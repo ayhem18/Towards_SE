@@ -63,12 +63,45 @@ class Solution:
 
         return [-1, -1]
 
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        # first let's define the start and end parameters
+        start = 0
+        best_start, best_end = 0, 0
+        current_dict = {}
+        for i, char in enumerate(s):
+            # first check if the char is seen for the first time
+            if char not in current_dict:
+                current_dict[char] = i
+            else:
+                # first check if the best start and ends should be updated
+                if i - 1 - start > best_end - best_start:
+                    best_end = i - 1
+                    best_start = start
+                # now we need to update the start
+                # the new start position is the position of the previous occurrence of the character char + 1
+
+                new_start = current_dict[char] + 1
+
+                for j in range(start, new_start):
+                    del current_dict[s[j]]
+
+                start = new_start
+                # the value of i-th character should be added
+                current_dict[char] = i
+
+        # check the if the substring ends at the end of the string
+        if len(s) - 1 - start > best_end - best_start:
+            best_end = len(s) - 1
+            best_start = start
+
+        return best_end - best_start + 1
+
 
 def main():
     sol = Solution()
-    nums = [3, 3]
-    t = 6
-    print(sol.two_sum(nums, t))
+    # let's see how our function works
+    s = 'aabycbaycefghcb'
+    print(sol.lengthOfLongestSubstring(s))
 
 
 if __name__ == "__main__":
