@@ -1,3 +1,6 @@
+from collections import deque
+
+
 class Solution:
     def binary_search(self, array: list, x, low, high):
         while low <= high:
@@ -23,7 +26,7 @@ class Solution:
         :param target: the
         :return:
         """
-        ## The solution passed the tests!!!! GREAT
+        # The solution passed the tests!!!! GREAT
 
         # first sort the array of values
         sorted_nums = sorted(nums)
@@ -96,13 +99,57 @@ class Solution:
 
         return best_end - best_start + 1
 
+    # let's get this valid parentheses question
+    def isValid(self, s: str) -> bool:
+        # check if a string has valid parentheses
+        o = ["{", "(", "["]
+        c = ["{", "(", "["]
+        open_parentheses = set(o)
+        close_parentheses = set(c)
+        parentheses = dict(zip(c, o))
+
+        # create a hidden deque
+        if len(s) == 0:
+            return True
+
+        stack = deque()
+        for char in s:
+            if char in open_parentheses:
+                stack.append(char)
+            if char in close_parentheses:
+                # check if the closing parentheses correspond to the more recent opening parenthesis
+                if len(stack) > 0 and parentheses[char] == stack[-1]:
+                    stack.pop()
+                else:
+                    return False
+
+        # the stack must be empty by the end of the string
+        return len(stack) == 0
+
+    # well spotting a string with valid parentheses is a child's game
+
+    def n_parenthesis_with_subs(self, n: int, sub: dict):
+        # this assumes that the sub dictionary have the valid combinations for all values from 1 to n - 1
+        results = set(["(" + s + ")" for s in sub[n - 1]])
+        for i in range(1, n):
+            s1 = sub[i]
+            s2 = sub[n - i]
+            results.update([l1 + l2 for l1 in s1 for l2 in s2])
+        return list(results)
+
+    def generateParenthesis(self, n: int) -> list[str]:
+        # create a dictionary
+        sub = {}
+        sub[1] = ["()"]
+        # fill the subs with the valid combination of lower values
+        for i in range(2, n + 1):
+            sub[i] = self.n_parenthesis_with_subs(i, sub)
+        return list(sub[n])
 
 def main():
     sol = Solution()
-    # let's see how our function works
-    s = 'aabycbaycefghcb'
-    print(sol.lengthOfLongestSubstring(s))
-
+    n = 4
+    print(sol.generateParenthesis(n))
 
 if __name__ == "__main__":
     main()
