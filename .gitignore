@@ -1,2 +1,7 @@
 Information_retrieval/Uni_course/*.txt
 .idea
+Information_retrieval/Uni_course/shard
+*.zip
+*.pickle
+*.csv
+/extra_env
