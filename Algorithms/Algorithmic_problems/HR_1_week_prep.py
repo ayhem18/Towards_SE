@@ -1,10 +1,3 @@
-import math
-import os
-import random
-import re
-import sys
-
-
 def minimumBribes(queue):
     total_count = 0  # the total number of bribes
 
@@ -23,6 +16,10 @@ def minimumBribes(queue):
 
     print(total_count)
     # return total_count
+
+
+# first let's determine the possible combination of bricks
+import numpy as np
 
 
 def fun(p_d):
@@ -105,7 +102,7 @@ def mergeLists(head1: SinglyLinkedListNode, head2: SinglyLinkedListNode):
     return new_head
 
 
-def build_linked_list(values:list[int]):
+def build_linked_list(values: list[int]):
     assert values
     head = SinglyLinkedListNode(values[0])
     p = head
@@ -182,10 +179,147 @@ def pairs(target, values):
     return count
 
 
+def possible_combinations(m: int, values: set):
+    # create the table that will store the results
+    table = [[] for _ in range(m + 1)]
+    min_val = min(values)
+    for i in range(min_val, m + 1):
+        # append the rest of the results
+        for j in values:
+            if i >= j:
+                # extract the possible sub combinations
+                sub_combinations = table[i - j]
+                if sub_combinations:
+                    table[i].extend([[j] + sub_c for sub_c in sub_combinations])
+                else:
+                    table[i].append([j])
+
+    # now just extract the possible combinations for the last element: n
+    return table[m]
+
+
+def can_be_consecutive(seq1: list, seq2: list):
+    pass
+    i1, i2 = 0, 0
+    count1, count2 = 0, 0
+    defect_points = set()
+    while i1 != len(seq1) or i2 != len(seq2):
+        if count1 == count2:
+            defect_points.add(count1)
+        if count1 > count2:
+            count2 += seq2[i2]
+            i2 += 1
+        else:
+            count1 += seq1[i1]
+            i1 += 1
+
+    # remove 0 and the sum of all elements
+    defect_points.discard(sum(seq1))
+    defect_points.discard(0)
+
+    if defect_points == set():
+        return True, defect_points
+
+    return False, defect_points
+
+
+def build_defect_pairs(one_row_combinations):
+    non_consecutive_combinations = {}
+    # now determine which combinations cannot be consecutive
+    for i1, com1 in enumerate(one_row_combinations):
+        s1 = " ".join([str(c) for c in com1])
+        for i2 in range(i1, len(one_row_combinations)):
+            com2 = one_row_combinations[i2]
+            s2 = " ".join([str(c) for c in com2])
+            res, defect_points = can_be_consecutive(com1, com2)
+            if not res:
+                if s1 in non_consecutive_combinations:
+                    non_consecutive_combinations[s1].append((com2, defect_points))
+                else:
+                    non_consecutive_combinations[s1] = [(com2, defect_points)]
+
+                if s1 != s2:
+                    if s2 in non_consecutive_combinations:
+                        non_consecutive_combinations[s2].append((com1, defect_points))
+                    else:
+                        non_consecutive_combinations[s2] = [(com1, defect_points)]
+
+    # make sure each combination is present at least once
+    for com in one_row_combinations:
+        com_string = " ".join([str(c) for c in com])
+        if com_string not in non_consecutive_combinations:
+            non_consecutive_combinations[com_string] = [([], set())]
+
+    return non_consecutive_combinations
+
+
+BIG_INTEGER = 10 ** 9 + 7
+
+
+def invalid_combinations(n: int, initial_combinations: list[list], defect_points: set, pairs: dict):
+    # first of all check if  we have non-empty initial_combinations and defect_points
+    if n <= 1 or len(initial_combinations) == 0 or len(defect_points) == 0:
+        return 0
+
+    result = 0
+    # the base case is 2
+    if n == 2:
+        for combination in initial_combinations:
+            # extract the string representation of the combination
+            com_string = " ".join([str(c) for c in combination])
+            next_list = pairs[com_string]
+            # filter those that do not have defects
+            result += len([n for n in next_list if len(n[0]) != 0])
+
+        return result % BIG_INTEGER
+
+    result = 0
+    for combination in initial_combinations:
+        # extract the string representation of the combination
+        com_string = " ".join([str(c) for c in combination])
+        next_list = pairs[com_string]
+        for com, dp in next_list:
+            result += invalid_combinations(n - 1, com, defect_points.intersection(dp), pairs) % BIG_INTEGER
+
+    return result
+
+
+# let's build our final function
+OUR_SET = {1, 2, 3, 4}
+
+
+def legoBlocks(n, m):
+
+    # first extract all the possible combinations
+    one_row_combinations = possible_combinations(m, OUR_SET)
+
+    x = len(one_row_combinations)
+    # second calculate the theoretical number of all possible combinations: len(one_row_combinations) ** n
+
+    total = 1
+    for _ in range(n):
+        total = (total * x) % BIG_INTEGER
+
+    pairs = build_defect_pairs(one_row_combinations)
+
+    total_invalid = invalid_combinations(n, one_row_combinations, set(list(range(1, m))), pairs)
+    # now simply count the number of stuff on this
+    return (total - total_invalid) % BIG_INTEGER
+
+
+import pprint
 def main():
-    t = 1
-    values = [1, 1, 1, 2, 2, 3, 1, 4, 10]
-    print(pairs(t, values))
+    pp = pprint.PrettyPrinter(sort_dicts=True)
+
+    # p = possible_combinations(2, OUR_SET)
+    # c_combinations = build_defect_pairs(p)
+    # pp.pprint(p)
+    # pp.pprint(c_combinations)
+
+
+    res = legoBlocks(3, 2)
+    pp.pprint(res)
+
 
 if __name__ == '__main__':
     main()
