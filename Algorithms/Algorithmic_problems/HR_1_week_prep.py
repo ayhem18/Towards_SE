@@ -21,7 +21,6 @@ def minimumBribes(queue):
 # first let's determine the possible combination of bricks
 import numpy as np
 
-
 def fun(p_d):
     N = len(p_d)
     # first determine the difference
@@ -60,7 +59,7 @@ class SinglyLinkedListNode:
         self.data = data
         self.next = next
 
-
+0
 def mergeLists(head1: SinglyLinkedListNode, head2: SinglyLinkedListNode):
     # head1 /head 2 represent the heads of  sorted linked lists
     # first let's eliminate the possibility of empty lists

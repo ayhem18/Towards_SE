@@ -146,10 +146,12 @@ class Solution:
             sub[i] = self.n_parenthesis_with_subs(i, sub)
         return list(sub[n])
 
+
 def main():
     sol = Solution()
     n = 4
     print(sol.generateParenthesis(n))
+
 
 if __name__ == "__main__":
     main()

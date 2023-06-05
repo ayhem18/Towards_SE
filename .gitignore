@@ -5,3 +5,9 @@ Information_retrieval/Uni_course/shard
 *.pickle
 *.csv
 /extra_env
+*.gz
+*.tsv
+*.pkl
+Information_retrieval/Uni_course/shard/
+.vscode/
+
