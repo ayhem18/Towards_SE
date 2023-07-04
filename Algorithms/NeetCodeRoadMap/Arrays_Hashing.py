@@ -158,9 +158,28 @@ class Solution:
 
         return max_count
 
+    def productExceptSelf(self, nums: list[int]) -> list[int]:
+        # the idea is simple, given an array A, construct another array B
+        # such that B[i] = the product of all elements in A except for A[i]
+
+        # the first step is to determine zeros elements in the array A
+        non_zeros = [value for _, value in enumerate(nums) if value != 0]
+
+        prod = np.prod(non_zeros)
+        if len(non_zeros) == len(nums):
+            # it means there are no zeros
+            # in the initial array
+            return [int(prod / value) for value in nums]
+        elif len(non_zeros) == len(nums) - 1:
+            # there is only one zero element
+            return [0 if value != 0 else prod for value in nums]
+
+        else:
+            # there are at least 2 zero elements:
+            return [0 for _ in nums]
+
 
 if __name__ == '__main__':
     s = Solution()
-    nums = [1, 2, 3, 8, 9, 10, 12, 13, 14, 15]
-    nums = [1]
-    print(s.longestConsecutive(nums))
+    nums = [1, 0, 3, 4, 0]
+    print(s.productExceptSelf(nums))
