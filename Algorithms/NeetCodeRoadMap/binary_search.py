@@ -150,6 +150,11 @@ class Solution:
     def search(self, nums: list[int], target: int) -> int:
         return self.search_rotated_array(nums, target, 0, len(nums) - 1)
 
+    def findMedianSortedArrays(self, nums1: list[int], nums2: list[int]) -> float:
+        # the solution must be O(log(m + n)) where m, n are the lengths of the sorted arrays
+        # it is indeed a hard problem
+        pass
+
 
 def rotate(sorted_array: list[int], n: int):
     new_array = sorted_array.copy()
@@ -162,16 +167,3 @@ if __name__ == '__main__':
     s = Solution()
     a = [3, 1]
     s.search(a, -1)
-
-    # a = [1, 2, 3, 4, 5, 6, 20, 50, 70, 71, 81, 89, 90, 100, 120]
-    #
-    # for i in range(len(a)):
-    #     new_a = rotate(a, i)
-    #     for _ in range(10):
-    #         target = random.randint(1, 120)
-    #
-    #         index = s.search(new_a, target)
-    #         if index == -1:
-    #             assert target not in new_a
-    #         else:
-    #             assert new_a[index] == target
