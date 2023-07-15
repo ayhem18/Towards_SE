@@ -116,7 +116,7 @@ class Solution:
         p1, p2 = 1, index - 1
 
         # remove the head
-        del(d[0])
+        del (d[0])
 
         t = head
         while len(d) != 0:
@@ -135,9 +135,42 @@ class Solution:
 
         t.next = None
 
+    # another medium problem for the fun of it:
+    # https://leetcode.com/problems/remove-nth-node-from-end-of-list/description/
+    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
+        if head is None:
+            return head
+        index = 0
+        t = head
+        while t is not None:
+            t = t.next
+            index += 1
+
+        N = index
+        # this is the case where the head is removed
+        if N == n:
+            return head.next
+
+        counter = 0
+        t = head
+        while True:
+            if counter == N - n - 1:
+                # this means the node to be removed is the last node
+                if n == 1:
+                    t.next = None
+                else:
+                    t.next = t.next.next
+                break
+            t = t.next
+            counter += 1
+
+        return head
+
 
 if __name__ == '__main__':
-    sol = Solution()
-    l = sol.linked_list_from_list([1, 2, 3, 4, 5, 6])
-    sol.reorderList(l)
-    sol.traverse_linked_list(l, display=True)
+    for i in range(1, 6):
+        sol = Solution()
+        l = sol.linked_list_from_list([1, 2, 3, 4, 5])
+        l = sol.removeNthFromEnd(l, i)
+        sol.traverse_linked_list(l, display=True)
+        print("#" * 100)
