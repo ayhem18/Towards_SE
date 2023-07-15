@@ -1,4 +1,7 @@
 # noinspection PyMethodMayBeStatic
+from collections import Counter, deque
+
+
 class Solution:
     # well it is sad that I am not always capable for directly solving an easy problem
     def maxProfit(self, prices: list[int]) -> int:
@@ -159,7 +162,7 @@ class Solution:
             occurrences[char] += 1
 
             if occurrences[char] == 0:
-                del(occurrences[char])
+                del (occurrences[char])
 
         if len(occurrences) == 0:
             return True
@@ -188,9 +191,46 @@ class Solution:
 
         return False
 
+    # another hard question to solve (my 2nd)
+    # https://leetcode.com/problems/minimum-window-substring/
+    def minWindow(self, s: str, t: str) -> str:
+        # first let's do some preliminary work
+        if len(t) > len(s):
+            return ''
+        sd, td = dict(Counter(s)), dict(Counter(t))
+        for char, count in td.items():
+            if char not in sd or count > sd[char]:
+                return ''
+
+        # at this point, the entire string 's' is a window
+        t_set = set(t)
+        mapping = {}
+
+        for index, char in enumerate(s):
+            if char in td:
+                if char not in mapping:
+                    mapping[char] = deque()
+                mapping[char].append(index)
+                # first check if the length of mapping[char] exceeds the count of char in 't'
+                if len(mapping[char]) >= td[char]:
+                    t_set.discard(char)
+
+                if len(mapping[char]) > td[char]:
+                    # the first index now is not needed
+                    mapping[char].popleft()
+
+        max_index, min_index = 0, len(s)
+        # find the indices of the extremes of the minimum window
+        for char, stack in mapping.items():
+            max_index = max(max_index, stack[-1])
+            min_index = min(min_index, stack[0])
+
+        res = s[min_index: max_index + 1]
+        return res
+
 
 if __name__ == '__main__':
-    s = Solution()
-    s1 = 'abbba'
-    s2 = 'aabbaaabbab'
-    print(s.checkInclusion(s1, s2))
+    sol = Solution()
+    t = 'abbba'
+    s = 'aabbaaabbab'
+    print(sol.minWindow(s, t))
