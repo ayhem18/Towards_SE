@@ -4,6 +4,7 @@ https://neetcode.io/roadmap
 """
 from typing import Optional, Union
 from copy import copy
+from heapq import heapify, heappush, heappop
 
 
 # Definition for singly-linked list, given by LeetCode
@@ -14,12 +15,21 @@ class ListNode:
         self.next = next_node
 
 
-# Definition for a Node.
-class Node:
-    def __init__(self, x: int, next_node: 'Node' = None, random_node: 'Node' = None):
-        self.val = int(x)
-        self.next = next_node
-        self.random = random_node
+class ListNodeWrapper:
+    def __init__(self, node: ListNode):
+        self.node = node
+
+    def __ge__(self, other):
+        return self.node.val >= other.node.val
+
+    def __gt__(self, other):
+        return self.node.val > other.node.val
+
+    def __lt__(self, other):
+        return self.node.val < other.node.val
+
+    def __le__(self, other):
+        return self.node.val <= other.node.val
 
 
 # noinspection PyMethodMayBeStatic
@@ -174,78 +184,78 @@ class Solution:
 
         return head
 
-    def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':
-        # let's start by removing the degenerate cases
-        if head is None:
-            return head
-
-        # there is only one element in the node
-        if head.next is None:
-            new_head = copy(head)
-            if head.random is not None:
-                new_head.random = new_head
-            return new_head
-        # the main idea is to build an index to index map: mapping the node of each index
-        # to the random_node's index
-        index_to_id = {}
-        id_to_index = {}
-        id_to_random_id = {}
-        index = 0
-        t = head
-        while t is not None:
-            idt = id(t)
-            index_to_id[index] = idt
-            id_to_index[idt] = index
-            # access the random node pointed by 't'
-            if t.random is not None:
-                id_random = id(t.random)
-                id_to_random_id[idt] = id_random
-            index += 1
-            t = t.next
-        # now we need to construct index_to_random_index map
-
-        index_to_random_index = {}
-        for node_index, node_id in index_to_id.items():
-            if node_id in id_to_random_id:
-                random_node_id = id_to_random_id[node_id]
-                random_index = id_to_index[random_node_id]
-                index_to_random_index[node_index] = random_index
-
-        # now time to build the new linked list
-        new_head = copy(head)
-        new_t = new_head
-        t = head.next
-
-        # a new a dictionary that maps indices to the actual nodes
-        counter = 1
-        index_to_node = {0: new_head}
-
-        while t is not None:
-            # create the new node
-            new_node = Node(t.val)
-            # add the new_node to new_t
-            new_t.next = new_node
-            new_t = new_node
-            # make sure to map the counter to the new node
-            index_to_node[counter] = new_node
-            # update the counter
-            counter += 1
-            # update t
-            t = t.next
-
-        # another pass on the data
-        t = new_head
-        index = 0
-        while t is not None:
-            if index in index_to_random_index:
-                # this means the current node points to an actual node
-                # extract the node index
-                random_node_index = index_to_random_index[index]
-                t.random = index_to_node[random_node_index]
-            else:
-                t.random = None
-
-        return new_head
+    # def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':
+    #     # let's start by removing the degenerate cases
+    #     if head is None:
+    #         return head
+    #
+    #     # there is only one element in the node
+    #     if head.next is None:
+    #         new_head = copy(head)
+    #         if head.random is not None:
+    #             new_head.random = new_head
+    #         return new_head
+    #     # the main idea is to build an index to index map: mapping the node of each index
+    #     # to the random_node's index
+    #     index_to_id = {}
+    #     id_to_index = {}
+    #     id_to_random_id = {}
+    #     index = 0
+    #     t = head
+    #     while t is not None:
+    #         idt = id(t)
+    #         index_to_id[index] = idt
+    #         id_to_index[idt] = index
+    #         # access the random node pointed by 't'
+    #         if t.random is not None:
+    #             id_random = id(t.random)
+    #             id_to_random_id[idt] = id_random
+    #         index += 1
+    #         t = t.next
+    #     # now we need to construct index_to_random_index map
+    #
+    #     index_to_random_index = {}
+    #     for node_index, node_id in index_to_id.items():
+    #         if node_id in id_to_random_id:
+    #             random_node_id = id_to_random_id[node_id]
+    #             random_index = id_to_index[random_node_id]
+    #             index_to_random_index[node_index] = random_index
+    #
+    #     # now time to build the new linked list
+    #     new_head = copy(head)
+    #     new_t = new_head
+    #     t = head.next
+    #
+    #     # a new a dictionary that maps indices to the actual nodes
+    #     counter = 1
+    #     index_to_node = {0: new_head}
+    #
+    #     while t is not None:
+    #         # create the new node
+    #         new_node = Node(t.val)
+    #         # add the new_node to new_t
+    #         new_t.next = new_node
+    #         new_t = new_node
+    #         # make sure to map the counter to the new node
+    #         index_to_node[counter] = new_node
+    #         # update the counter
+    #         counter += 1
+    #         # update t
+    #         t = t.next
+    #
+    #     # another pass on the data
+    #     t = new_head
+    #     index = 0
+    #     while t is not None:
+    #         if index in index_to_random_index:
+    #             # this means the current node points to an actual node
+    #             # extract the node index
+    #             random_node_index = index_to_random_index[index]
+    #             t.random = index_to_node[random_node_index]
+    #         else:
+    #             t.random = None
+    #
+    #     return new_head
 
     def to_ll(self, n: int) -> ListNode:
         new_head = ListNode(val=int(n % 10))
@@ -308,6 +318,36 @@ class Solution:
             counter += 1
 
         return False
+
+    # well, it might be considered a shortcut, but I still managed to do it xD
+    # https://leetcode.com/problems/merge-k-sorted-lists/description/
+    def mergeKLists(self, lists: list[Optional[ListNode]]) -> Optional[ListNode]:
+        # filter empty lists
+        lists = [l for l in lists if l is not None]
+        if len(lists) == 0:
+            return None
+
+        # the idea here is to create a heap data structure
+        heap = [ListNodeWrapper(h) for h in lists]
+
+        heapify(heap)
+
+        new_head = None
+        t = None
+        while len(heap) != 0:
+            # each time remove the element with the minimum 'val'
+            min_value = heappop(heap)
+            if min_value.node.next is not None:
+                # create a wrapper and add it
+                heappush(heap, ListNodeWrapper(min_value.node.next))
+
+            if new_head is None:
+                new_head = min_value.node
+                t = new_head
+            else:
+                t.next = min_value.node
+                t = t.next
+        return new_head
 
 
 if __name__ == '__main__':
