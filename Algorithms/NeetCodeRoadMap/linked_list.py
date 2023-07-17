@@ -349,15 +349,47 @@ class Solution:
                 t = t.next
         return new_head
 
+    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        # let's remove degenerate cases:
+        if head is None or head.next is None or k == 1:
+            return head
+
+        # let's define a variable to return
+        new_head = None
+        p1, p2 = head, head
+        link = None
+        counter = 1
+        last_k_p2 = None
+        while p2 is not None:
+            if counter % k == 0:
+                new_k_last = ListNode(p1.val)
+                new_k_head = new_k_last
+                p1 = p1.next
+                while p1 != p2.next:
+                    new_node = ListNode(p1.val)
+                    new_node.next = new_k_head
+                    new_k_head = new_node
+                    # don't forget to update p1
+                    p1 = p1.next
+                # now we have the k current elements reversed
+                if new_head is None:
+                    new_head = new_k_head
+                if link is not None:
+                    link.next = new_k_head
+                # set link to new_k_last regardless
+                link = new_k_last
+                last_k_p2 = p2.next
+
+            p2 = p2.next
+            counter += 1
+        # consider the group leftover at the end
+        if (counter - 1) % k != 0:
+            link.next = last_k_p2
+        return new_head
+
 
 if __name__ == '__main__':
     sol = Solution()
-    l1 = sol.to_ll(101)
-    l2 = sol.to_ll(456)
-
-    sol.traverse_linked_list(l1, display=True)
-    print("#" * 100)
-    sol.traverse_linked_list(l2, display=True)
-    print("#" * 100)
-    res = sol.addTwoNumbers(l1, l2)
-    sol.traverse_linked_list(res, display=True)
+    l1 = sol.linked_list_from_list([10, 11, 12])
+    nl = sol.reverseKGroup(l1, k=2)
+    sol.traverse_linked_list(nl, display=True)
