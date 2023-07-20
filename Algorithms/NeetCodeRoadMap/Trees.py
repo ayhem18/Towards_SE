@@ -146,6 +146,71 @@ class Solution:
 
     # this is my solution for this problem:
     # https://leetcode.com/problems/subtree-of-another-tree/
+    # well this solution beats the hell out of 92% of other Python solutions NICE !!
     def isSubtree(self, root: Optional[TreeNode], subRoot: Optional[TreeNode]) -> bool:
-        pass
+        if subRoot is None:
+            return True
 
+        if root is None:
+            return False
+
+        if root.val == subRoot.val:
+            if self.isSameTree(root, subRoot):
+                return True
+
+        if self.isSubtree(root.left, subRoot):
+            return True
+
+        if self.isSubtree(root.right, subRoot):
+            return True
+
+        return False
+
+    # let's make things a bit more interesting and solve a 'medium' level problem
+    # my solution isn't that fast apparently: beats only 20% of other solutions..
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        queue = deque()
+        queue.append(root)
+        parent_mapper = {root: None}
+        q_in, p_in = q == root, p == root
+        shallow = None
+
+        while len(queue) != 0 and not (q_in and p_in):
+            node = queue.popleft()
+
+            if node == q:
+                q_in = True
+                shallow = q if shallow is None else shallow
+
+            if node == p:
+                p_in = True
+                shallow = p if shallow is None else shallow
+
+            if node.left is not None:
+                parent_mapper[node.left] = node
+                queue.append(node.left)
+
+            if node.right is not None:
+                parent_mapper[node.right] = node
+                queue.append(node.right)
+
+        # define deep,
+        deep = p if q == shallow else q
+        shallow_ancestors = set()
+        t = shallow
+        while t is not None:
+            shallow_ancestors.add(t)
+            t = parent_mapper[t]
+
+        # use the set above to find the
+        t = deep
+        while t is not None:
+            if t in shallow_ancestors:
+                return t
+            t = parent_mapper[t]
+
+        return t  # it will be None at this point
+
+
+
+        pass
