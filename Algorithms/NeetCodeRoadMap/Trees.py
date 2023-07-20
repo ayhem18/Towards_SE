@@ -167,8 +167,9 @@ class Solution:
         return False
 
     # let's make things a bit more interesting and solve a 'medium' level problem
+    # https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/description/
     # my solution isn't that fast apparently: beats only 20% of other solutions..
-    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+    def lowestCommonAncestorGeneral(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
         queue = deque()
         queue.append(root)
         parent_mapper = {root: None}
@@ -211,6 +212,81 @@ class Solution:
 
         return t  # it will be None at this point
 
+    # my solution above is general and does not utilize the fact that root represents a BINARY SEARCH TREE
+    # where node.val > node.left.val and node.val <= node.val.right
+    # well this solution is much better and uses the constraints of the problem
 
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        if root == q or root == p:
+            return root
+        if min(q.val, p.val) < root.val < max(q.val, p.val):
+            # this means that p and q are in different subtrees and automatically
+            # the lowest ancestor will be 'root'
+            return root
 
-        pass
+        if q.val > root.val and p.val > root.val:
+            # it means they are both on the left subtree
+            return self.lowestCommonAncestor(root.right, p, q)
+
+        if q.val < root.val and p.val < root.val:
+            # it means they are both on the left subtree
+            return self.lowestCommonAncestor(root.left, p, q)
+
+    # let's solve another one
+    # https://leetcode.com/problems/binary-tree-level-order-traversal/
+    def levelOrder(self, root: Optional[TreeNode]) -> list[list[int]]:
+        # this problem is clearly BFS
+        if root is None:
+            return []
+        queue = deque()
+        queue.append(root)
+
+        def level_generator():
+            while len(queue) != 0:
+                # save the length of the current queue before any modifications
+                l = len(queue)
+                yield [e.val for e in queue]
+                for _ in range(l):
+                    n = queue.popleft()
+                    if n.left:
+                        queue.append(n.left)
+                    if n.right:
+                        queue.append(n.right)
+
+        res = [l for l in level_generator()]
+        return res
+
+    # the next one might seem a bit confusing at first, but it really isn't
+    # https://leetcode.com/problems/binary-tree-right-side-view/
+    def rightSideView(self, root: Optional[TreeNode]) -> list[int]:
+        if root is None:
+            return []
+        queue = deque([root])
+
+        def right_view_generator():
+            while len(queue) != 0:
+                # save the length of the current queue before any modifications
+                l = len(queue)
+                yield queue[-1].val
+                for _ in range(l):
+                    n = queue.popleft()
+                    # most importantly put the left node first
+                    if n.left:
+                        queue.append(n.left)
+                    if n.right:
+                        queue.append(n.right)
+
+        res = [r for r in right_view_generator()]
+        return res
+
+    # another 'medium' level problem
+    # https://leetcode.com/problems/count-good-nodes-in-binary-tree/
+    def nodes_higher_thresholds(self, root: TreeNode, threshold: int):
+        if root is None:
+            return 0
+        left_score = self.nodes_higher_thresholds(root.left, max(root.left.val, threshold)) if root.left else 0
+        right_score = self.nodes_higher_thresholds(root.right, max(root.right.val, threshold)) if root.right else 0
+        return int(root.val >= threshold) + left_score + right_score
+
+    def goodNodes(self, root: TreeNode) -> int:
+        return self.nodes_higher_thresholds(root, root.val)
