@@ -401,15 +401,75 @@ class Solution:
     def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
         return self.__kthSmallest(root, k)
 
+    # the final 'medium' problem:
+    # https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
+    def buildTree(self, preorder: list[int], inorder: list[int]) -> Optional[TreeNode]:
+        # this isn't an easy problem
+        # the idea is there, but a working code is definitely tricky
+        preorder_stack = deque()
+        preorder_pointer = 0
+        inorder_pointer = 0
+        l = len(preorder)
+        parent = {}
+        # let's start with a root
+        root = TreeNode()
+        t = root
+        while preorder_pointer < l and inorder_pointer < l:
+            while preorder[preorder_pointer] != inorder[inorder_pointer]:
+                value = preorder[preorder_pointer]
+                t.val = value
+                # make sure to add the value to the stack
+                preorder_stack.append(value)
+
+                # create a new node
+                new_node = TreeNode()
+                t.left = new_node
+                # make sure to save 't' as the parent of new_node
+                parent[new_node] = t
+
+                t = new_node
+                # don't forget to update preorder_pointer
+                preorder_pointer += 1
+
+            # at this point t represents the left most node in the current subtree
+            t.val = preorder[preorder_pointer]
+            # the next step is to go up in the tree until finding the node with a right child node
+            inorder_pointer += 1
+            preorder_pointer += 1
+
+            while inorder[inorder_pointer] != preorder_stack[-1]:
+                preorder_stack.pop()
+                t = parent[t]
+                inorder_pointer += 1
+            # at this point we have link 't' to the right
+            new_node = TreeNode(val=inorder_pointer)
+            t.right = new_node
+            preorder_stack.append(new_node)
+
+        return root
+
+    def preorder(self, root: TreeNode):
+        if root is None:
+            return []
+        res = [root.val]
+        res.extend(self.preorder(root.left))
+        res.extend(self.preorder(root.right))
+        return res
+
+    def inorder(self, root: TreeNode):
+        if root is None:
+            return []
+
+        res = self.inorder(root.left)
+        res.append(root.val)
+        res.extend(self.inorder(root.right))
+        return res
+
 
 if __name__ == '__main__':
-    l = [5, 3, 6, 2, 4, None, None, 1]
+    l = [1, 2, 3, 4, 5, 6, 7]
     root = build_tree_from_list(l)
     sol = Solution()
-    k = 3
-    res = sol.levelOrder(root)
-    print(res)
-
-    v = sol.kthSmallest(root, k)
-    print(v)
-
+    pp = sol.preorder(root)
+    ip = sol.inorder(root)
+    new_root = sol.buildTree(pp, ip)
