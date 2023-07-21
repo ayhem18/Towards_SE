@@ -3,7 +3,7 @@ This script contains my solution for the leetCode problems of the Trees section
 https://neetcode.io/roadmap
 """
 
-from typing import Optional
+from typing import Optional, Union
 from collections import deque
 
 
@@ -13,6 +13,40 @@ class TreeNode:
         self.val = val
         self.left = left
         self.right = right
+
+
+def build_tree_from_list(values: list[Union[int, None]]) -> TreeNode:
+    if len(values) == 0:
+        return None
+    nodes = [TreeNode() if _ is not None else None for _ in values]
+    for index, value in enumerate(values):
+        if value is not None:
+            nodes[index].val = value
+            nodes[index].left = nodes[2 * index + 1] if 2 * index + 1 < len(values) else None
+            nodes[index].right = nodes[2 * index + 2] if 2 * index + 2 < len(values) else None
+
+    return nodes[0]
+
+
+def breadth_first_traversal(root: None):
+    if root is None:
+        return []
+    result = []
+
+    to_do = deque()
+    to_do.append(root)
+    # the to_do DS will save all the nodes that were not yet processed.
+    while len(to_do) != 0:
+        first_element = to_do.popleft()
+        result.append(first_element.val)
+        # add the left child first, then the right one
+        if first_element.left:
+            to_do.append(first_element.left)
+
+        if first_element.right:
+            to_do.append(first_element.right)
+
+    return result
 
 
 # noinspection PyMethodMayBeStatic
@@ -290,3 +324,92 @@ class Solution:
 
     def goodNodes(self, root: TreeNode) -> int:
         return self.nodes_higher_thresholds(root, root.val)
+
+    # another 'medium' level problem:
+    # https://leetcode.com/problems/validate-binary-search-tree/
+    # well that's what I call a great solution !!!
+    def __isValidBST(self, root: Optional[TreeNode], min_t=None, max_t=None):
+        if min_t is None:
+            min_t = float('-inf')
+        if max_t is None:
+            max_t = float('inf')
+        # root must be less than max_t
+        # root must be larger than min_t
+        if root.val >= max_t or root.val <= min_t:
+            return False
+
+        # the left node must be less than the current value of min(root.val, max_t)
+        right_cond = self.__isValidBST(root.right, max(root.val, min_t), max_t) if root.right else True
+        if not right_cond:
+            return False
+
+        # right condition must be more than self.val / min_t, but with the same upper bound as the parent
+        return self.__isValidBST(root.left, min_t, min(root.val, max_t)) if root.left else True
+
+    def isValidBST(self, root: Optional[TreeNode]) -> bool:
+        # an empty tree is a valid BST
+        if root is None:
+            return True
+
+        return self.__isValidBST(root)
+
+    # the next 'medium' problem
+    # https://leetcode.com/problems/kth-smallest-element-in-a-bst/
+
+    # let's first create an auxiliary functino
+    # the main idea here is simple
+    def num_nodes(self, root: Optional[TreeNode], memo: dict[TreeNode, int]) -> int:
+        # the idea here is simple
+        if root is None:
+            return 0
+        d = 1 + self.num_nodes(root.left, memo) + self.num_nodes(root.right, memo)
+        memo[root] = d
+        return d
+
+    def __kthSmallest(self, root: Optional[TreeNode], k: int, memo: dict[TreeNode, int] = None):
+        # we are assuming
+        if memo is None:
+            memo = {}
+            self.num_nodes(root, memo)
+            # add None to memo for shorter code
+            memo[None] = 0
+
+        # first let's start with the base case, k == 1
+        if k == 1:
+            t = root
+            while t.left is not None:
+                t = t.left
+            return t.val
+
+        # extract the number of nodes starting from the left node
+        num_nodes_left = memo[root.left]
+        # if there are less than 'k' nodes in the left subtree,
+        # it means that the k-th smallest element is in the right subtree,
+        # and we are looking for the (k - num_nodes_left)-th smallest element
+
+        # there are 3 cases, right ?
+        # either the value we are looking for is in the root node
+        if num_nodes_left == k - 1:
+            return root.val
+
+        # DON'T FORGET TO PASS MEMO
+        if num_nodes_left < k:
+            return self.__kthSmallest(root.right, k - num_nodes_left - 1, memo)
+
+        return self.__kthSmallest(root.left, k, memo)
+
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+        return self.__kthSmallest(root, k)
+
+
+if __name__ == '__main__':
+    l = [5, 3, 6, 2, 4, None, None, 1]
+    root = build_tree_from_list(l)
+    sol = Solution()
+    k = 3
+    res = sol.levelOrder(root)
+    print(res)
+
+    v = sol.kthSmallest(root, k)
+    print(v)
+
