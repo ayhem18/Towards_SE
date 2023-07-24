@@ -1,3 +1,4 @@
+# noinspection PyMethodMayBeStatic
 class Solution:
     def __all_paths(self, n: int, m: int, grid, current_position):
         if current_position == (n - 1, m - 1):
@@ -23,6 +24,40 @@ class Solution:
     def findAllPossiblePaths(self, n: int, m: int, grid):
         return self.__all_paths(n, m, grid, (0, 0))
 
-    def combinationSum(self, K, target):
-        # Code here
+    # this is my attempt to solve:
+    # https://practice.geeksforgeeks.org/problems/combination-sum-iii/1?page=1&category[]=Backtracking&sortBy=accuracy
+    # let's start with some inner methods
+    def choose_k_from_set(self, nums: list[int], k: int):
+        if k > len(nums):
+            return []
+        if k == len(nums):
+            return [nums]
+        if k == 1:
+            return [[n] for n in nums]
 
+        res = []
+        # there are 2 possible cases, either we add the current element, or not
+        # add the current element
+
+        temp = self.choose_k_from_set(nums[1:], k - 1)
+        for i in range(len(temp)):
+            temp[i] = [nums[0]] + temp[i]
+        res.extend(temp)
+
+        if len(nums) >= k + 1:
+            temp = self.choose_k_from_set(nums[1:], k)
+            res.extend(temp)
+
+        return res
+
+    def combinationSum(self, k, target):
+        temp = self.choose_k_from_set(nums=list(range(1, 10)), k=k)
+        return [t for t in temp if sum(t) == target]
+
+
+if __name__ == '__main__':
+    sol = Solution()
+    k = 2
+    t = 10
+    res = sol.combinationSum(k=2, target=10)
+    print(res)
