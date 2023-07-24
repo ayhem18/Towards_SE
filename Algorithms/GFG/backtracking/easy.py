@@ -1,7 +1,7 @@
 from math import factorial, ceil
 
 
-# noinspection PyMethodMayBeStatic,PyShadowingNames
+# noinspection PyMethodMayBeStatic,PyShadowingNames,SpellCheckingInspection
 class Solution:
     def __all_paths(self, n: int, m: int, grid, current_position):
         if current_position == (n - 1, m - 1):
@@ -75,9 +75,67 @@ class Solution:
         string = ''.join([str(i) for i in range(1, n + 1)])
         return self.permute_str(string, k)
 
+    # the next problem is:
+    # https://practice.geeksforgeeks.org/problems/combination-sum-1587115620/1?page=1&category[]=Backtracking&sortBy=submissions
+    def inner_find_permutation(self, s):
+        # let's start with some base cases:
+        if len(s) <= 1:
+            return [s]
+        if len(s) == 2:
+            return list({s[0] + s[1], s[1] + s[0]})
+
+        res = []
+        for i in range(len(s)):
+            new_str = s[:i] + (s[i + 1:] if i + 1 < len(s) else '')
+            temp = self.inner_find_permutation(new_str)
+            # add the i-th character to the beginning of each string in the temp list
+            for j in range(len(temp)):
+                temp[j] = s[i] + temp[j]
+            res.extend(temp)
+        return res
+
+    def find_permutation(self, s):
+        return sorted(list(set(self.inner_find_permutation(s))))
+
+    def InnerCombs(self, nums, target: int):
+        # this function assumes the input is sorted
+        if target < nums[0]:
+            return []
+        # the next base case
+        if len(nums) == 1:
+            return [[nums[0] for _ in range(target // nums[0])]] if target % nums[0] == 0 else []
+
+        min_num = nums[0]
+        max_times = target // min_num
+        res = []
+
+        for i in range(max_times + 1):
+            new_target = target - min_num * i
+            current_list = [min_num for _ in range(i)]
+            if new_target == 0:
+                res.append(current_list)
+            elif new_target > 0:
+                temp = self.InnerCombs(nums[1:], new_target)
+                if len(temp) > 0:
+                    for j in range(len(temp)):
+                        temp[j] = current_list + temp[j]
+                    res.extend(temp)
+        return res
+
+    def combinationalSum(self, nums, target):
+        nums = sorted(list(set(nums)))
+        if len(nums) == 0:
+            return []
+
+        res = self.InnerCombs(nums, target)
+        return sorted(res, key=lambda x: tuple(x))
+
+
+
+
 if __name__ == '__main__':
     sol = Solution()
-    string = '1234'
-    for i in range(1, 25):
-        r = sol.permute_str(string, i)
-        print(i, r, sep='\t')
+    string = '123'
+    r = sol.find_permutation(string)
+    print(len(r))
+    print(r)
