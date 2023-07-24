@@ -1,4 +1,7 @@
-# noinspection PyMethodMayBeStatic
+from math import factorial, ceil
+
+
+# noinspection PyMethodMayBeStatic,PyShadowingNames
 class Solution:
     def __all_paths(self, n: int, m: int, grid, current_position):
         if current_position == (n - 1, m - 1):
@@ -54,10 +57,27 @@ class Solution:
         temp = self.choose_k_from_set(nums=list(range(1, 10)), k=k)
         return [t for t in temp if sum(t) == target]
 
+    def permute_str(self, string: str, k: int):
+        if len(string) == 0 or k == 1:
+            return string
+
+        n = len(string)
+        fac_n = factorial(n)
+        k = k % fac_n
+        k = fac_n if k == 0 else k
+        fac_n1 = fac_n // n
+        rotation_factor = int(ceil(k / fac_n1)) - 1
+        new_str = string[:rotation_factor] + string[rotation_factor + 1:]
+        result = string[rotation_factor] + self.permute_str(new_str, k % fac_n1)
+        return result
+
+    def kthPermutation(self, n: int, k: int) -> str:
+        string = ''.join([str(i) for i in range(1, n + 1)])
+        return self.permute_str(string, k)
 
 if __name__ == '__main__':
     sol = Solution()
-    k = 2
-    t = 10
-    res = sol.combinationSum(k=2, target=10)
-    print(res)
+    string = '1234'
+    for i in range(1, 25):
+        r = sol.permute_str(string, i)
+        print(i, r, sep='\t')
