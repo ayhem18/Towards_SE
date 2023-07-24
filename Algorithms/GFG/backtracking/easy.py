@@ -1,4 +1,5 @@
 from math import factorial, ceil
+from copy import copy
 
 
 # noinspection PyMethodMayBeStatic,PyShadowingNames,SpellCheckingInspection
@@ -130,12 +131,36 @@ class Solution:
         res = self.InnerCombs(nums, target)
         return sorted(res, key=lambda x: tuple(x))
 
+    def combination_of_sets(self, sets):
+        # sets is a list of lists
+        if len(sets) == 1:
+            return sets[0]
+        res = []
+        sub_combination = self.combination_of_sets(sets[1:])
+        for string in sets[0]:
+            temp = copy(sub_combination)
+            for j in range(len(temp)):
+                temp[j] = string + temp[j]
+            res.extend(temp)
+        return res
 
+    phone = {2: ['a', 'b', 'c'],
+             3: ['d', 'e', 'f'],
+             4: ['g', 'h', 'i'],
+             5: ['j', 'k', 'l'],
+             6: ['m', 'n', 'o'],
+             7: ['p', 'q', 'r', 's'],
+             8: ['t', 'u', 'v'],
+             9: ['w', 'x', 'y', 'z']}
+
+    def possibleWords(self, a, _):
+        # first build the sets
+        sets = [self.phone[v] for v in a]
+        return self.combination_of_sets(sets)
 
 
 if __name__ == '__main__':
     sol = Solution()
-    string = '123'
-    r = sol.find_permutation(string)
-    print(len(r))
+    sets = [['1', '2', '3'], ['4', '5', '6']]
+    r = sol.combination_of_sets(sets)
     print(r)
