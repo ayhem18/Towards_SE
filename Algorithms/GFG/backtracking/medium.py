@@ -1,4 +1,9 @@
 # noinspection PyPep8Naming,PyShadowingNames,PyMethodMayBeStatic
+from itertools import chain
+import numpy as np
+
+
+# noinspection PyMethodMayBeStatic,PyShadowingNames
 class Solution:
     # let's star with a function that determines all combinations that sum up to target value
     def combination_sum(self, nums, target: int):
@@ -24,39 +29,6 @@ class Solution:
                         temp[j] = current_list + temp[j]
                     res.extend(temp)
         return res
-
-    def find_partition(self, sets: list[list[int]], objective_set: set, current_set=None) -> bool:
-        # given a list of sets, find out whether there is a partition that leads to the objective_set
-        if current_set is None:
-            current_set = set()
-
-        if current_set == objective_set:
-            return True
-
-        if len(sets) == 0:
-            return False
-
-        # we are going to call the find_portion without the first element regardless
-        temp = self.find_partition(sets[1:], objective_set, current_set)
-        if len(current_set.intersection(sets[0])) != 0:
-            return temp
-
-        # on the other hand, if the first set does not have elements in common, then:
-        current_set.update(sets[0])
-        return temp or self.find_partition(sets[1:], objective_set, current_set)
-
-    def isKPartitionPossible(self, nums, k):
-        # let's group everything together
-        nums = sorted(nums)
-        # let's calculate the sum
-        total = sum(nums)
-        if total % k != 0:
-            return False
-        target = total // k
-        # find all combinations that sum up to 'target'
-        combinations = self.combination_sum(nums, target)
-        # objective_set =
-        pass
 
     # https://practice.geeksforgeeks.org/problems/word-search/1?page=1&category[]=Backtracking&sortBy=submissions
     # As they say 3rd time is the charm!!!
@@ -139,7 +111,7 @@ class Solution:
         next_pos = []
         position_move_mapper = {}
         if y + 1 < len(grid) \
-                and (y + 1, x) not in visited_pos\
+                and (y + 1, x) not in visited_pos \
                 and grid[y + 1][x] == 1:
             # add the current position
             next_pos.append((y + 1, x))
@@ -147,19 +119,19 @@ class Solution:
             position_move_mapper[(y + 1, x)] = self.DOWN
 
         if x > 0 \
-                and (y, x - 1) not in visited_pos\
+                and (y, x - 1) not in visited_pos \
                 and grid[y][x - 1] == 1:
             next_pos.append((y, x - 1))
             position_move_mapper[(y, x - 1)] = self.LEFT
 
         if x + 1 < len(grid[0]) \
-                and (y, x + 1) not in visited_pos\
+                and (y, x + 1) not in visited_pos \
                 and grid[y][x + 1] == 1:
             next_pos.append((y, x + 1))
             position_move_mapper[(y, x + 1)] = self.RIGHT
 
         if y > 0 \
-                and (y - 1, x) not in visited_pos\
+                and (y - 1, x) not in visited_pos \
                 and grid[y - 1][x] == 1:
             next_pos.append((y - 1, x))
             position_move_mapper[(y - 1, x)] = self.UP
@@ -189,11 +161,102 @@ class Solution:
         res = self.inner_find_path(matrix, (0, 0))
         return sorted(res)
 
+    # time to solve some sodoku problem:
+    # https://practice.geeksforgeeks.org/problems/solve-the-sudoku-1587115621/1?page=1&category[]=Backtracking&sortBy=submissions
+
+    # first need a function to return the values present in the row of a given position
+    def row_values(self, grid, position: tuple):
+        y, _ = position
+        res = [v for v in grid[y] if v != 0]
+        return res
+
+    def column_values(self, grid, position: tuple):
+        _, x = position
+        res = [grid[i][x] for i in range(len(grid)) if grid[i][x] != 0]
+        return res
+
+    def sub_square_values(self, grid, position: tuple):
+        y, x = position
+        yl = y // 3
+        xl = x // 3
+        square = np.asarray(grid)[3 * yl: 3 * (yl + 1), 3 * xl: 3 * (xl + 1)]
+        square = square.tolist()
+        square = list(chain(*square))
+        res = [v for v in square if v != 0]
+        return res
+
+    def candidates(self, grid, pos) -> set:
+        assert grid[pos[0]][pos[1]] == 0, "MAKE SURE TO CONSIDER ONLY BLANK CELLS"
+        row, col, square = self.row_values(grid, pos), self.column_values(grid, pos), self.sub_square_values(grid, pos)
+        # first make sure the values are unique for each domain
+        if len(row) != len(set(row)) or len(col) != len(set(col)) or len(square) != len(set(square)):
+            return set()
+
+        all_values = set(row).union(set(col)).union(set(square))
+        res = set(list(range(1, 10))).difference(all_values)
+        return res
+
+    def solution(self, grid, blank_positions: set):
+        if len(blank_positions) == 0:
+            return grid
+
+        # iterate through the blank positions
+        # and carry on with the position with the minimum number of candidates
+        min_count = None
+        best_pos = None
+        cds = None
+        for pos in blank_positions:
+            # count the number of candidates
+            candidates = self.candidates(grid, pos)
+            # if len(candidates) == 0:
+            #     return False
+            if min_count is None or 0 < len(candidates) < min_count:
+                min_count = len(candidates)
+                best_pos = pos
+                cds = candidates
+        # at this point, we are choosing to fill a point with a minimum number of candidates
+
+        for value in cds:
+            y, x = best_pos
+            grid[y][x] = value
+            # this cell is officially no longer blank
+            blank_positions.discard(best_pos)
+            temp = self.solution(grid, blank_positions)
+            if not isinstance(temp, bool):
+                return temp
+
+        # at this point we have tried all the possible combinations,
+        return False
+
+    def SolveSudoku(self, grid):
+        # find blank positions
+        blanks = [(y, x) for y in range(len(grid)) for x in range(len(grid[0])) if grid[y][x] == 0]
+        blanks = set(blanks)
+        res = self.solution(grid, blanks)
+        return True if not isinstance(res, bool) else False
+
+    def printGrid(self, grid):
+        # flatten the array
+        flatten_array = list(chain(*grid))
+        print(" ".join([str(v) for v in flatten_array]))
+
+    def printGridBetter(self, grid):
+        for row in grid:
+            print(row)
+
 
 if __name__ == '__main__':
     sol = Solution()
-    grid = [[1, 1, 1, 0],
-            [1, 0, 1, 1],
-            [1, 0, 0, 0],
-            [1, 0, 1, 1]]
-    print(sol.findPath(grid, len(grid)))
+    g = [[3, 0, 6, 5, 0, 8, 4, 0, 0],
+         [5, 2, 0, 0, 0, 0, 0, 0, 0],
+         [0, 8, 7, 0, 0, 0, 0, 3, 1],
+         [0, 0, 3, 0, 1, 0, 0, 8, 0],
+         [9, 0, 0, 8, 6, 3, 0, 0, 5],
+         [0, 5, 0, 0, 9, 0, 6, 0, 0],
+         [1, 3, 0, 0, 0, 0, 2, 5, 0],
+         [0, 0, 0, 0, 0, 0, 0, 7, 4],
+         [0, 0, 5, 2, 0, 6, 3, 0, 0]]
+
+    new_g = sol.SolveSudoku(g)
+    print(new_g)
+    # sol.printGridBetter(new_g)

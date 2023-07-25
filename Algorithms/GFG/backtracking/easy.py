@@ -1,9 +1,30 @@
 from math import factorial, ceil
 from copy import copy
+from itertools import chain
 
 
 # noinspection PyMethodMayBeStatic,PyShadowingNames,SpellCheckingInspection
 class Solution:
+    def kSubsets(self, nums: list[int], k: int) -> list[list[int]]:
+        if len(nums) == 0 or k == 0:
+            return [[]]
+        if k == 1:
+            return [[v] for v in nums]
+
+        res = []
+        for index, v in enumerate(nums[:len(nums) - k + 1]):
+            temp = self.kSubsets(nums[index + 1:], k - 1)
+            # add the current value
+            for i in range(len(temp)):
+                temp[i] = [v] + temp[i]
+            res.extend(temp)
+        return res
+
+    def subsets(self, nums: list[int]) -> list[list[int]]:
+        res = [self.kSubsets(nums, i) for i in range(len(nums) + 1)]
+        res = list(chain(*res))
+        return res
+
     def __all_paths(self, n: int, m: int, grid, current_position):
         if current_position == (n - 1, m - 1):
             return [[grid[n - 1][m - 1]]]
@@ -77,7 +98,7 @@ class Solution:
         return self.permute_str(string, k)
 
     # the next problem is:
-    # https://practice.geeksforgeeks.org/problems/combination-sum-1587115620/1?page=1&category[]=Backtracking&sortBy=submissions
+    # https://practice.geeksforgeeks.org/problems/permutations-of-a-given-string2041/1?page=1&category[]=Backtracking&sortBy=submissions
     def inner_find_permutation(self, s):
         # let's start with some base cases:
         if len(s) <= 1:
