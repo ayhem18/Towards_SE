@@ -1,29 +1,15 @@
 from math import factorial, ceil
 from copy import copy
 from itertools import chain
+from typing import List
+from collections import Counter
 
 
 # noinspection PyMethodMayBeStatic,PyShadowingNames,SpellCheckingInspection
 class Solution:
-    def kSubsets(self, nums: list[int], k: int) -> list[list[int]]:
-        if len(nums) == 0 or k == 0:
-            return [[]]
-        if k == 1:
-            return [[v] for v in nums]
-
-        res = []
-        for index, v in enumerate(nums[:len(nums) - k + 1]):
-            temp = self.kSubsets(nums[index + 1:], k - 1)
-            # add the current value
-            for i in range(len(temp)):
-                temp[i] = [v] + temp[i]
-            res.extend(temp)
-        return res
-
-    def subsets(self, nums: list[int]) -> list[list[int]]:
-        res = [self.kSubsets(nums, i) for i in range(len(nums) + 1)]
-        res = list(chain(*res))
-        return res
+    # even though this function works, regardless of the input
+    # it will return a large number of duplicate sets in case
+    # of duplicate numbers in
 
     def __all_paths(self, n: int, m: int, grid, current_position):
         if current_position == (n - 1, m - 1):
@@ -181,7 +167,4 @@ class Solution:
 
 
 if __name__ == '__main__':
-    sol = Solution()
-    sets = [['1', '2', '3'], ['4', '5', '6']]
-    r = sol.combination_of_sets(sets)
-    print(r)
+    pass

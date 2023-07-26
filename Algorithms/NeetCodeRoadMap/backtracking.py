@@ -1,4 +1,7 @@
 from collections import Counter
+from itertools import chain
+from copy import copy
+from typing import List
 
 
 # noinspection PyMethodMayBeStatic,PyShadowingNames
@@ -77,9 +80,75 @@ class Solution:
             res.extend(temp)
         return res
 
+    def kSubsets(self, nums: list[int], k: int) -> list[list[int]]:
+        if len(nums) == 0 or k == 0:
+            return [[]]
+        if k == 1:
+            return [[v] for v in nums]
+
+        res = []
+        for index, v in enumerate(nums[:len(nums) - k + 1]):
+            temp = self.kSubsets(nums[index + 1:], k - 1)
+            # add the current value
+            for i in range(len(temp)):
+                temp[i] = [v] + temp[i]
+            res.extend(temp)
+        return res
+
+    def subsets(self, nums: list[int]) -> list[list[int]]:
+        res = [self.kSubsets(nums, i) for i in range(len(nums) + 1)]
+        res = list(chain(*res))
+        return res
+
+    def new_lists(self, org_list: list[int], index: int, count: int):
+        def new(c: int):
+            l = copy(org_list)
+            l.extend([l[index]] * (c - 1))
+            return l
+
+        return [new(i) for i in range(1, count + 1)]
+
+    def expand_list(self, org_list: list[int], counter: dict[int, int]):
+        # counter is supposed to map index to the number of times a certain value appear
+        res = [org_list]
+        for index, c in counter.items():
+            new_res = []
+            for r in res:
+                new_res.extend(self.new_lists(r, index, c))
+            res = new_res
+        return res
+
+    def KSubsetsWithDups(self, nums: list[int], k: int, counter: Counter) -> list[list[int]]:
+        if k == 0:
+            return [[]]
+        # the function assume nums to have distinct element
+        res = []
+        for index, v in enumerate(nums[:len(nums) - k + 1]):
+            # first let's extract the original list of all possible list with 'k - 1' distinct elements
+            k_unique = self.kSubsets(nums[index + 1:], k - 1)
+            # add the value at the beginning of each list
+            for i in range(len(k_unique)):
+                k_unique[i] = [v] + k_unique[i]
+            # now time to expand the list as needed
+            # build the counter
+            for l in k_unique:
+                index_counter = dict([(i, counter[value]) for i, value in enumerate(l)])
+                res.extend(self.expand_list(l, index_counter))
+        return res
+
+    def subsetsWithDup(self, numbers: List[int]) -> List[List[int]]:
+        # first step is to convert the input to distinct elements
+        nums = list(set(numbers))
+        counter = Counter(numbers)
+        res = [self.KSubsetsWithDups(nums, i, counter) for i in range(len(nums) + 1)]
+        res = list(chain(*res))
+        return res
+
 
 if __name__ == '__main__':
     sol = Solution()
-    string = 'aabbaa'
-    r = sol.partition(string)
+    nums = [1, 2, 2, 2, 2, 1]
+    n = [1, 2]
+    counter = Counter(nums)
+    r = sol.KSubsetsWithDups(n, 0, counter)
     print(r)
