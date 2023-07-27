@@ -1,6 +1,6 @@
 from collections import Counter
 from itertools import chain
-from copy import copy
+from copy import deepcopy
 from typing import List
 
 
@@ -80,6 +80,10 @@ class Solution:
             res.extend(temp)
         return res
 
+    # the functions below solve the 2 subsets challenges:
+    # https://leetcode.com/problems/subsets/
+    # https://leetcode.com/problems/subsets-ii/
+
     def kSubsets(self, nums: list[int], k: int) -> list[list[int]]:
         if len(nums) == 0 or k == 0:
             return [[]]
@@ -102,7 +106,7 @@ class Solution:
 
     def new_lists(self, org_list: list[int], index: int, count: int):
         def new(c: int):
-            l = copy(org_list)
+            l = deepcopy(org_list)
             l.extend([l[index]] * (c - 1))
             return l
 
@@ -144,11 +148,128 @@ class Solution:
         res = list(chain(*res))
         return res
 
+    # the last problem in the backtracking problem set
+    # let's set some constants to work with
+    EMPTY = 0
+    ATTACKED = -1
+
+    def queen_range(self, grid: list[list[int]], pos: tuple[int, int], value_set):
+        # let's extract position
+        y, x = pos
+        seen_pos = set()
+
+        # set the column
+        for i in range(len(grid)):
+            if (i, x) not in seen_pos:
+                grid[i][x] += value_set
+                seen_pos.add((i, x))
+
+        # set the row
+        for i in range(len(grid[0])):
+            if (y, i) not in seen_pos:
+                grid[y][i] += value_set
+                seen_pos.add((y, i))
+
+        yt, xt = y, x
+        # set the diagonal left + up
+        while yt > -1 and xt < len(grid[0]):
+            if (yt, xt) not in seen_pos:
+                grid[yt][xt] += value_set
+                seen_pos.add((yt, xt))
+
+            # increase xt
+            xt += 1
+            # decrease yt
+            yt -= 1
+
+        yt, xt = y, x
+        # set the diagonal left + up
+        while yt > -1 and xt > -1:
+            if (yt, xt) not in seen_pos:
+                grid[yt][xt] += value_set
+                seen_pos.add((yt, xt))
+
+            # increase xt
+            xt -= 1
+            # decrease yt
+            yt -= 1
+
+        yt, xt = y, x
+        # set the diagonal right
+        while yt < len(grid) and xt > -1:
+            if (yt, xt) not in seen_pos:
+                grid[yt][xt] += value_set
+                seen_pos.add((yt, xt))
+
+            # increase xt
+            xt -= 1
+            # decrease yt
+            yt += 1
+
+        yt, xt = y, x
+        # set the diagonal right
+        while yt < len(grid) and xt < len(grid[0]):
+            if (yt, xt) not in seen_pos:
+                grid[yt][xt] += value_set
+                seen_pos.add((yt, xt))
+
+            # increase xt
+            xt += 1
+            # decrease yt
+            yt += 1
+        pass
+
+    def nQueens(self, grid: list[list[int]], n: int):
+        # let's start with a base case:
+        if n == len(grid):
+            return [[]]
+        # now the idea is to check the values at the n-th row
+        empty_pos = [(n, x) for x in range(len(grid[0])) if grid[n][x] == self.EMPTY]
+
+        res = []
+
+        for pos in empty_pos:
+            # first attack
+            self.queen_range(grid, pos, -1)
+            # proceed with the next row
+            next_row = self.nQueens(grid, n + 1)
+            for i in range(len(next_row)):
+                next_row[i] = [pos] + next_row[i]
+            res.extend(next_row)
+            # make sure to clear the cells attacked by the current position
+            self.queen_range(grid, pos, 1)
+
+        return res
+
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        # create an empty grid
+        grid = [[self.EMPTY for _ in range(n)] for _ in range(n)]
+        combs = self.nQueens(grid, 0)
+        output = []
+
+        for combination in combs:
+            grid_copy = deepcopy(grid)
+            for p in combination:
+                grid_copy[p[0]][p[1]] = self.ATTACKED
+            output.append(self.to_output(grid_copy))
+            # output.append(grid_copy)
+        # convert the grid now to the desired output
+        return output
+
+    def to_output(self, grid):
+        g = ["".join(['.' if v == self.EMPTY else 'Q' for v in row]) for row in grid]
+        return g
+
+
+def print_grid(g):
+    for r in g:
+        print(r)
+
 
 if __name__ == '__main__':
     sol = Solution()
-    nums = [1, 2, 2, 2, 2, 1]
-    n = [1, 2]
-    counter = Counter(nums)
-    r = sol.KSubsetsWithDups(n, 0, counter)
-    print(r)
+    n = 4
+    r = sol.solveNQueens(n)
+    for g in r:
+        print_grid(g)
+        print("#" * 10)
