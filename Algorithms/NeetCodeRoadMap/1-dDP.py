@@ -84,11 +84,130 @@ class Solution:
         p2 = self.inner_rob(nums[:-1], len(nums) - 2)
         return max(p1, p2)
 
+    # time for a slightly more challenging string problem:
+    # longest palindromic substring
+    # let's break down a notch
+    # the brute force approach works in O(n^3)
+    # let's bring down  to O(n ^ 2)
+    def longest_palindrome_start(self, string: str) -> str:
+        """
+        This function finds the longest palindrome that starts from the beginning of the string in linear time
+        """
+        if len(string) == 1:
+            return string[0]
 
+        if len(string) == 2:
+            return string if string[0] == string[1] else string[0]
+
+        # at this point of the code len(string) >= 3
+
+        best_str = string[:2] if string[0] == string[1] else string[0]  # one letter string is a palindrome...
+        p1, p2 = 0, 1
+        last_len_pal = 1 if string[0] == string[1] else 0
+        set_chars = set(string[:2])
+
+        for i, char in enumerate(string[2:], start=2):
+            if i % 2 == 0:
+                p2 += 1
+
+            if i % 2 == 1:
+                p1 += 1
+
+            set_chars.add(char)
+            if last_len_pal == i - 1:
+                # this means the last detected palindrome was the previous substring
+                # then this new substring is a palindrome only and only if all characters so far are the same
+                if len(set_chars) == 1:
+                    last_len_pal += 1
+                    best_str = string[: i + 1]
+
+                # no need to proceed to the next part
+                continue
+            tp1, tp2 = p1, p2
+            # time to evaluate w
+            while tp1 > -1 and tp2 <= i and string[tp1] == string[tp2]:
+                tp1 -= 1
+                tp2 += 1
+
+            # at this point there 2 cases:
+            # either p1 == -1 and p2 == len(string) which means the string is palindrome
+            if tp1 == -1 and tp2 == i + 1:
+                last_len_pal = i
+                best_str = string[: i + 1]
+
+        return best_str
+
+    def longestPalindrome(self, s: str) -> str:
+        if len(s) <= 2:
+            return self.longest_palindrome_start(s)
+
+        current_best = ""
+        for i in range(len(s)):
+            # this means the length of the substring left is less than the current best, so there is no point
+            # in considering it
+            if len(s) - i < len(current_best):
+                break
+
+            temp = self.longest_palindrome_start(s[i:])
+            current_best = max(temp, current_best, key=len)
+
+        return current_best
+
+    def all_palindromes_start(self, string: str) -> set[str]:
+        """
+            This function returns all palindrome substring that start from the beginning of the string.
+        """
+        if len(string) == 1:
+            return {string}
+
+        pals = set([string[0], string[:2]] if string[0] == string[1] else [string[0]])
+        if len(string) == 2:
+            return set(pals)
+
+        # at this point of the code len(string) >= 3
+        p1, p2 = 0, 1
+        last_len_pal = 1 if string[0] == string[1] else 0
+        set_chars = set(string[:2])
+
+        for i, char in enumerate(string[2:], start=2):
+            if i % 2 == 0:
+                p2 += 1
+
+            if i % 2 == 1:
+                p1 += 1
+
+            set_chars.add(char)
+            if last_len_pal == i - 1:
+                # this means the last detected palindrome was the previous substring
+                # then this new substring is a palindrome only and only if all characters so far are the same
+                if len(set_chars) == 1:
+                    last_len_pal += 1
+                    pals.add(string[:i + 1])
+                # no need to proceed to the next part
+                continue
+
+            tp1, tp2 = p1, p2
+            # time to evaluate w
+            while tp1 > -1 and tp2 <= i and string[tp1] == string[tp2]:
+                tp1 -= 1
+                tp2 += 1
+
+            # at this point there 2 cases:
+            # either p1 == -1 and p2 == len(string) which means the string is palindrome
+            if tp1 == -1 and tp2 == i + 1:
+                last_len_pal = i
+                pals.add(string[: i + 1])
+
+        return pals
+
+    def countSubstrings(self, s: str) -> int:
+        counter = 0
+        for i in range(len(s)):
+            counter += len(self.all_palindromes_start(s[i:]))
+        return counter
 
 
 if __name__ == '__main__':
-    nums = [2, 2, 8, 20, 10]
     sol = Solution()
-    v = sol.rob(nums)
-    print(v)
+    string = 'a'
+    print(sol.countSubstrings(string))
