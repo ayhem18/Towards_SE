@@ -2,7 +2,9 @@
 This file contains my solutions for the leet code problems proposed in the 1d DP problems:
 https://neetcode.io/roadmap
 """
+import math
 from typing import List
+import numpy as np
 
 
 # noinspection PyMethodMayBeStatic,PyShadowingNames
@@ -74,7 +76,6 @@ class Solution:
 
     # seems robbers have another version
     def rob(self, nums: List[int]) -> int:
-        # let's to tweak the problem just a tiny bit
         # there are 2 possibilities, either using the last element or not
         # if we use the last element: then we cannot use the first one, and the second last one
         p1 = nums[-1]
@@ -206,8 +207,81 @@ class Solution:
             counter += len(self.all_palindromes_start(s[i:]))
         return counter
 
+    def maxProductNoZero(self, nums: list[int],
+                         start_index: int,
+                         end_index: int,
+                         sign_dict: dict[int, list[int]]) -> int:
+
+        nums = nums[start_index: end_index]
+        if len(nums) == 0:
+            return 0
+        if len(nums) == 1:
+            return nums[0]
+
+        # first step is to count the number of negative numbers in this block
+        count_neg = [i for i in sign_dict[-1] if start_index <= i < end_index]
+
+        if len(count_neg) % 2 == 0:
+            return math.prod(nums)
+
+        total_product = math.prod(nums)
+
+        if len(count_neg) == 1:
+            neg_index = count_neg[0] - start_index
+            p1, p2 = total_product // math.prod(nums[:neg_index + 1]), total_product // math.prod(nums[neg_index:])
+            return max([p1, p2])
+
+        # case: odd number of negative numbers
+        first = count_neg[0]
+        last = count_neg[-1]
+
+        # each of them should be reduced with the start_index value
+        last -= start_index
+        first -= start_index
+
+        first_part = math.prod(nums[:first + 1])
+        second_part = math.prod(nums[last:])
+
+        p1, p2 = total_product // first_part, total_product // second_part
+
+        return max(p1, p2)
+
+    def maxProduct(self, nums: List[int]) -> int:
+        # let's first rule out some degenerate cases
+        if len(nums) == 1:
+            return nums[0]
+        # first let's save the indices of values of each sign
+        sign_indices = {-1: set(), 0: set(), 1: set()}
+        for i, n in enumerate(nums):
+            sign_indices[np.sign(n)].add(i)
+
+        for k, v in sign_indices.items():
+            sign_indices[k] = sorted(list(v))
+
+        zeros = sign_indices[0]
+        # first let's iterate through the zeros
+        if len(zeros) > 0:  # if there is at least one zero element in the original array
+            if len(zeros) == 1:
+                zero_index = zeros[0]
+
+                res1 = self.maxProductNoZero(nums, 0, zero_index, sign_indices)
+                res2 = self.maxProductNoZero(nums, zero_index + 1, len(nums), sign_indices) if zero_index + 1 < len(
+                    nums) else 0
+                res = max(res1, res2)
+            else:
+                res = max([self.maxProductNoZero(nums, zeros[i] + 1, zeros[i + 1], sign_indices)
+                           for i in range(len(zeros) - 1)])
+                # there are 2 values forgotten so far: before the first zero, and after the last zero
+                res = max(res, self.maxProductNoZero(nums, 0, zeros[0], sign_indices))
+                res = max(res, self.maxProductNoZero(nums, zeros[-1] + 1, len(nums), sign_indices))
+            # the final result should be at least 0: as arrays of similar structure
+            # will return -1,0,-1,0,-1 negative numbers
+            return max(0, res)
+        return self.maxProductNoZero(nums, 0, len(nums), sign_indices)
+
 
 if __name__ == '__main__':
     sol = Solution()
-    string = 'a'
-    print(sol.countSubstrings(string))
+    array = [1,0,-1,2,3,-5,-2]
+    p = sol.maxProduct(array)
+    print(p)
