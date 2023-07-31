@@ -387,9 +387,49 @@ class Solution:
             link.next = last_k_p2
         return new_head
 
+    def swapPairs(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        # first let's rule out some small cases
+        if head is None or head.next is None:
+            return head
+
+        # at this point of the code the linked list has at least 2 nodes
+        # let's treat the case of 2 nodes separately
+        if head.next.next is None:
+            new_head = head.next
+            new_head.next = head
+            head.next = None
+            return new_head
+
+        new_head = head.next
+        t = head
+        last_node = None
+        while t is not None:
+            # there are 2 cases,
+            if t.next is None:
+                # last node is guaranteed to be non None
+                last_node.next = t
+                return new_head
+            # t.next is not None
+            second = t.next
+            next_t = second.next
+
+            # time for assignments
+            second.next = t
+            # time to link the last node with 't'
+            t.next = next_t
+            t = next_t
+            if last_node is not None:
+                last_node.next = second
+
+            last_node = second.next
+
+        return new_head
+
 
 if __name__ == '__main__':
     sol = Solution()
-    l1 = sol.linked_list_from_list([10, 11, 12])
-    nl = sol.reverseKGroup(l1, k=2)
-    sol.traverse_linked_list(nl, display=True)
+    l1 = sol.linked_list_from_list([1, 2, 3, 4, 5, 6, 7])
+    sol.traverse_linked_list(l1, display=True)
+    l2 = sol.swapPairs(l1)
+    print("#" * 10)
+    sol.traverse_linked_list(l2, display=True)

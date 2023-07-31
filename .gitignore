@@ -10,4 +10,5 @@ Information_retrieval/Uni_course/shard
 *.pkl
 Information_retrieval/Uni_course/shard/
 .vscode/
+c++
 
