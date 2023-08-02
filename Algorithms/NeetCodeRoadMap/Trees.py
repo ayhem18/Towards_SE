@@ -203,6 +203,11 @@ class Solution:
     # let's make things a bit more interesting and solve a 'medium' level problem
     # https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/description/
     # my solution isn't that fast apparently: beats only 20% of other solutions..
+
+    # UPDATE: I FOUND A LeetCode PROBLEM FOR THIS SOLUTION:
+    # MY SOLUTION IS PRETTY FAST...  BEATS 99.06% OF SOLUTIONS
+    # https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/description/
+
     def lowestCommonAncestorGeneral(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
         queue = deque()
         queue.append(root)
