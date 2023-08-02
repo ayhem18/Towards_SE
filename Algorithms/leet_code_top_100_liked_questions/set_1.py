@@ -187,9 +187,87 @@ class Solution:
 
         return self.InnerWordBreak(string, wordDict)
 
+    # this problem is interesting as well
+    # https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+
+    # one simple approach is to get each of the 2 extremes separately
+
+    # well that's one great solution, NGL
+    def higher_occurrence(self, nums: list[int], target: int, low: int, high: int):
+        # let's start with the classical base cases
+        if high < low:
+            return -1
+
+        if nums[high] == target:
+            return high
+
+        # time to consider mid
+        mid = (low + high) // 2
+
+        if nums[mid] < target:
+            # mid + 1, high - 1 (high does not equal target so no point in checking it)
+            return self.higher_occurrence(nums, target, mid + 1, high - 1)
+
+        if nums[mid] == target:
+            # we know that the higher occurrence of target is at least 'mid', let's consider mid and above
+            return self.higher_occurrence(nums, target, mid, high - 1)
+
+        # now target < nums[mid]
+        return self.higher_occurrence(nums, target, low, mid - 1)
+
+    def lower_occurrence(self, nums: list[int], target: int, low: int, high: int):
+        # let's start with the classical base cases
+        if high < low:
+            return -1
+
+        if nums[low] == target:
+            return low
+
+        # time to consider mid
+        mid = (low + high) // 2
+
+        if nums[mid] < target:
+            # mid + 1, high - 1 (high does not equal target so no point in checking it)
+            return self.lower_occurrence(nums, target, mid + 1, high)
+
+        if nums[mid] == target:
+            # we know that the lower occurrence is at most 'mid', let's check mid and lower
+            # we know that the higher occurrence of target is at least 'mid', let's consider mid and above
+            return self.lower_occurrence(nums, target, low + 1, mid)
+
+        # now target < nums[mid]
+        return self.lower_occurrence(nums, target, low + 1, mid - 1)
+
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        # the time complexity must be O(log(n))
+        e1, e2 = self.lower_occurrence(nums, target, 0, len(nums) - 1), \
+            self.higher_occurrence(nums, target, 0, len(nums) - 1)
+        return [e1, e2]
+
+    def minPathSumRecur(self, grid: List[List[int]], y: int, x: int, memo: dict[tuple, int] = None) -> int:
+        if memo is None:
+            memo = {}
+
+        # the idea here is simple
+        if y == len(grid) - 1 and x == len(grid[0]) - 1:
+            return grid[y][x]
+
+        key = (y, x)
+        if key in memo:
+            return memo[key]
+
+        cost_right = self.minPathSumRecur(grid, y, x + 1, memo) if x + 1 < len(grid[0]) else float('inf')
+        cost_down = self.minPathSumRecur(grid, y + 1, x, memo) if y + 1 < len(grid) else float('inf')
+
+        memo[key] = grid[y][x] + min(cost_right, cost_down)
+        return memo[key]
+
+    def minPathSum(self, grid: List[List[int]]) -> int:
+        return self.minPathSumRecur(grid, 0, 0)
+
 
 if __name__ == "__main__":
     sol = Solution()
-    nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    sol.rotate(nums, 223)
-    print(nums)
+    # nums = [1, 2, 2, 2, 2, 3, 5, 10, 10, 10, 12, 12, 50]
+    nums = [1] * 10
+    print(sol.searchRange(nums, 1))
