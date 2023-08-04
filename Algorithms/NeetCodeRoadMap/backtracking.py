@@ -1,3 +1,4 @@
+import math
 from collections import Counter
 from itertools import chain
 from copy import deepcopy
@@ -99,10 +100,33 @@ class Solution:
             res.extend(temp)
         return res
 
-    def subsets(self, nums: list[int]) -> list[list[int]]:
-        res = [self.kSubsets(nums, i) for i in range(len(nums) + 1)]
-        res = list(chain(*res))
-        return res
+    def canPartition(self, nums: List[int]) -> bool:
+        # the idea is to first set a limit
+        # we will consider all subsets of  1 <= size < K where K is the first integer
+        # such that the sum of the smallest K numbers is larger than half the sum
+        sum_array = sum(nums)
+        if sum_array % 2 != 0:
+            return False
+
+        nums = sorted(nums)
+        current_sum = 0
+        K = 0
+        for i, n in enumerate(nums):
+            current_sum += n
+            if current_sum == sum_array // 2:
+                return True
+            if current_sum > sum_array // 2:
+                K = i
+
+        limit = min(K - 1, int(math.ceil(len(nums) / 2)))
+
+        for k in range(1, limit + 1):
+            subsets_k = self.kSubsets(nums, k)
+            for s in subsets_k:
+                if sum(s) == sum_array // 2:
+                    return True
+
+        return False
 
     def new_lists(self, org_list: list[int], index: int, count: int):
         def new(c: int):
@@ -125,7 +149,7 @@ class Solution:
     def KSubsetsWithDups(self, nums: list[int], k: int, counter: Counter) -> list[list[int]]:
         if k == 0:
             return [[]]
-        # the function assume nums to have distinct element
+        # the function assume nums to have distinct elements
         res = []
         for index, v in enumerate(nums[:len(nums) - k + 1]):
             # first let's extract the original list of all possible list with 'k - 1' distinct elements

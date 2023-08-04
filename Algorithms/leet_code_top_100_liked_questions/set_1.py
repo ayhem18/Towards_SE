@@ -2,6 +2,7 @@
 This script contains my solutions for some of the problems I haven't previously solved in the
 top 100 liked questions in LeetCode.
 """
+import math
 from collections import deque
 from typing import List
 
@@ -265,9 +266,127 @@ class Solution:
     def minPathSum(self, grid: List[List[int]]) -> int:
         return self.minPathSumRecur(grid, 0, 0)
 
+    # let's solve this problem:
+    # https://leetcode.com/problems/subarray-sum-equals-k/
+
+    def subarraySum(self, nums: List[int], k: int) -> int:
+        # the simplest solution is too slow
+        # let's write some more sophisticated algorithm
+        if len(nums) == 1:
+            return int(nums[0] == k)
+
+        n = len(nums)
+        # let's introduce the idea of range or a block: consecutive array elements of the same sign
+
+        # we need a mapping between any index and the block it belongs to
+        index_to_range = {}
+
+        current_start = 0
+        current_end = 0
+
+        for index, value in enumerate(nums[1:], 1):
+            if (value >= 0 and nums[current_start] >= 0) or (value < 0 and nums[current_start] < 0):
+                current_end = index
+            else:
+                index_to_range[current_start] = (current_start, current_end)
+                current_start = index
+                current_end = index
+
+        index_to_range[current_start] = (current_start, current_end)
+
+        index_to_sums = {}
+        for start, (s, e) in index_to_range.items():
+            # 'start' should be equal to 's'
+            current_sum = 0
+            for i in range(e, s - 1, -1):
+                current_sum += nums[i]
+                index_to_sums[i] = current_sum
+
+        initial_items = list(index_to_range.items())
+        for start, (s, e) in initial_items:
+            for i in range(s, e + 1):
+                index_to_range[i] = (s, e)
+
+        count = 0
+        for i in range(n):
+            current_sum = nums[i]
+            index = i
+            while index < n:
+                start, end = index_to_range[index]
+                block_sum_index = index_to_sums[index]
+
+                if current_sum < k:
+                    current_sum = 0 if index == i else current_sum
+
+                    if current_sum + block_sum_index == k:
+                        # increase the count
+                        count += 1
+                    elif current_sum + block_sum_index > k:
+                        ts = current_sum
+                        for j in range(index, end + 1):
+                            ts += nums[j]
+                            if ts == k:
+                                count += 1
+                                break
+
+                elif current_sum > k:
+                    current_sum = 0 if index == i else current_sum
+
+                    if current_sum + block_sum_index == k:
+                        # increase the count
+                        count += 1
+                    elif current_sum + block_sum_index < k:
+                        ts = current_sum
+                        for j in range(index, end + 1):
+                            ts += nums[j]
+                            if ts == k:
+                                count += 1
+                                break
+                    # anyway, the sum of the block is added
+                    # and the index if moved to the start of the next block
+
+                else:
+                    if index == i:
+                        j = index + 1
+                        while j < n and nums[j] == 0:
+                            count += 1
+                            j += 1
+                    else:
+                        # start from index
+                        j = index
+                        while j < n and nums[j] == 0:
+                            count += 1
+                            j += 1
+
+                index = end + 1
+                current_sum += block_sum_index
+
+        return count
+
+    def subarraySumSlow(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        count = 0
+        for i in range(n):
+            current_sum = 0
+
+            for number in nums[i:]:
+                current_sum += number
+                count += int(current_sum == k)
+
+            # current_sum at this point is the sum of the entire slice
+            # slice_sum = current_sum
+            # current_sum = 0
+            # for number in nums[i:]:
+            #     current_sum += number
+            #     count += int(current_sum == slice_sum - k)
+
+        return count
+
 
 if __name__ == "__main__":
     sol = Solution()
-    # nums = [1, 2, 2, 2, 2, 3, 5, 10, 10, 10, 12, 12, 50]
-    nums = [1] * 10
-    print(sol.searchRange(nums, 1))
+    nums = [1, 1, 1, -1, 1, 2, 0]
+    k = 2
+    c1 = sol.subarraySumSlow(nums, k)
+    c2 = sol.subarraySum(nums, k)
+    print(c1, c2, sep='\t')
