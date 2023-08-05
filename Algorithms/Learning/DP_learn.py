@@ -4,7 +4,7 @@ This is based on the YouTube course: https://www.youtube.com/watch?v=oBt53YbR9Kk
 """
 
 import numpy as np
-from typing import Union
+from typing import Union, List
 
 
 # let's start with something very simple such as Fibonacci numbers
@@ -68,6 +68,11 @@ def grid_rec_memo(n: int, m: int, memo: dict = None) -> int:
     # make sure to pass the memo object to the recursive calls
     memo[(min_n, max_n)] = grid_rec_memo(min_n - 1, max_n, memo=memo) + grid_rec_memo(min_n, max_n - 1, memo=memo)
     return memo[(min_n, max_n)]
+
+
+# let's consider the following problem
+def canSum(target: int, coins: List[int]) -> bool:
+    pass
 
 
 # let's consider the recursive version of the can sum function: determines whether

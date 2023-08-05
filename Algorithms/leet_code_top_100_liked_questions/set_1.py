@@ -3,7 +3,7 @@ This script contains my solutions for some of the problems I haven't previously 
 top 100 liked questions in LeetCode.
 """
 import math
-from collections import deque
+from collections import deque, Counter
 from typing import List
 
 
@@ -141,53 +141,6 @@ class Solution:
         for i in range(k):
             nums[i] = last_k[i]
 
-    # word break problem broke me a bit
-    # https://leetcode.com/problems/word-break/
-    # my attempt keeps getting LTE flag which is quite sad...
-    def InnerWordBreak(self, string: str, wordDict: List[str], memo: dict[str, bool] = None) -> bool:
-        if memo is None:
-            memo = {}
-
-        # let's start with some base cases
-        if len(string) == 0:
-            return True
-        # let's rule out some edges cases
-
-        if string in memo:
-            return memo[string]
-
-        # sorted by the largest word
-        possible_words_starts = sorted([w for w in wordDict if string.startswith(w)], key=len, reverse=True)
-
-        if len(possible_words_starts) == 0:
-            return False
-
-        for w in possible_words_starts:
-            if w == string:
-                return True
-            # do not forget to pass the memo object
-            temp = self.InnerWordBreak(string[len(w):], wordDict, memo)
-            if temp:
-                return True
-
-        return False
-
-    def wordBreak(self, string: str, wordDict: List[str]) -> bool:
-        # the set of letters present in the string is a subset
-        # of the set of all characters in the wordDict list
-        word_dict_set = set()
-        string_set = set(string)
-
-        for w in wordDict:
-            word_dict_set = word_dict_set.union(set(w))
-
-        if not string_set.issubset(word_dict_set):
-            return False
-
-        # it might be necessary to filter the word dict to only keep
-
-        return self.InnerWordBreak(string, wordDict)
-
     # this problem is interesting as well
     # https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
 
@@ -245,6 +198,7 @@ class Solution:
             self.higher_occurrence(nums, target, 0, len(nums) - 1)
         return [e1, e2]
 
+    # another obvious DP problem: nothing too challenging
     def minPathSumRecur(self, grid: List[List[int]], y: int, x: int, memo: dict[tuple, int] = None) -> int:
         if memo is None:
             memo = {}
@@ -268,7 +222,6 @@ class Solution:
 
     # let's solve this problem:
     # https://leetcode.com/problems/subarray-sum-equals-k/
-
     def subarraySum(self, nums: List[int], k: int) -> int:
         # the simplest solution is too slow
         # let's write some more sophisticated algorithm
@@ -382,11 +335,100 @@ class Solution:
 
         return count
 
+    # word break problem broke me a bit
+    # https://leetcode.com/problems/word-break/
+    # my attempt keeps getting LTE flag which is quite sad...
+    def innerWordBreak(self,
+                       string: str,
+                       char_count: Counter[str, int],
+                       char_word_map: dict[str, set[str]],
+                       memo: dict[str, bool] = None):
+
+        memo = {} if memo is None else memo
+        # let's put the trivial case aside
+        if len(string) == 0:
+            return True
+
+        if string in memo:
+            return memo[string]
+
+        # map the characters to their total number of occurrences
+        string_char_count = Counter(string)
+        # find the char that has minimal occurrence in the string
+        # equality is broken by the number of words for which the character belongs to in the
+        # wordDict
+        min_char = string[0]
+        for c in string:
+            min_char = min([c, min_char], key=lambda x: (string_char_count[x], len(char_word_map[x])))
+
+        # find the indices of min_char in the string
+        indices = [i for i, c in enumerate(string) if c == min_char]
+
+        # choose the indices that divide the original string to the most balanced substrings (length wise)
+        key_index = min(indices, key=lambda x: abs(len(string) / 2 - x))
+
+        candidates = char_word_map[min_char]
+
+        for cs in candidates:
+
+            if cs == string:
+                memo[string] = True
+                return True
+
+            for index, char in enumerate(cs):
+                if char == min_char:
+                    right_length = key_index >= index
+                    left_length = len(string) - key_index >= len(cs) - index
+                    match = string[key_index - index: key_index - index + len(cs)] == cs
+                    if right_length and left_length and match:
+                        # time to solve the sub-problems
+                        # the right side
+                        temp = self.innerWordBreak(string[:key_index - index],
+                                                   char_count,
+                                                   char_word_map,
+                                                   memo) and self.innerWordBreak(string[key_index - index + len(cs):],
+                                                                                 char_count,
+                                                                                 char_word_map,
+                                                                                 memo)
+                        if temp:
+                            memo[string] = True
+                            return True
+
+        # save the result in the memo
+        memo[string] = False
+        return False
+
+    def wordBreak(self, string: str, wordDict: List[str]) -> bool:
+        # the set of letters present in the string is a subset
+        # of the set of all characters in the wordDict list
+        word_dict_set = set()
+        string_set = set(string)
+        for w in wordDict:
+            word_dict_set = word_dict_set.union(set(w))
+
+        if not string_set.issubset(word_dict_set):
+            return False
+
+        # let's prepare some more information needed for a constant time look up
+        char_count = Counter()
+        char_word_map = {}
+        # we need to have the total number of occurrences of each char in the word bank
+        for word in wordDict:
+            for c in word:
+                if c not in char_word_map:
+                    char_word_map[c] = set()
+                char_word_map[c].add(word)
+            char_count.update(word)
+
+        # char_Count: maps each character to the total number of occurrences in the word bank
+        # char_word_map: maps each character to all words that contains the char in question
+
+        return self.innerWordBreak(string, char_count, char_word_map)
+
 
 if __name__ == "__main__":
     sol = Solution()
-    nums = [1, 1, 1, -1, 1, 2, 0]
-    k = 2
-    c1 = sol.subarraySumSlow(nums, k)
-    c2 = sol.subarraySum(nums, k)
-    print(c1, c2, sep='\t')
+    s = "leetcode"
+    wordDict = ["leet","code"]
+    res = sol.wordBreak(s, wordDict)
+    print(res)
