@@ -5,6 +5,7 @@ https://neetcode.io/roadmap
 import math
 from typing import List
 import numpy as np
+from collections import Counter
 
 
 # noinspection PyMethodMayBeStatic,PyShadowingNames
@@ -279,9 +280,173 @@ class Solution:
             return max(0, res)
         return self.maxProductNoZero(nums, 0, len(nums), sign_indices)
 
+    # word break problem broke me a bit
+    # https://leetcode.com/problems/word-break/
+    # my attempt keeps getting LTE flag which is quite sad...
+    def innerWordBreak(self,
+                       string: str,
+                       char_count: Counter[str, int],
+                       char_word_map: dict[str, set[str]],
+                       memo: dict[str, bool] = None):
+
+        memo = {} if memo is None else memo
+        # let's put the trivial case aside
+        if len(string) == 0:
+            return True
+
+        if string in memo:
+            return memo[string]
+
+        # map the characters to their total number of occurrences
+        string_char_count = Counter(string)
+        # find the char that has minimal occurrence in the string
+        # equality is broken by the number of words for which the character belongs to in the
+        # wordDict
+        min_char = string[0]
+        for c in string:
+            min_char = min([c, min_char], key=lambda x: (string_char_count[x], len(char_word_map[x])))
+
+        # find the indices of min_char in the string
+        indices = [i for i, c in enumerate(string) if c == min_char]
+
+        # choose the indices that divide the original string to the most balanced substrings (length wise)
+        key_index = min(indices, key=lambda x: abs(len(string) / 2 - x))
+
+        candidates = char_word_map[min_char]
+
+        for cs in candidates:
+
+            if cs == string:
+                memo[string] = True
+                return True
+
+            for index, char in enumerate(cs):
+                if char == min_char:
+                    right_length = key_index >= index
+                    left_length = len(string) - key_index >= len(cs) - index
+                    match = string[key_index - index: key_index - index + len(cs)] == cs
+                    if right_length and left_length and match:
+                        # time to solve the sub-problems
+                        # the right side
+                        temp = self.innerWordBreak(string[:key_index - index],
+                                                   char_count,
+                                                   char_word_map,
+                                                   memo) and self.innerWordBreak(string[key_index - index + len(cs):],
+                                                                                 char_count,
+                                                                                 char_word_map,
+                                                                                 memo)
+                        if temp:
+                            memo[string] = True
+                            return True
+
+        # save the result in the memo
+        memo[string] = False
+        return False
+
+    def wordBreak(self, string: str, wordDict: List[str]) -> bool:
+        # the set of letters present in the string is a subset
+        # of the set of all characters in the wordDict list
+        word_dict_set = set()
+        string_set = set(string)
+        for w in wordDict:
+            word_dict_set = word_dict_set.union(set(w))
+
+        if not string_set.issubset(word_dict_set):
+            return False
+
+        # let's prepare some more information needed for a constant time look up
+        char_count = Counter()
+        char_word_map = {}
+        # we need to have the total number of occurrences of each char in the word bank
+        for word in wordDict:
+            for c in word:
+                if c not in char_word_map:
+                    char_word_map[c] = set()
+                char_word_map[c].add(word)
+            char_count.update(word)
+
+        # char_Count: maps each character to the total number of occurrences in the word bank
+        # char_word_map: maps each character to all words that contains the char in question
+
+        return self.innerWordBreak(string, char_count, char_word_map)
+
+    # well another medium, but it might not be as hard as the problem above:
+    # https://leetcode.com/problems/coin-change/
+
+    def innerCoinChange(self,
+                        target: int,
+                        coins: set,
+                        min_coin: int,
+                        memo: dict = None):
+        memo = {} if memo is None else memo
+        # base cases
+        if target == 0:
+            return 0
+
+        if target < min_coin:
+            return -1
+
+        if target in coins:
+            return 1
+
+        if target in memo:
+            return memo[target]
+
+        res = float('inf')
+        for c in coins:
+            temp_res = self.innerCoinChange(target - c, coins, min_coin, memo)
+            if temp_res != -1:
+                res = min(res, temp_res)
+                if res == 1:
+                    break
+        memo[target] = (res + 1) if res != float('inf') else -1
+        return memo[target]
+
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        min_coin = min(coins)
+        coins = set(coins)
+        return self.innerCoinChange(amount, coins, min_coin)
+
+    def inner_decoding(self, string: str, mapping: set[str], memo: dict = None):
+        memo = {} if memo is None else memo
+        if len(string) == 0:
+            return 0
+        # some base cases
+        if len(string) == 1:
+            return int(string[0] in mapping)
+
+        if len(string) == 2:
+            return int(string in mapping) + int(string[0] in mapping and string[1] in mapping)
+
+        if string in memo:
+            return memo[string]
+
+        # given a string, there 2 main approaches, either take the first character encode it
+        # and get the count of string[1:]
+        # or encode the first 2 characters and get the count of string[2:]
+
+        two = None
+        one = None
+        if string[:1] in mapping:
+            two = self.inner_decoding(string[2:], mapping, memo)
+            memo[string[2:]] = two
+
+        if string[0] in mapping:
+            one = self.inner_decoding(string[1:], mapping, memo)
+            memo[string[1:]] = one
+
+        one = 0 if one is None else one
+        two = 0 if two is None else two
+        memo[string] = one + two
+        return memo[string]
+
+    def numDecodings(self, string: str) -> int:
+        mapping = [str(n) for n in range(1, 27)]
+        return self.inner_decoding(string, mapping)
+
 
 if __name__ == '__main__':
     sol = Solution()
-    array = [1,0,-1,2,3,-5,-2]
-    p = sol.maxProduct(array)
+    s = "1201234"
+    p = sol.numDecodings(s)
     print(p)

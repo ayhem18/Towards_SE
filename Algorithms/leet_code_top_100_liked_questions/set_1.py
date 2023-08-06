@@ -425,10 +425,49 @@ class Solution:
 
         return self.innerWordBreak(string, char_count, char_word_map)
 
+    # well another medium, but it might not be as hard as the problem above:
+    # https://leetcode.com/problems/coin-change/
+
+    def innerCoinChange(self,
+                        target: int,
+                        coins: set,
+                        min_coin: int,
+                        memo: dict = None):
+        memo = {} if memo is None else memo
+        # base cases
+        if target == 0:
+            return 0
+
+        if target < min_coin:
+            return -1
+
+        if target in coins:
+            return 1
+
+        if target in memo:
+            return memo[target]
+
+        res = float('inf')
+        for c in coins:
+            temp_res = self.innerCoinChange(target - c, coins, min_coin, memo)
+            if temp_res != -1:
+                res = min(res, temp_res)
+                if res == 1:
+                    break
+        memo[target] = (res + 1) if res != float('inf') else -1
+        return memo[target]
+
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        min_coin = min(coins)
+        coins = set(coins)
+        return self.innerCoinChange(amount, coins, min_coin)
+
+
+
 
 if __name__ == "__main__":
     sol = Solution()
-    s = "leetcode"
-    wordDict = ["leet","code"]
-    res = sol.wordBreak(s, wordDict)
+    amount = 11
+    coins = [2]
+    res = sol.coinChange(coins, amount)
     print(res)
