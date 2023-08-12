@@ -444,6 +444,34 @@ class Solution:
         mapping = [str(n) for n in range(1, 27)]
         return self.inner_decoding(string, mapping)
 
+    # well I need to go back to the decoding problem later...
+    # let's tackle this one instead.
+    def unique_paths(self, grid: List[List[int]], y: int, x: int, memo: dict = None):
+        memo = {} if memo is None else memo
+        # let's start with the base cases
+        # leaving the grid
+        if y >= len(grid) or x >= len(grid[0]):
+            return 0
+        # passing through an obstacle
+        if grid[y][x] == 1:
+            return 0
+        # reaching the final position
+        if y == len(grid) - 1 and x == len(grid[0]) - 1:
+            return 1
+
+        key = (y, x)
+        if key in memo:
+            return memo[key]
+
+        memo[key] = self.unique_paths(grid, y + 1, x, memo) + self.unique_paths(grid, y, x + 1, memo)
+        return memo[key]
+
+    def uniquePathsWithObstacles(self, obstacleGrid: List[List[int]]) -> int:
+        return self.unique_paths(obstacleGrid, 0, 0)
+
+    # it would be safe to state that the problem above is a standard dynamic programming problem. Thus, I shouldn;t
+    # feel so high and mighty after solving it.
+
 
 if __name__ == '__main__':
     sol = Solution()

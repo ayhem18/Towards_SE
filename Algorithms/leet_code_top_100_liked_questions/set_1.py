@@ -425,49 +425,41 @@ class Solution:
 
         return self.innerWordBreak(string, char_count, char_word_map)
 
-    # well another medium, but it might not be as hard as the problem above:
-    # https://leetcode.com/problems/coin-change/
+    # this problem sounds interesting:
+    # https://leetcode.com/problems/set-matrix-zeroes/
+    # apparently my solution is quite good: beats 90% performance wise and 84% memory-wise
+    def setZeroes(self, matrix: List[List[int]]) -> None:
+        """
+        Do not return anything, modify matrix in-place instead.
+        """
+        # this problem mainly deals with optimizing memory usage
+        columns = set()
 
-    def innerCoinChange(self,
-                        target: int,
-                        coins: set,
-                        min_coin: int,
-                        memo: dict = None):
-        memo = {} if memo is None else memo
-        # base cases
-        if target == 0:
-            return 0
+        for r in range(len(matrix)):
+            zero_row = False
 
-        if target < min_coin:
-            return -1
+            for c in range(len(matrix[0])):
+                if matrix[r][c] == 0:
+                    # first add `c` to the cols to consider
+                    columns.add(c)
+                    # set the zero_row to `True`
+                    zero_row = True
+                    # set the value [y][c] to zero where y < r
+                    for t in range(r):
+                        matrix[t][c] = 0
 
-        if target in coins:
-            return 1
-
-        if target in memo:
-            return memo[target]
-
-        res = float('inf')
-        for c in coins:
-            temp_res = self.innerCoinChange(target - c, coins, min_coin, memo)
-            if temp_res != -1:
-                res = min(res, temp_res)
-                if res == 1:
-                    break
-        memo[target] = (res + 1) if res != float('inf') else -1
-        return memo[target]
-
-    def coinChange(self, coins: List[int], amount: int) -> int:
-        min_coin = min(coins)
-        coins = set(coins)
-        return self.innerCoinChange(amount, coins, min_coin)
-
-
+            if zero_row:
+                for i in range(len(matrix[0])):
+                    matrix[r][i] = 0
+            else:
+                for i in range(len(matrix[0])):
+                    if i in columns:
+                        matrix[r][i] = 0
 
 
 if __name__ == "__main__":
     sol = Solution()
-    amount = 11
-    coins = [2]
-    res = sol.coinChange(coins, amount)
-    print(res)
+    grid = [[0, 1, 0], [1, 1, 1], [1, 1, 1]]
+    sol.setZeroes(grid)
+    for g in grid:
+        print(g)
