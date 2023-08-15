@@ -4,12 +4,27 @@ top 100 liked questions in LeetCode.
 """
 import math
 from collections import deque, Counter
-from typing import List
+from typing import List, Optional
+from heapq import heapify
 
 
 # let's start with the following problem:
 # https://leetcode.com/problems/swap-nodes-in-pairs/
 # well I wrote it in the linkedlist file for completion
+
+
+# Definition for singly-linked list.
+class ListNode:
+    def __init__(self, val=0, next_node=None):
+        self.val = val
+        self.next = next_node
+
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
 
 
 # noinspection PyMethodMayBeStatic,PyShadowingNames
@@ -456,10 +471,76 @@ class Solution:
                     if i in columns:
                         matrix[r][i] = 0
 
+    # it sounds easier than it is
+    # the heaps acts very strangely with negative numbers
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        # first creates a counter here
+        # heap = list(set([-v for v in nums]))
+        heap = list(set(nums))
+        heapify(heap)
+        count = 0
+        # create a counter
+        counter = Counter(nums)
+        current_num = heap.pop()
+
+        while True:
+            if count + counter[current_num] >= k:
+                return current_num
+            count += counter[current_num]
+            current_num = heap.pop()
+
+    # here is this one: https://leetcode.com/problems/partition-list/
+    def partition(self, head: Optional[ListNode], x: int) -> Optional[ListNode]:
+        if head is None:
+            return head
+        t = head
+        new_head = None
+        last_node = None
+        while t is not None:
+            if t.val < x:
+                if new_head is None:
+                    new_head = ListNode(t.val)
+                    last_node = new_head
+                else:
+                    last_node.next = ListNode(t.val)
+                    last_node = last_node.next
+
+        # this is the case where there are no number that are less than x
+        if last_node is None:
+            return head
+
+        t = head
+        while t is not None:
+            if t.val >= x:
+                last_node.next = ListNode(t.val)
+                last_node = last_node.next
+        return new_head
+
+    # this question has 46% success rate
+    # https://leetcode.com/problems/merge-intervals/description/
+    # well done, no problem:
+    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+        # first let's sort the intervals
+        intervals = sorted(intervals, key=lambda e: (e[0], -e[1]))
+        start, end = None, None
+        result = []
+        for i in intervals:
+            if start is None:
+                start = i[0]
+                end = i[1]
+                continue
+            if i[0] > end:
+                result.append([start, end])
+                start, end = i
+            else:
+                end = max(end, i[1])
+        # add the last interval
+        result.append([start, end])
+        return result
+
 
 if __name__ == "__main__":
     sol = Solution()
-    grid = [[0, 1, 0], [1, 1, 1], [1, 1, 1]]
-    sol.setZeroes(grid)
-    for g in grid:
-        print(g)
+    ins = [[2, 3], [3, 4], [4, 5], [5, 7], [1, 2]]
+    # ins = [[1,3],[2,6],[8,10],[15,18]]
+    print(sol.merge(ins))

@@ -49,7 +49,7 @@ def breadth_first_traversal(root: None):
     return result
 
 
-# noinspection PyMethodMayBeStatic
+# noinspection PyMethodMayBeStatic,PyShadowingNames
 class Solution:
     def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
         if root is None:
@@ -470,11 +470,49 @@ class Solution:
         res.extend(self.inorder(root.right))
         return res
 
+    def flatten_tree(self, root: TreeNode) -> tuple[TreeNode, TreeNode]:
+        if root is None or (root.right is None and root.left is None):
+            return root, root
+        # at this point `root` has at least one child
+        left, right = root.left, root.right
+        # set the left to None
+        root.left = None
+
+        if left is not None:
+            left, last_left = self.flatten_tree(left)
+            root.right = left
+            # at this point is it possible that right is None
+            if right is not None:
+                right, last_right = self.flatten_tree(right)
+                last_left.right = right
+                return root, last_right
+
+            return root, last_left
+
+        right, last_right = self.flatten_tree(right)
+        root.right = right
+        return root, last_right
+
+    def flatten(self, root: TreeNode):
+        if root is None or (root.left is None and root.right is None):
+            return
+
+        new_r, _ = self.flatten_tree(root)
+        root.right = new_r.right
+
 
 if __name__ == '__main__':
-    l = [1, 2, 3, 4, 5, 6, 7]
+    # l = [1, None, 2, None, None, None, 3]
+    l = [1, None, 3, None, None, None, 4, None, None, None, None, None, None, None, 7]
+    # l = [1, 2, 3, None, None, 6, 7, None, None, None, None, 8]
     root = build_tree_from_list(l)
     sol = Solution()
-    pp = sol.preorder(root)
-    ip = sol.inorder(root)
-    new_root = sol.buildTree(pp, ip)
+    print(sol.levelOrder(root))
+    new_r, _ = sol.flatten_tree(root)
+    t = new_r
+    print("#" * 10)
+    while t is not None:
+        print(t.val)
+        t = t.right
+
+
