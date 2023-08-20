@@ -425,6 +425,23 @@ class Solution:
 
         return new_head
 
+    def isPalindrome(self, head: Optional[ListNode]) -> bool:
+        if head is None or head.next is None:
+            return True
+        save = []
+        t = head
+        while t is not None:
+            save.append(t.val)
+            t = t.next
+
+        for index, v in enumerate(save):
+            if save[len(save) - index - 1] != v:
+                return False
+
+        return True
+
+
+
 
 if __name__ == '__main__':
     sol = Solution()
