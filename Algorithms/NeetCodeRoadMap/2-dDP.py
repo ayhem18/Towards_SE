@@ -65,8 +65,22 @@ class Solution:
 
         return values[-1]
 
+    def longestCommonSubsequence(self, text1: str, text2: str) -> int:
+        # let's create out grid
+        values = [[0 for _ in range(len(text2) + 1)] for _ in range(len(text1)+1)]
+        for i, c1 in enumerate(text1, 1):
+            for j, c2 in enumerate(text2, 1):
+                op1 = int(c1 == c2) + values[i - 1][j - 1]
+                op2 = values[i - 1][j]
+                op3 = values[i][j - 1]
+                values[i][j] = max([op1, op2, op3])
+        return values[-1][-1]
+
+
+
 
 if __name__ == '__main__':
     sol = Solution()
-    prices = [1, 99, 99, 99, 100]
-    print(sol.maxProfit(prices))
+    t1 = 'abcde'
+    t2 = 'acde'
+    print(sol.longestCommonSubsequence(t1, t2))

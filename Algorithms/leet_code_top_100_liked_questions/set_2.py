@@ -4,7 +4,8 @@ The 1st script reached around 600 lines. Time for a 2nd script
 
 from typing import List
 from heapq import heapify, heappush, heappop
-from collections import OrderedDict
+from collections import OrderedDict, Counter
+from math import ceil
 
 
 # noinspection PyMethodMayBeStatic,PyShadowingNames,PyPep8Naming
@@ -136,9 +137,63 @@ class Solution:
 
         return res
 
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        # my solution is DP, and quadratic in time
+        # apparently there is a O(nlog(n)) solution
+        # but let's make this work for the moment
+        values = [0 for _ in nums]
+
+        if len(nums) == 1:
+            return 1
+
+        values[1] = 1 + int(nums[-2] < nums[-1])
+        max_value = values[1]
+        for i in range(len(nums) - 3, -1, -1):
+            # each iteration will set values[len(nums) - 1 - i] which corresponds to length of LTS
+            # starting from i
+            j1 = None
+            for j in range(i + 1, len(nums)):
+                if nums[j] > nums[i]:
+                    j1 = j
+                    break
+
+            if j1 is None:
+                values[len(nums) - 1 - i] = 1
+                continue
+            candidates = [j1]
+            candidates.extend([c for c in range(j1, len(nums)) if nums[j1] > nums[c] > nums[i]])
+
+            values[len(nums) - 1 - i] = 1 + max([values[len(nums) - 1 - c] for c in candidates])
+
+            max_value = max(max_value, values[len(nums) - 1 - i])
+
+        return max_value
+
+    # what about the follow-up question ? O(nlog(n))
+    def reorganizeString(self, s: str) -> str:
+        # the idea is quite simple here
+        counter = sorted(list(Counter(s)), key=lambda x: x[1], reverse=True)
+        new_string = ["" for _ in s]
+
+        if counter[0][1] > int(ceil(len(s) / 2)):
+            return ""
+
+        i = 0
+
+        # that's the occupying stage
+        letter = 0
+        while True:
+            for _ in range(counter[letter][1]):
+                new_string[i] = counter[letter][0]
+                i += 2
+                if i > len(s):
+                    break
+            letter += 1
+
+
+
 
 if __name__ == '__main__':
     sol = Solution()
-    a = [[1, 2, 3], [4, 5, 6]]
-    # a = [1, 1, 9, 2, 9]
-    print(sol.spiralOrder(a))
+    a = [10, 9, 2, 5, 3, 7, 101, 18]
+    print(sol.lengthOfLIS(a))
