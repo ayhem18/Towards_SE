@@ -4,8 +4,7 @@ The 1st script reached around 600 lines. Time for a 2nd script
 
 from typing import List
 from heapq import heapify, heappush, heappop
-from collections import OrderedDict, Counter
-from math import ceil
+from collections import OrderedDict
 
 
 # noinspection PyMethodMayBeStatic,PyShadowingNames,PyPep8Naming
@@ -169,31 +168,82 @@ class Solution:
 
         return max_value
 
-    # what about the follow-up question ? O(nlog(n))
-    def reorganizeString(self, s: str) -> str:
-        # the idea is quite simple here
-        counter = sorted(list(Counter(s)), key=lambda x: x[1], reverse=True)
-        new_string = ["" for _ in s]
+    # def increasingPathScore(self,
+    #                         matrix: List[List[int]],
+    #                         y: int,
+    #                         x: int,
+    #                         values: List[List[int]] = None) -> int:
+    #     rows = len(matrix)
+    #     cols = len(matrix[0])
+    #
+    #     if values is None:
+    #         values = [[0 for _ in range(cols)] for _ in range(rows)]
+    #
+    #     if values[y][x] != 0:
+    #         # it means this cell has already been considered
+    #         return values[y][x]
+    #
+    #     # at this point set it to 1, cause any cell has at least a score of '1'
+    #     values[y][x] = 1
+    #
+    #     next_cells = [(t[0], t[1]) for t in [(y, x + 1), (y, x - 1), (y + 1, x), (y - 1, x)]
+    #                   if rows > t[0] >= 0 and cols > t[1] >= 0 and matrix[t[0]][t[1]] > matrix[y][x]]
+    #
+    #     # sort them in descending order
+    #     next_cells = sorted(next_cells, key=lambda t: matrix[t[0]][t[1]], reverse=True)
+    #
+    #     for (y1, x1) in next_cells:
+    #         values[y][x] = max(1 + self.increasingPathScore(matrix, y1, x1, values), values[y][x])
+    #
+    #     return values[y][x]
+    #
+    # def longestIncreasingPath(self, matrix: List[List[int]]) -> int:
+    #     rows = len(matrix)
+    #     cols = len(matrix[0])
+    #
+    #     max_value = 0
+    #     for y in range(rows):
+    #         for x in range(cols):
+    #             v = self.increasingPathScore(matrix, y, x)
+    #             max_value = max(v, max_value)
+    #
+    #     return max_value
 
-        if counter[0][1] > int(ceil(len(s) / 2)):
-            return ""
+    def longestIncreasingPath(self, matrix: List[List[int]]) -> int:
+        rows = len(matrix)
+        cols = len(matrix[0])
 
-        i = 0
+        maps = {}
+        vals = set()
+        for r, rv in enumerate(matrix):
+            for c, v in enumerate(rv):
+                vals.add(v)
+                if v not in maps:
+                    maps[v] = set()
 
-        # that's the occupying stage
-        letter = 0
-        while True:
-            for _ in range(counter[letter][1]):
-                new_string[i] = counter[letter][0]
-                i += 2
-                if i > len(s):
-                    break
-            letter += 1
+                maps[v].add((r, c))
 
+        # convert to a list
+        vals = sorted(list(vals), reverse=True)
+        values = [[1 for _ in r] for r in matrix]
 
+        max_score = 1
+        for v in vals:
+            for y, x in maps[v]:
+                next_cells = [(t[0], t[1]) for t in [(y, x + 1), (y, x - 1), (y + 1, x), (y - 1, x)]
+                              if rows > t[0] >= 0 and cols > t[1] >= 0 and matrix[t[0]][t[1]] > matrix[y][x]]
+
+                # iterate through the next cells:
+                # it is guaranteed that the score of any chosen cell is already computed
+                for y1, x1 in next_cells:
+                    values[y][x] = max(values[y][x], 1 + values[y1][x1])
+
+                max_score = max(max_score, values[y][x])
+
+        return max_score
 
 
 if __name__ == '__main__':
     sol = Solution()
-    a = [10, 9, 2, 5, 3, 7, 101, 18]
-    print(sol.lengthOfLIS(a))
+    a = [[3, 3, 4, 5, 10, 2]]
+    print(sol.longestIncreasingPath(a))
