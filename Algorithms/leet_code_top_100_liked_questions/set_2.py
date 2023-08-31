@@ -4,7 +4,7 @@ The 1st script reached around 600 lines. Time for a 2nd script
 
 from typing import List
 from heapq import heapify, heappush, heappop
-from collections import OrderedDict
+from collections import OrderedDict, deque
 
 
 # noinspection PyMethodMayBeStatic,PyShadowingNames,PyPep8Naming
@@ -243,7 +243,63 @@ class Solution:
         return max_score
 
 
+# the idea here is very simplistic:
+# implementing a stack with 2 queues
+#: https://leetcode.com/problems/implement-stack-using-queues/submissions/
+# nice the solution works !!
+class MyStack:
+    def __init__(self):
+        # as indicated by the problem statement, the idea is to use 2  queues
+        self.q1 = deque()
+        self.q2 = deque()
+
+    def push(self, x: int) -> None:
+        # push to whatever queue has larger number of element
+        max_q = max([self.q1, self.q2], key=len)
+        # this pushes the element to the end of the queue
+        max_q.append(x)
+
+    # since pop() and top() are quite similar in functionalities, a utility function is written
+    # to save the common part between them
+
+    def pop(self) -> int:
+        max_q, min_q = (self.q1, self.q2) if len(self.q1) > len(self.q2) else (self.q2, self.q1)
+        # the idea is to reduce the largest queue to only contain one element:
+        # that element will either be removed: pop
+        # or simply put in the other queue: top
+        while len(max_q) > 1:
+            # max_q.popleft() corresponds to pop for a usual queue
+            min_q.append(max_q.popleft())
+
+        return max_q.popleft()
+
+    def top(self) -> int:
+        max_q, min_q = (self.q1, self.q2) if len(self.q1) > len(self.q2) else (self.q2, self.q1)
+        # the idea is to reduce the largest queue to only contain one element:
+        # that element will either be removed: pop
+        # or simply put in the other queue: top
+        while len(max_q) > 1:
+            # max_q.popleft() corresponds to pop for a usual queue
+            min_q.append(max_q.popleft())
+        # at this point  return the only element in max_q
+        top = max_q[0]
+
+        # put in min_q
+        min_q.append(max_q.popleft())
+        return top
+
+    def empty(self) -> bool:
+        return len(self.q1) + len(self.q2) == 0
+
+
 if __name__ == '__main__':
-    sol = Solution()
-    a = [[3, 3, 4, 5, 10, 2]]
-    print(sol.longestIncreasingPath(a))
+    s = MyStack()
+    l = list(range(1, 1))
+    for v in l:
+        s.push(v)
+
+    new_l = []
+    while not s.empty():
+        new_l.append(s.pop())
+
+    assert new_l == l[::-1]
