@@ -1,0 +1,16 @@
+h1{
+    color: purple; 
+    background-color: blue;
+}
+
+#pricing_header {
+    color: green;
+}
+
+#main_header {
+    color: red;
+}
+
+.list_point {
+    background-color: purple;
+}

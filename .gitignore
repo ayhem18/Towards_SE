@@ -11,4 +11,6 @@ Information_retrieval/Uni_course/shard
 Information_retrieval/Uni_course/shard/
 .vscode/
 c++
+*.rnote
+
 
