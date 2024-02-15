@@ -30,6 +30,6 @@ void naming_conventions() {
     std::cout << var_name << varName << '\n';
 }
 
-// int main() {
-
-// }
+int main() {
+    get_input();
+}
