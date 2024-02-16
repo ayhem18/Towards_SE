@@ -4,13 +4,14 @@ https://www.learncpp.com/
 */
 
 # include <iostream> 
+# include <cmath>
 using namespace std;
 
 // functions
 
 int value_return_function() {
     int a = 10;
-    std:: cout << a << '\n';
+    cout << a << '\n';
     // not returning the value will raise warning but not necessarily a compilation error.
     return a;
 }
@@ -51,7 +52,11 @@ so scope is basically the part of the code where a certain variable can be seen 
 a local variable can only be seen and used with in body function where it is defined.
 */
 
+// this 'add' function is written on a different file, that's why we need forward definition
+int add(int x, int y);
 
-
-
+// int main() {
+//     std::cout << add(10, 20) << " : well it seems files are linked somehow" << '\n';
+// }
+ 
 
