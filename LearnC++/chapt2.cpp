@@ -1,6 +1,5 @@
 /*
-This file is used to illustrate some of the interesting points discussed in chapter 2 of the C++ online tutorials that can be found here: 
-https://www.learncpp.com/ 
+This file is used to illustrate some of the interesting points discussed in chapter 2 of the C++ online tutorials: https://www.learncpp.com/ 
 */
 
 # include <iostream> 
