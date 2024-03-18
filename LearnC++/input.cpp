@@ -7,9 +7,9 @@ int getInteger() {
 }
 
 
-double getNumber() {
-    std::cout << "Please enter a number" << '\n';
-    double x {0};
+int getIntegerInput(const std::string& prompt_text){
+    std::cout << prompt_text << '\n';
+    int x {0};
     std:: cin >> x;
     return x;
 }

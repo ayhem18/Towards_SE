@@ -7,18 +7,8 @@ This file is used to illustrate some of the interesting points discussed in chap
 using namespace std;
 
 // functions
-
-int value_return_function() {
-    int a = 10;
-    cout << a << '\n';
-    // not returning the value will raise warning but not necessarily a compilation error.
-    return a;
-}
-
-// unlike Python, C++ functions can return one and only value (it it is not a void function that is)
+// unlike Python, C++ functions can return one and only value (if it is not a void function that is)
 // unlike Python, C++ does not allow nested functions.
-
-
 int function(int a, int b) {
     // a, b are function parameters
     // the values passed by the user to the function are called arguments

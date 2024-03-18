@@ -4,5 +4,8 @@ project(LearnC__)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(LearnC__ main.cpp operators.cpp
-        containers.cpp)
+        containers.cpp
+        strings.cpp
+        input.cpp
+        arrays.cpp)
 
