@@ -7,5 +7,7 @@ add_executable(LearnC__ main.cpp operators.cpp
         containers.cpp
         strings.cpp
         input.cpp
-        arrays.cpp)
+        arrays.cpp
+        compound_types.cpp
+        linked_lists.cpp)
 
