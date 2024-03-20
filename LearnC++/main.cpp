@@ -1,32 +1,9 @@
 # include <vector>
 # include <string>
-#include <bits/stdc++.h>
-
-void print_vector(const std::vector<int>& int_vec);
-void print_vector(const std::vector<double>& double_vec);
-std::string getStringInput(const std::string& input_prompt);
-
-int getIntegerInput(const std::string& prompt_text);
-bool containsDuplicate(std::vector<int>& nums);
-
-void insertion_sort_insert_min(std::vector<int>& vec);
-void insertion_sort_insert_max(std::vector<int>& vec);
-void sort_STL(std::vector<int>& vec){
-    std::sort(vec.begin(), vec.end());
-}
-std::vector<int> merge_sorted_arrays(std::vector<int>& left, std::vector<int>& right);
-std::vector<int> merge_sort(std::vector<int>& vec);
-
-
-struct ListNode {
-    int val;
-    ListNode *next;
-};
-
-ListNode* insert_element(ListNode * head, int value);
-void print_linked_list(ListNode* head);
-bool hasCycle(ListNode *head);
-
+# include <bits/stdc++.h>
+# include <algorithm>
+# include "header.h" // this is how we include custom header files
+# include "DataStructures/linked_list.h"
 
 int main() {
 //    std::vector<int> v1 {4, 2, -4, 10, 23, 0, -5};
@@ -37,8 +14,8 @@ int main() {
 //    print_vector(v2_sorted);
 
     // setting the initial head
-    ListNode* head = new ListNode();
-    head -> val = 1;
+    Node* head = new Node();
+    head -> data = 1;
     head -> next = nullptr;
 
     for (int i = 2; i <= 4; i ++) {
@@ -49,14 +26,14 @@ int main() {
     std::cout << std:: boolalpha << hasCycle(head) << "\n";
 
     // let's create a cyclic linked list
-    ListNode* n1 = new ListNode();
-    n1->val = 1;
+    Node* n1 = new Node();
+    n1->data = 1;
 
-    ListNode* n2 = new ListNode();
-    n2->val = 2;
+    Node* n2 = new Node();
+    n2->data = 2;
 
-    ListNode* n3 = new ListNode();
-    n3->val = 3;
+    Node* n3 = new Node();
+    n3->data = 3;
 
     n1 -> next = n2;
     n2 -> next = n3;

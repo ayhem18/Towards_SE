@@ -3,11 +3,14 @@ project(LearnC__)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(LearnC__ main.cpp operators.cpp
+add_executable(LearnC__ main.cpp
         containers.cpp
         strings.cpp
         input.cpp
         arrays.cpp
         compound_types.cpp
-        linked_lists.cpp)
+        DataStructures/linked_list.cpp
+        header.h
+        DataStructures/Stack.cpp
+        DataStructures/linked_list.h)
 

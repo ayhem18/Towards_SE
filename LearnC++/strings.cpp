@@ -6,9 +6,6 @@
 // 'std::cin >> std::ws' will not accept empty input...
 // keep in mind that std::string.length will return an unsigned integer
 
-
-
-
 std::string getStringInput(const std::string& input_prompt) {
     std::cout << input_prompt <<'\n';
     std::string input_text {};
