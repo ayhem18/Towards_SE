@@ -4,7 +4,7 @@
 
 
 // what's wrong with code ???
-// the local object is not returned due to move semantics
+// the local object is not returned due to move semantics which messes up the 'next' pointer
 
 //ListNode insert_element(ListNode* head, int value) {
 //    // this function will insert the new value at the beginning of the linked list
@@ -162,4 +162,43 @@ Node* findIntersection(Node* head1, Node* head2)
     }
 
     return new_head;
+}
+
+
+int intersectPoint(Node* head1, Node* head2)
+{
+    // the first step is to determine whether the linked lists intersect or not
+    // while calculating the length of each list
+    Node* traverse_node1 = head1;
+    Node* traverse_node2 = head2;
+
+    int count1 = 1;
+    while (traverse_node1 -> next != nullptr) {
+        traverse_node1 = traverse_node1 -> next;
+        count1 ++;
+    }
+
+    int count2 = 1;
+    while (traverse_node2 -> next != nullptr) {
+        traverse_node2 = traverse_node2 -> next;
+        count2 ++;
+    }
+    // if the traversing nodes are not the same after traversing the entire list
+    // then the lists do not share nodes
+    if (traverse_node1 != traverse_node2) {
+        return -1;
+    }
+
+    Node* long_list = (count1 <= count2) ? head2 : head1;
+    Node* short_list = (count1 <= count2) ? head1 : head2;
+
+    for (int i = 0; i < std::abs(count1 - count2); i++) {
+        long_list = long_list -> next;
+    }
+
+    while (short_list != long_list) {
+        long_list = long_list -> next;
+        short_list = short_list -> next;
+    }
+    return long_list -> data;
 }

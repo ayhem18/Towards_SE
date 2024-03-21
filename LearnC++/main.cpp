@@ -13,32 +13,7 @@ int main() {
 //    print_vector(v1_sorted);
 //    print_vector(v2_sorted);
 
-    // setting the initial head
-    Node* head = new Node();
-    head -> data = 1;
-    head -> next = nullptr;
+    C c {};
+    c.print();
 
-    for (int i = 2; i <= 4; i ++) {
-        head = insert_element(head, i);
-    }
-    print_linked_list(head);
-
-    std::cout << std:: boolalpha << hasCycle(head) << "\n";
-
-    // let's create a cyclic linked list
-    Node* n1 = new Node();
-    n1->data = 1;
-
-    Node* n2 = new Node();
-    n2->data = 2;
-
-    Node* n3 = new Node();
-    n3->data = 3;
-
-    n1 -> next = n2;
-    n2 -> next = n3;
-    n3 -> next = n2;
-
-    std::cout << std::boolalpha << hasCycle(n1) << "\n";
 }
-

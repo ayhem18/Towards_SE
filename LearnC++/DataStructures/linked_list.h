@@ -22,4 +22,6 @@ bool hasCycle(Node *head);
 
 int countNodesinLoop(struct Node *head);
 
+Node* findIntersection(Node* head1, Node* head2);
+
 #endif //LEARNC___LINKED_LIST_H
