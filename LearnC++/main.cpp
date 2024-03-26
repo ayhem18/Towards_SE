@@ -1,19 +1,32 @@
-# include <vector>
-# include <string>
-# include <bits/stdc++.h>
 # include <algorithm>
-# include "header.h" // this is how we include custom header files
-# include "DataStructures/linked_list.h"
+# include "DataStructures/BST.h"
+# include "containers.h"
+int getInteger();
+
+int mod(int x, int y) {
+    return ((x % y) + y) % y;
+}
+
+
+int getInteger();
 
 int main() {
-//    std::vector<int> v1 {4, 2, -4, 10, 23, 0, -5};
-//    std::vector<int> v2 {1, 2, 5, 3};
-//    std::vector<int> v1_sorted = merge_sort(v1);
-//    std::vector<int> v2_sorted = merge_sort(v2);
-//    print_vector(v1_sorted);
-//    print_vector(v2_sorted);
+    Node* n20 = new Node(20);
+    Node* n10 = insertNode(n20, 10);
+    Node* n27 = insertNode(n20, 27);
+    Node* n25 = insertNode(n10, 15);
+    Node* n5 = insertNode(n10, 5);
+    Node* n22 = insertNode(n27, 22);
 
-    C c {};
-    c.print();
+    inorderTraversal(n20);
 
+    for (int i = 0; i < 10; i ++ ){
+        int x = getInteger();
+        n20 = deleteNode(n20, x);
+        std::cout << "\nafter deleting " << x << '\n';
+        inorderTraversal(n20);
+    }
+//
+
+    freeBSTMemory(n20);
 }

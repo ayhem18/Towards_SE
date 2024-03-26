@@ -2,6 +2,7 @@
 
 int getInteger() {
     int x {0};
+    std:: cout << "please enter a number" << "\n";
     std::cin >> x;
     return x;
 }

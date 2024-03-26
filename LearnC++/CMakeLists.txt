@@ -10,7 +10,9 @@ add_executable(LearnC__ main.cpp
         arrays.cpp
         compound_types.cpp
         DataStructures/linked_list.cpp
-        header.h
         DataStructures/Stack.cpp
-        DataStructures/linked_list.h)
+        DataStructures/linked_list.h
+        DataStructures/BST.cpp
+        DataStructures/BST.h
+        containers.h)
 

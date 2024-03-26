@@ -1,18 +1,19 @@
 # include <iostream>
 # include <vector>
+# include "containers.h"
 
-//template <typename T>
-//void printElement(std::vector<T>& array, int index) {
-//    if (index < 0 | index >= array.size()) {
-//        std::cout << "You cannot access element with index "
-//                  << index
-//                  << " from an array with length "
-//                  << array.size()
-//                  << '\n';
-//        return;
-//    }
-//    std::cout << "The element at index "  << index << " is " << array[index] << '\n';
-//}
+template <typename T>
+void printElement(std::vector<T>& array, int index) {
+    if (index < 0 | index >= array.size()) {
+        std::cout << "You cannot access element with index "
+                  << index
+                  << " from an array with length "
+                  << array.size()
+                  << '\n';
+        return;
+    }
+    std::cout << "The element at index "  << index << " is " << array[index] << '\n';
+}
 
 
 // add the 'const' operator to operations where the variable is not modified
