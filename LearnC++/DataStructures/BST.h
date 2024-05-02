@@ -1,7 +1,3 @@
-//
-// Created by bouab on 3/25/2024.
-//
-
 # include <iostream>
 #ifndef LEARNC___BST_H
 #define LEARNC___BST_H

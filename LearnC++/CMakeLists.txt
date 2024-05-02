@@ -14,5 +14,7 @@ add_executable(LearnC__ main.cpp
         DataStructures/linked_list.h
         DataStructures/BST.cpp
         DataStructures/BST.h
-        containers.h)
+        containers.h
+        oop/oop_starter.cpp
+        oop/oop_starter.h)
 
