@@ -2,7 +2,7 @@
 # include "DataStructures/BST.h"
 # include "containers.h"
 # include "oop/oop_starter.h"
-//# include "oop/oop_starter.cpp"
+# include "oop/oop_inheritance.h"
 
 int getInteger();
 
@@ -37,15 +37,9 @@ Ball f() {
 }
 
 int main() {
-//    Ball def{};
-//    Ball blue{ "blue" };
-//    Ball twenty{ 20.0 };
-//    Ball blueTwenty{ "blue", 20.0 };
-    Ball b1 {}; // won't display anythin
-    // will display the copy constructor once
-    Ball b2 {b1};
-    // each of them will display the copy constructor
-    // and then the print statement defined in the function body
-    print_ball(b1);
-    print_ball(b2);
+    const Apple a{ "Red delicious", "red", 4.2 };
+    const Banana b{ "Cavendish", "yellow" };
+    const Fruit f {"fruit", "green"};
+    b.f();
+    return 0;
 }

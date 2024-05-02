@@ -16,5 +16,9 @@ add_executable(LearnC__ main.cpp
         DataStructures/BST.h
         containers.h
         oop/oop_starter.cpp
-        oop/oop_starter.h)
+        oop/oop_starter.h
+        oop/oop_inheritance.h
+        Uni_assignments/itp_2021/midterm/classes.h
+        Uni_assignments/itp_2021/midterm/linked_list/linked_list.h
+        ../Uni_assignments/itp_2021/midterm/main.cpp)
 
