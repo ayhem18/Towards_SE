@@ -1,10 +1,11 @@
 # include <algorithm>
 # include "containers.h"
-# include "DataStructures/BST.h"
+# include "ProblemSolving/BST.h"
 # include "oop/oop_starter.h"
 # include "oop/oop_inheritance.h"
 # include "learnCppTutorials/functions.h"
-# include "learnCppTutorials/compond_types.h"
+# include "CustomDS/dll.h"
+# include "oop/oop_more.h"
 
 int getInteger() {
     return 0;
@@ -48,6 +49,31 @@ void function_overloading() {
 
 }
 
+void fractions_and_operators() {
+    Fraction f1 {1, 2};
+    Fraction f2 {2, 5}; // if b = 0, the code will raise an error
+    Fraction f3 {f1 * f2};
+    Fraction f4 {f1 * 4};
+    std::cout << "f3: " << f3 <<"\n";
+    std::cout << "f4: " << f4 <<"\n";
+}
+
+void dll_function() {
+    DoubleLinkedList l {};
+    for (int i = 1; i <= 25 ; i ++) {
+        l.add(i);
+    }
+    int element{0};
+    std::cout << "Initial list\n";
+    std::cout << "list " << l << "\n";
+
+    while (std::cin >> element) {
+        std::cout << "attempting to remove " << element << "\n";
+        l.remove(element);
+        std::cout << "list " << l << "\n";
+    }
+}
+
 int main() {
-    pointers_stuff();
+dll_function();
 }

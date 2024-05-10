@@ -8,11 +8,11 @@ add_executable(LearnC__ main.cpp
         learnCppTutorials/strings.cpp
         arrays.cpp
         learnCppTutorials/compound_types.cpp
-        DataStructures/linked_list.cpp
-        DataStructures/Stack.cpp
-        DataStructures/linked_list.h
-        DataStructures/BST.cpp
-        DataStructures/BST.h
+        ProblemSolving/linked_list.cpp
+        ProblemSolving/Stack.cpp
+        ProblemSolving/linked_list.h
+        ProblemSolving/BST.cpp
+        ProblemSolving/BST.h
         containers.h
         oop/oop_starter.cpp
         oop/oop_starter.h
@@ -21,5 +21,9 @@ add_executable(LearnC__ main.cpp
         learnCppTutorials/functions.cpp
         learnCppTutorials/functions.cpp
         learnCppTutorials/functions.h
-        learnCppTutorials/compond_types.h)
+        learnCppTutorials/compond_types.h
+        CustomDS/dll.h
+        CustomDS/dll.cpp
+        oop/oop_more.h
+        oop/oop_more.cpp)
 

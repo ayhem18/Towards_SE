@@ -121,6 +121,23 @@ public:
 };
 
 
+class Calc
+{
+private:
+    int m_value{};
+
+public:
+    Calc& add(int value) { m_value += value; return *this; }
+    Calc& sub(int value) { m_value -= value; return *this; }
+    Calc& mult(int value) { m_value *= value; return *this; }
+
+    int getValue() const { return m_value; }
+
+    void reset() { *this = {}; }
+};
+
+
+
 void print_ball(const Ball ball_obj);
 //void print_ball(const Ball& ball_obj);
 

@@ -105,7 +105,6 @@ int smallestValue(Node* root) {
 
 
 // this function finds the lowest common ancestor of 2 values in a binary search tree
-
 Node* LCA(Node *root, int n1, int n2) {
     int min = std::min(n1, n2);
     int max = std::max(n1, n2);
