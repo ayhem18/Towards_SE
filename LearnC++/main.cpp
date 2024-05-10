@@ -1,16 +1,14 @@
 # include <algorithm>
-# include "DataStructures/BST.h"
 # include "containers.h"
+# include "DataStructures/BST.h"
 # include "oop/oop_starter.h"
 # include "oop/oop_inheritance.h"
+# include "learnCppTutorials/functions.h"
+# include "learnCppTutorials/compond_types.h"
 
-int getInteger();
-
-int mod(int x, int y) {
-    return ((x % y) + y) % y;
+int getInteger() {
+    return 0;
 }
-
-int getInteger();
 
 void test_bst(){
     Node* n20 = new Node(20);
@@ -32,14 +30,24 @@ void test_bst(){
 
     freeBSTMemory(n20);
 }
-Ball f() {
-    return Ball(1, "color");
-}
 
-int main() {
+void play_with_fruits() {
     const Apple a{ "Red delicious", "red", 4.2 };
     const Banana b{ "Cavendish", "yellow" };
     const Fruit f {"fruit", "green"};
     b.f();
-    return 0;
+}
+
+void function_overloading() {
+    functionWithNumbers(10); // int
+    functionWithNumbers(10.0f); // float
+//    functionWithNumbers(10.0); // double
+    functionWithNumbers(true); // type expansion
+    functionWithNumbers('a'); // int: type conversion
+//    functionWithNumbers("Ayhem"); compilation error no match
+
+}
+
+int main() {
+    pointers_stuff();
 }

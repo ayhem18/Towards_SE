@@ -6,16 +6,29 @@
 # include <cassert>
 
 template <typename T>
-struct LinkedListNode {
+class LinkedListNode {
+private:
     T data;
     LinkedListNode* next;
+public:
+    LinkedListNode(T data, LinkedListNode* next): data(data) {
+        this-> next = next;
+    };
+    explicit LinkedListNode(T data): LinkedListNode(data, nullptr) {};
 };
 
 template <typename T>
 class LinkedList {
 private:
     int size {0};
-    LinkedListNode<T>* head {nullptr};
+    LinkedListNode<T>* head = nullptr;
+public:
+//    LinkedList() = default;
+    explicit LinkedList(T val): size{0}
+    {
+        // set the head with the new keyword
+        head = new LinkedListNode(val, nullptr);
+    };
 
     ~LinkedList()
     {
@@ -29,9 +42,6 @@ private:
         std::cout << "The memory allocated by the linked list has been completely cleared !!\n";
     }
 
-public:
-    LinkedList() = default;
-    explicit LinkedList(T val): size{0}, head {val, nullptr} {};
 
     // add an element to the linked list
     void add_element(T data) {
@@ -59,6 +69,20 @@ public:
         LinkedList<T> new_node = new LinkedList(data, traverse_node -> next);
         traverse_node -> next = new_node;
         this -> size ++;
+    }
+
+    void print() const {
+        if (head == nullptr) {
+            std::cout << "The linked list is empty\n";
+            return;
+        }
+        LinkedList<T> traverse_node = head;
+        std:: cout << head -> data;
+        traverse_node = traverse_node -> next;
+        while (traverse_node != nullptr) {
+            std:: cout << " --> " << traverse_node -> data;
+            traverse_node = traverse_node -> next;
+        }
     }
 
 };

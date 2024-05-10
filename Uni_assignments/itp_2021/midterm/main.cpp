@@ -1,3 +1,12 @@
-//
-// Created by bouab on 5/3/2024.
-//
+# include "linked_list/linked_list.h"
+# include <string>
+
+void test_linked_list() {
+    LinkedList<int> list {10};
+}
+
+
+int main() {
+
+    return 0;
+}
