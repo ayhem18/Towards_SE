@@ -43,7 +43,7 @@ public:
     }
     // let's add some elements:
     void add(const int& val);
-    // let's delete some items
+    // let's delete some elements
     void remove(const int& val);
 
     // let's create a friend function to display the content of the linked list

@@ -52,9 +52,9 @@ void function_overloading() {
 void fractions_and_operators() {
     Fraction f1 {1, 2};
     Fraction f2 {2, 5}; // if b = 0, the code will raise an error
-    Fraction f3 {f1 * f2};
+//    Fraction f3 {f1 * f2};
     Fraction f4 {f1 * 4};
-    std::cout << "f3: " << f3 <<"\n";
+//    std::cout << "f3: " << f3 <<"\n";
     std::cout << "f4: " << f4 <<"\n";
 }
 
@@ -75,5 +75,28 @@ void dll_function() {
 }
 
 int main() {
-dll_function();
+
+    Fraction frac1;
+    Fraction frac2;
+    std::cout << "Enter a fraction \n";
+    std::cin >> frac2;
+    bool same_frac {false};
+
+    int count = 1;
+    while (!(!frac2)) {
+        if (count >= 2 && frac1 == frac2){
+            same_frac = true;
+            break;
+        }
+        std::cout << "Here is the fraction you just entered: " << frac2 << "\n";
+        frac1 = Fraction{frac2};
+        std::cin >> frac2;
+        count ++;
+    }
+    if (same_frac) {
+        std:: cout << "You entered the same fraction twice in a row " << frac1 << "\n";
+    }
+    else {
+        std::cout << "You entered zero " << frac2 << "\n";
+    }
 }

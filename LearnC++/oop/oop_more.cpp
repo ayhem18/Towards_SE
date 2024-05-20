@@ -1,8 +1,7 @@
 # include "oop_more.h"
 
-Fraction operator * (const Fraction& f1, const Fraction& f2) {
-    return {f1.getNumerator() * f2.getNumerator(),
-            f1.getDenominator() * f2.getDenominator()};
+Fraction Fraction:: operator * (const double& d) {
+    return {numerator * d, denominator};
 }
 
 Fraction operator * (const Fraction& f1, const double& v){
@@ -22,8 +21,48 @@ Fraction operator - (const Fraction& f1, const Fraction& f2) {
     return {f1n * f2d - f2n * f1d, f1d * f2d};
 }
 
+// unary operators
+Fraction Fraction:: operator - () const {
+    return {-getNumerator(), getDenominator()};
+}
+
+bool Fraction:: operator ! () const {
+    return (getNumerator() == 0);
+}
+
+bool Fraction:: operator == (const Fraction& otherFrac) const {
+    return (getNumerator() == otherFrac.getNumerator()) & (getDenominator() == otherFrac.getDenominator());
+}
+
+
 // the code needed to overload the std::cout << operator
 std::ostream& operator << (std::ostream& out, const Fraction& f) {
     out << f.getNumerator() << "/" << f.getDenominator();
     return out;
 }
+
+// the code needed to overload the std::cin >> operator;
+std::istream& operator >> (std::istream& in, Fraction& frac) {
+    double temp_val;
+    in >> temp_val;
+    frac.setNumerator(temp_val);
+    in >> temp_val;
+    frac.setDenominator(temp_val);
+    return in;
+}
+
+// the code needed to overload the std::cout << operator
+//std::ostream& operator << (std::ostream& out, const Fraction& f) {
+//    out << f.getNumerator() << "/" << f.getDenominator();
+//    return out;
+//}
+//
+// the code needed to overload the std::cin >> operator;
+//std::istream& operator >> (std::istream& in, Fraction& frac) {
+//    double temp_val;
+//    in >> temp_val;
+//    frac.setNumerator(temp_val);
+//    in >> temp_val;
+//    frac.setDenominator(temp_val);
+//    return in;
+//}
