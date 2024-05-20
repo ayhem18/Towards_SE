@@ -6,6 +6,7 @@
 # include "learnCppTutorials/functions.h"
 # include "CustomDS/dll.h"
 # include "oop/oop_more.h"
+# include "oop/more_inheritance.h"
 
 int getInteger() {
     return 0;
@@ -36,7 +37,13 @@ void play_with_fruits() {
     const Apple a{ "Red delicious", "red", 4.2 };
     const Banana b{ "Cavendish", "yellow" };
     const Fruit f {"fruit", "green"};
-    b.f();
+    std:: cout << a << "\n";
+    std:: cout << b << "\n";
+
+    std::cout << "###########################" << "\n";
+    // after hiding the function some_func() in the Apple class, the line of code below does not compile
+//    a.some_funct();
+    b.some_funct();
 }
 
 void function_overloading() {
@@ -74,8 +81,7 @@ void dll_function() {
     }
 }
 
-int main() {
-
+void play_with_fractions_and_operators() {
     Fraction frac1;
     Fraction frac2;
     std::cout << "Enter a fraction \n";
@@ -98,5 +104,32 @@ int main() {
     }
     else {
         std::cout << "You entered zero " << frac2 << "\n";
+    }
+}
+
+
+# include "small_game/game_objects.h"
+# include "small_game/game_play.h"
+
+int main()
+{
+//    Creature o{ "orc", 'o', 4, 2, 10 };
+//    o.addGold(5);
+//    o.reduceHealth(1);
+//    std::cout << "The " << o.getName() << " has " << o.getHealth() << " health and is carrying " << o.getGold() << " gold.\n";
+//
+//    return 0;
+//    Player userPlayer {getPlayerFromUser()};
+//    std::cout << "Welcome " << userPlayer.getName() << "\n";
+//    std::cout << "You have " << userPlayer .getHealth() << " health and are carrying " << userPlayer.getGold() << " gold.\n";
+
+//    Monster m{ Monster::Type::orc };
+//    std::cout << "A " << m.getName() << " (" << m.getSymbol() << ") was created.\n";
+//    return 0;
+
+    for (int i{ 0 }; i < 10; ++i)
+    {
+        Monster m{ Monster::getRandomMonster() };
+        std::cout << "A " << m.getName() << " (" << m.getSymbol() << ") was created.\n";
     }
 }

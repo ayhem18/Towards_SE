@@ -25,5 +25,12 @@ add_executable(LearnC__ main.cpp
         CustomDS/dll.h
         CustomDS/dll.cpp
         oop/oop_more.h
-        oop/oop_more.cpp)
+        oop/oop_more.cpp
+        oop/more_inheritance.h
+        small_game/game_objects.h
+        small_game/game_play.h
+        small_game/random.h
+        small_game/utilities.cpp
+        small_game/utilities.h
+        small_game/game_play.cpp)
 
