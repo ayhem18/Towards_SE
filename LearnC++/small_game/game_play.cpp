@@ -153,6 +153,7 @@ bool player_and_potions(Player& player) {
     }
     return false;
 }
+
 void goodByeDeadPlayer(const Player& deadPlayer) {
     std:: cout << "You died at level " << deadPlayer.getLevel() << " carrying " << deadPlayer.getGold() << " gold\n";
     std:: cout << "Too bad you can't take it with you";

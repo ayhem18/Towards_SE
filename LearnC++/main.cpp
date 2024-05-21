@@ -107,30 +107,11 @@ void play_with_fractions_and_operators() {
     }
 }
 
-
-# include "small_game/game_objects.h"
 # include "small_game/game_play.h"
+# include "oop/poly.h"
+
 
 int main()
 {
-//    Creature o{ "orc", 'o', 4, 2, 10 };
-//    o.addGold(5);
-//    o.reduceHealth(1);
-//    std::cout << "The " << o.getName() << " has " << o.getHealth() << " health and is carrying " << o.getGold() << " gold.\n";
-//
-//    return 0;
-//    Player userPlayer {getPlayerFromUser()};
-//    std::cout << "Welcome " << userPlayer.getName() << "\n";
-//    std::cout << "You have " << userPlayer .getHealth() << " health and are carrying " << userPlayer.getGold() << " gold.\n";
-
-//    Monster m{ Monster::Type::orc };
-//    std::cout << "A " << m.getName() << " (" << m.getSymbol() << ") was created.\n";
-//    return 0;
-
-//    for (int i{ 0 }; i < 10; ++i)
-//    {
-//        Monster m{ Monster::getRandomMonster() };
-//        std::cout << "A " << m.getName() << " (" << m.getSymbol() << ") was created.\n";
-//    }
-    game();
+    polymorphism();
 }

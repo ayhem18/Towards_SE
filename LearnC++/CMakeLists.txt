@@ -32,5 +32,7 @@ add_executable(LearnC__ main.cpp
         small_game/random.h
         small_game/utilities.cpp
         small_game/utilities.h
-        small_game/game_play.cpp)
+        small_game/game_play.cpp
+        oop/poly.h
+        oop/poly.cpp)
 
