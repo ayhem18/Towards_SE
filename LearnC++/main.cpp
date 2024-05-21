@@ -127,9 +127,10 @@ int main()
 //    std::cout << "A " << m.getName() << " (" << m.getSymbol() << ") was created.\n";
 //    return 0;
 
-    for (int i{ 0 }; i < 10; ++i)
-    {
-        Monster m{ Monster::getRandomMonster() };
-        std::cout << "A " << m.getName() << " (" << m.getSymbol() << ") was created.\n";
-    }
+//    for (int i{ 0 }; i < 10; ++i)
+//    {
+//        Monster m{ Monster::getRandomMonster() };
+//        std::cout << "A " << m.getName() << " (" << m.getSymbol() << ") was created.\n";
+//    }
+    game();
 }

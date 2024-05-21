@@ -67,11 +67,10 @@ public:
 
 };
 
-
-int _DEFAULT_PLAYER_HEALTH = 10;
-char _PLAYER_SYMBOL = '@';
-int _INITIAL_DAMAGE = 1;
-int _WIN_LEVEL = 20;
+inline int _DEFAULT_PLAYER_HEALTH = 10;
+inline char _PLAYER_SYMBOL = '@';
+inline int _INITIAL_DAMAGE = 1;
+inline int _WIN_LEVEL = 20;
 
 class Player: public  Creature {
 private:
@@ -82,7 +81,8 @@ public:
                  _PLAYER_SYMBOL,
                  _DEFAULT_PLAYER_HEALTH,
                  _INITIAL_DAMAGE,
-                 0  }, // call the base class constructor
+                 0
+                 }, // call the base class constructor
         level{1} // set the leve to '1'
         {};
 
@@ -100,12 +100,9 @@ public:
     }
 };
 
-//namespace Monster {
-//}
 
 // create a monster class
 class Monster: public Creature {
-
 private:
     static inline Creature monsterData [] {
         Creature{"dragon", 'D', 20, 4, 100},
@@ -113,7 +110,7 @@ private:
         Creature {"slime", 's', 1, 1, 10}
     };
 public:
-    enum Type {
+    enum Type{
         dragon,
         orc,
         slime,
@@ -131,6 +128,90 @@ public:
 
 };
 
+
+class Potion {
+public:
+    enum Size {
+        small,
+        medium,
+        large
+    };
+
+    Potion(Potion::Size size, int effect): m_size{size}, m_effect{effect} {};
+    Potion() = delete;
+
+    void affect(Creature& creature) const {};
+    const std::string& getPotionName() const {};
+    Potion::Size getSize() const {
+        return m_size;
+    };
+
+protected:
+    int m_effect {0};
+    Potion::Size m_size {};
+};
+
+class HealthPotion: public Potion {
+private:
+    static inline Potion HealthPotionData [] {
+        Potion(Potion::small, 2), // the small health potion will add 2 to health
+        Potion(Potion::medium, 2), // same for the medium-sized
+        Potion(Potion::large, 5), // the large one adds 5
+    };
+    static inline const std::string potion_name{"Health Potion"};
+public:
+
+    explicit HealthPotion(Potion::Size size): Potion(HealthPotionData[static_cast<int>(size)]) {};
+    void affect(Creature& creature) const {
+        // increase the creature's damage per attack
+        creature.setHealth(creature.getHealth() + m_effect);
+    };
+    const std::string& getPotionName() const {
+        return potion_name;
+    };
+};
+
+class StrengthPotion: public Potion {
+private:
+    static inline Potion StrengthPotionData [] {
+        Potion(Potion::small, 1), // the small health potion will add 2 to health
+            Potion(Potion::medium, 1), // same for the medium-sized
+            Potion(Potion::large, 1), // the large one adds 5
+    };
+    static inline const std::string potion_name{"Strength Potion"};
+
+public:
+    explicit StrengthPotion(Potion::Size size): Potion(StrengthPotionData[static_cast<int>(size)]) {};
+    void affect(Creature& creature) const {
+        // increase the creature's damage per attack
+        creature.setDamagePerAttack(creature.getDamagePerAttack() + m_effect);
+    };
+    const std::string& getPotionName() const {
+        return potion_name;
+    };
+};
+
+class PoisonPotion: public Potion {
+private:
+    static inline Potion PoisonPotionData [] {
+            Potion(Potion::small, -1),
+            Potion(Potion::medium, -1),
+            Potion(Potion::large, -1),
+    };
+    static inline const std::string potion_name{"Poison Potion"};
+
+public:
+    explicit PoisonPotion(Potion::Size size): Potion(PoisonPotionData[static_cast<int>(size)]) {};
+
+    void affect(Creature& creature) const {
+        // increase the creature's damage per attack
+        creature.setHealth(creature.getHealth() + m_effect);
+    };
+
+    const std::string& getPotionName() const {
+        return potion_name;
+    };
+};
 
 
 #endif //LEARNC___GAME_OBJECTS_H
