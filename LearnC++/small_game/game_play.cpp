@@ -86,7 +86,7 @@ bool fight(Player& player, Monster& monster) {
     return true;
 }
 
-Potion generateRandomPotion() {
+Potion* generateRandomPotion() {
     // randomly selected  the type
     int type_index = Random::get(0, 2);
     // randomly selected  the size
@@ -94,11 +94,11 @@ Potion generateRandomPotion() {
 
     switch(type_index) {
         case 0:
-            return HealthPotion(static_cast<Potion::Size>(size_index));
+            return new HealthPotion(static_cast<Potion::Size>(size_index));
         case 1:
-            return StrengthPotion(static_cast<Potion::Size>(size_index));
+            return new StrengthPotion(static_cast<Potion::Size>(size_index));
         default:
-            return PoisonPotion(static_cast<Potion::Size>(size_index));
+            return new PoisonPotion(static_cast<Potion::Size>(size_index));
     }
 }
 
@@ -112,12 +112,12 @@ bool userPotionInput() {
     std:: cin >> decision;
 
     decision = toLower(decision);
-    while (std::count(_VALID_FIGHT_RUN_INPUT.begin(),
-                      _VALID_FIGHT_RUN_INPUT.end(),
+    while (std::count(_VALID_POTION_INPUT.begin(),
+                      _VALID_POTION_INPUT.end(),
                       decision) == 0)
     {
 
-        std::cout << "Please enter a valid input ";
+        std::cout << "Please enter a valid input \n";
         for (const std::string& str : _VALID_POTION_INPUT) {
             std::cout << str << " ";
         }
@@ -130,9 +130,9 @@ bool userPotionInput() {
     return (decision == "y") || (decision == "yes");
 }
 
-void userDrinkPotion(Player& player, const Potion& p) {
-    std::cout << "You drank a " << p.getPotionName() << " of size " << p.getSize() << "\n";
-    p.affect(player);
+void userDrinkPotion(Player& player, Potion* p) {
+    std::cout << "You drank a " << p -> getPotionName() << " of size " << p -> getSize() << "\n";
+    p -> affect(player);
 }
 
 bool player_and_potions(Player& player) {
@@ -143,14 +143,18 @@ bool player_and_potions(Player& player) {
     }
 
     // a potion was found
-    Potion p = generateRandomPotion();
+    Potion* p = generateRandomPotion();
     // ask the player whether
     bool drink {userPotionInput()};
 
     if (drink) {
         userDrinkPotion(player, p);
+        // make sure to free the memory here
+        free(p);
         return player.isDead();
     }
+    // free the memory here as well
+    free(p);
     return false;
 }
 
@@ -182,11 +186,11 @@ void game () {
         else {
             gameOver = run(player, round_monster);
         }
-        // check if the player has won
-        if (player.hasWon()) {
+        // check if the player won or died
+        if (player.hasWon() || player.isDead()) {
             break;
         }
-
+        // if the player is still alive at this point, then yep !!
         // deal with potions
         gameOver = player_and_potions(player);
     }

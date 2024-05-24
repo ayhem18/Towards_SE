@@ -12,8 +12,6 @@ Base* pB {&d};
 std::cout << pB -> getName() << "\n";
 Base& rB {d};
 std::cout << rB.getName() << "\n";
-Base cB{d};
-std::cout << cB.getName() << "\n";
 }
 
 void polymorphism() {
@@ -23,10 +21,7 @@ void polymorphism() {
 
     // let's check with a reference
     Base& rD {d};
-    std::cout << rD.getName() << "\n";
-
-    Base derived_copy {d};
-    std::cout << derived_copy.getName() << "\n"; // this will always print the original class version
+    std::cout << rD.abstract_function() << "\n";
 
 }
 

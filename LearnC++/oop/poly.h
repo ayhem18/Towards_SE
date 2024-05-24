@@ -10,12 +10,12 @@ protected:
 
 public:
     explicit Base(int value)
-            : m_value{ value }
-    {
-    }
+            : m_value{value} {}
 
     virtual std::string_view getName() const { return "Base"; };
     int getValue() const { return m_value; }
+    virtual int abstract_function() const = 0;
+    virtual ~Base(){};
 };
 
 class Derived: public Base
@@ -25,6 +25,11 @@ public:
              : Base{ value } {}
 
     virtual std::string_view getName() const { return "Derived"; }
+
+    int abstract_function() const {
+        return 0;
+    }
+
     int getValueDoubled() const { return m_value * 2; }
 };
 

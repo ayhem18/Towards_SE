@@ -113,5 +113,5 @@ void play_with_fractions_and_operators() {
 
 int main()
 {
-    polymorphism();
+game();
 }

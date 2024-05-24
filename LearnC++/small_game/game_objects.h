@@ -4,6 +4,7 @@
 // https://www.learncpp.com/cpp-tutorial/chapter-24-summary-and-quiz/
 # include<string>
 # include "random.h"
+# include <map>
 
 #ifndef LEARNC___GAME_OBJECTS_H
 #define LEARNC___GAME_OBJECTS_H
@@ -140,11 +141,15 @@ public:
     Potion(Potion::Size size, int effect): m_size{size}, m_effect{effect} {};
     Potion() = delete;
 
-    void affect(Creature& creature) const {};
-    const std::string& getPotionName() const {};
+    // pure virtual function
+    virtual void affect(Creature& creature) const = 0;
+    // pure virtual function
+    virtual const std::string& getPotionName() const = 0;
     Potion::Size getSize() const {
         return m_size;
     };
+    // define the virtual destructor
+    virtual ~Potion() = default;
 
 protected:
     int m_effect {0};
@@ -153,16 +158,14 @@ protected:
 
 class HealthPotion: public Potion {
 private:
-    static inline Potion HealthPotionData [] {
-        Potion(Potion::small, 2), // the small health potion will add 2 to health
-        Potion(Potion::medium, 2), // same for the medium-sized
-        Potion(Potion::large, 5), // the large one adds 5
-    };
+    static inline std::map<Potion::Size, int> size_effect_map {
+        {Potion::small, 2},
+        {Potion::medium, 2},
+        {Potion::large, 5}};
     static inline const std::string potion_name{"Health Potion"};
 public:
-
-    explicit HealthPotion(Potion::Size size): Potion(HealthPotionData[static_cast<int>(size)]) {};
-    void affect(Creature& creature) const {
+    explicit HealthPotion(Potion::Size size): Potion(size, size_effect_map[size]) {};
+    virtual void affect(Creature& creature) const {
         // increase the creature's damage per attack
         creature.setHealth(creature.getHealth() + m_effect);
     };
@@ -173,42 +176,42 @@ public:
 
 class StrengthPotion: public Potion {
 private:
-    static inline Potion StrengthPotionData [] {
-        Potion(Potion::small, 1), // the small health potion will add 2 to health
-            Potion(Potion::medium, 1), // same for the medium-sized
-            Potion(Potion::large, 1), // the large one adds 5
-    };
+    static inline std::map<Potion::Size, int> size_effect_map {
+            {Potion::small, 1},
+            {Potion::medium, 2},
+            {Potion::large, 2}};
     static inline const std::string potion_name{"Strength Potion"};
 
 public:
-    explicit StrengthPotion(Potion::Size size): Potion(StrengthPotionData[static_cast<int>(size)]) {};
-    void affect(Creature& creature) const {
+    explicit StrengthPotion(Potion::Size size): Potion(size, size_effect_map[size]) {};
+
+    virtual void affect(Creature& creature) const {
         // increase the creature's damage per attack
         creature.setDamagePerAttack(creature.getDamagePerAttack() + m_effect);
     };
-    const std::string& getPotionName() const {
+    virtual  const std::string& getPotionName() const {
         return potion_name;
     };
 };
 
 class PoisonPotion: public Potion {
 private:
-    static inline Potion PoisonPotionData [] {
-            Potion(Potion::small, -1),
-            Potion(Potion::medium, -1),
-            Potion(Potion::large, -1),
-    };
+    static inline std::map<Potion::Size, int> size_effect_map {
+            {Potion::small, -1},
+            {Potion::medium, -1},
+            {Potion::large, -1}};
+
     static inline const std::string potion_name{"Poison Potion"};
 
 public:
-    explicit PoisonPotion(Potion::Size size): Potion(PoisonPotionData[static_cast<int>(size)]) {};
+    explicit PoisonPotion(Potion::Size size): Potion(size, size_effect_map[size]) {};
 
-    void affect(Creature& creature) const {
+    virtual void affect(Creature& creature) const {
         // increase the creature's damage per attack
         creature.setHealth(creature.getHealth() + m_effect);
     };
 
-    const std::string& getPotionName() const {
+    virtual const std::string& getPotionName() const {
         return potion_name;
     };
 };
