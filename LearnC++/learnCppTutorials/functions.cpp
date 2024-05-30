@@ -17,7 +17,7 @@ void functionWithNumbers(float x) {
 //}
 
 // if we want to prevent certain types to be called with this function
-void functionWithNumbers(bool x) = delete;  // forbid calling "functionWithNumbers" with the bool argument
+//void functionWithNumbers(bool x) = delete;  // forbid calling "functionWithNumbers" with the bool argument
 //void functionWithNumbers(int x) = delete;  // forbid calling "functionWithNumbers" with the bool argument
 
 // keep in mind that deleting a function will prevent any calls that match even indirectly
@@ -25,3 +25,4 @@ void functionWithNumbers(bool x) = delete;  // forbid calling "functionWithNumbe
 // declaring: void f(int)  and void f(double)
 
 // functions in C++ have default arguments that behave just like Python default args
+

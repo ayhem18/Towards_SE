@@ -8,15 +8,31 @@ void func() {
     int& ref_var {var};
     // modify ref_var <=> modify var
     const int cnst_var{1};
+    // keep the const modifier here !!! a modifiable lvalue ref cannot be bound to
+    // a non-modifiable lvalue ref
     const int & cnt_ref {cnst_var};
 
     // question why would I care about const reference:
     // they extend the lifetime of the temporary object assigned to it
      // int& var {5}; does not compile; because it '5' is an rvalue
      const int & cnt_ref_var {5}; // now cnt_ref_var is just another constant variable holding the value 5
-
      // a little bit more about pointers
+}
 
+void reference_stuff() {
+    int var {1};
+    int& ref_var{var};
+    // ref_var is a copy of 'var' basically
+    std::cout << ref_var << "\n";
+    var ++;
+    std::cout << ref_var << "\n";
+
+    int v {2};
+    const int& r{v}; // basically means that the variable 'v' cannot be changed through the reference
+    // useful in functions
+
+    v ++;
+    std:: cout << r << "\n";
 }
 
 
@@ -31,10 +47,6 @@ void pointers_stuff() {
     int* const cnt_pt = &var; // the pointer itself is cnst: cannot change the address it points to !!
     *cnt_pt += 1; // can modify the value of the variable the pointer is pointing to
 
-    //
-    // make sure to free the memory
-    free(pt);
-    free(cnt_pt);
 }
 
 
@@ -47,6 +59,6 @@ void printByAddress(const int* ptr)
 
 void passByAddressCopy(int* ptr) {
     // the point here is that 'ptr' represents a copy of the actual pointer
-    // we can modify the data by dereferring ptr, but cannot change the actual pointer...
+    // we can modify the data by de-referring ptr, but cannot change the actual pointer...
 
 }

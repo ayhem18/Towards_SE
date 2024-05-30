@@ -4,9 +4,10 @@
 # include "oop/oop_starter.h"
 # include "oop/oop_inheritance.h"
 # include "learnCppTutorials/functions.h"
-# include "CustomDS/dll.h"
+# include "CustomDS/list.h"
 # include "oop/oop_more.h"
 # include "oop/more_inheritance.h"
+# include "learnCppTutorials/compond_types.h"
 
 int getInteger() {
     return 0;
@@ -46,15 +47,6 @@ void play_with_fruits() {
     b.some_funct();
 }
 
-void function_overloading() {
-    functionWithNumbers(10); // int
-    functionWithNumbers(10.0f); // float
-//    functionWithNumbers(10.0); // double
-    functionWithNumbers(true); // type expansion
-    functionWithNumbers('a'); // int: type conversion
-//    functionWithNumbers("Ayhem"); compilation error no match
-
-}
 
 void fractions_and_operators() {
     Fraction f1 {1, 2};
@@ -63,22 +55,6 @@ void fractions_and_operators() {
     Fraction f4 {f1 * 4};
 //    std::cout << "f3: " << f3 <<"\n";
     std::cout << "f4: " << f4 <<"\n";
-}
-
-void dll_function() {
-    DoubleLinkedList l {};
-    for (int i = 1; i <= 25 ; i ++) {
-        l.add(i);
-    }
-    int element{0};
-    std::cout << "Initial list\n";
-    std::cout << "list " << l << "\n";
-
-    while (std::cin >> element) {
-        std::cout << "attempting to remove " << element << "\n";
-        l.remove(element);
-        std::cout << "list " << l << "\n";
-    }
 }
 
 void play_with_fractions_and_operators() {
@@ -107,11 +83,41 @@ void play_with_fractions_and_operators() {
     }
 }
 
+
 # include "small_game/game_play.h"
 # include "oop/poly.h"
+
+void dll_function() {
+//    List<int> l {};
+//    std::cout << l.size() << "\n";
+//    l.add(10);
+//    std::cout << l.size() << "\n";
+//
+//    DLLNode<int> node {1};
+//    std::cout << node.val << "\n";
+
+    DoubleLinkedList<int> l {};
+
+    for (int i = 1; i <= 10 ; i ++) {
+        l.add(i);
+    }
+    std::cout << l.size() << "\n";
+
+        int element{0};
+    std::cout << "Initial list\n";
+    std::cout << "list " << l << "\n";
+//
+//    while (std::cin >> element) {
+//        std::cout << "attempting to remove " << element << "\n";
+//        l.remove(element);
+//        std::cout << "list " << l << "\n";
+//    }
+}
+
 
 
 int main()
 {
-game();
+//game();
+dll_function();
 }

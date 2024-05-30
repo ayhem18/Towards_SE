@@ -37,5 +37,7 @@ add_executable(LearnC__ main.cpp
         oop/poly.cpp
         ../Uni_assignments/itp2024/main.cpp
         ../Uni_assignments/itp2024/labs/objects.h
-        ../Uni_assignments/itp2024/labs/objects.cpp)
+        ../Uni_assignments/itp2024/labs/objects.cpp
+        CustomDS/list.h
+        CustomDS/list.cpp)
 

@@ -2,4 +2,6 @@
 #define LEARNC___COMPOND_TYPES_H
 void pointers_stuff();
 
+void reference_stuff();
+
 #endif
