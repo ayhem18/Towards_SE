@@ -34,5 +34,8 @@ add_executable(LearnC__ main.cpp
         small_game/utilities.h
         small_game/game_play.cpp
         oop/poly.h
-        oop/poly.cpp)
+        oop/poly.cpp
+        ../Uni_assignments/itp2024/main.cpp
+        ../Uni_assignments/itp2024/labs/objects.h
+        ../Uni_assignments/itp2024/labs/objects.cpp)
 
