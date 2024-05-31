@@ -84,6 +84,15 @@ void play_with_fractions_and_operators() {
 }
 
 
+// forward declaration to a function defined somewhere else
+std::string getStringInput(const std::string& input_prompt);
+//    std::cout << input_prompt <<'\n';
+//    std::string input_text {};
+//    std::getline(std::cin >> std::ws, input_text);
+//    return input_text;
+//}
+
+
 # include "small_game/game_play.h"
 # include "oop/poly.h"
 
@@ -96,22 +105,63 @@ void dll_function() {
 //    DLLNode<int> node {1};
 //    std::cout << node.val << "\n";
 
-    DoubleLinkedList<int> l {};
+    DoubleLinkedList<double> l {};
 
     for (int i = 1; i <= 10 ; i ++) {
-        l.add(i);
+        l.add(static_cast<double>(i));
     }
     std::cout << l.size() << "\n";
 
-        int element{0};
     std::cout << "Initial list\n";
     std::cout << "list " << l << "\n";
-//
-//    while (std::cin >> element) {
-//        std::cout << "attempting to remove " << element << "\n";
-//        l.remove(element);
-//        std::cout << "list " << l << "\n";
-//    }
+
+    std::vector<std::string> commands {"add", "remove", "add at", "remove at", "quit"};
+
+    bool flag = true;
+    while (flag) {
+        // get the user input
+        bool move = false;
+        std::string user_input;
+        while (! move) {
+            user_input = getStringInput("Please enter the command");
+            move = std::count(commands.begin(), commands.end(), user_input) != 0;
+        }
+        int element;
+        int position;
+        if (user_input == "add") {
+            std::cout << "enter the element to add\n";
+            std::cin >> element;
+            std::cout << "attempting to add " << element << " to the list" << "\n";
+            l.add(element);
+        }
+        else if (user_input == "add at") {
+            std::cout << "enter the element and the position\n";
+            std::cin >> element;
+            std::cin >> position;
+            std::cout << "attempting to add " << element << " to the list at position " << position << "\n";
+            l.addAt(element, position);
+        }
+
+        else if (user_input == "remove") {
+            std::cout << "enter the element to remove\n";
+            std::cin >> element;
+            std::cout << "attempting to remove " << element << "\n";
+            l.remove(element);
+        }
+
+        else if (user_input == "remove at"){
+            std::cout << "enter the position of the element to remove\n";
+            std::cin >> position;
+            std::cout << "attempting to remove the " << position << "-th element\n";
+            l.removeAt(position);
+        }
+
+        else {
+            flag = false;
+        }
+        std::cout << l << "\n";
+    }
+
 }
 
 
