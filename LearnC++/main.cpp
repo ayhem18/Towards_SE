@@ -4,10 +4,11 @@
 # include "oop/oop_starter.h"
 # include "oop/oop_inheritance.h"
 # include "learnCppTutorials/functions.h"
-# include "CustomDS/list.h"
+# include "CustomDS/dll.h"
 # include "oop/oop_more.h"
 # include "oop/more_inheritance.h"
 # include "learnCppTutorials/compond_types.h"
+# include "learnCppTutorials/arrays.h"
 
 int getInteger() {
     return 0;
@@ -97,17 +98,9 @@ std::string getStringInput(const std::string& input_prompt);
 # include "oop/poly.h"
 
 void dll_function() {
-//    List<int> l {};
-//    std::cout << l.size() << "\n";
-//    l.add(10);
-//    std::cout << l.size() << "\n";
-//
-//    DLLNode<int> node {1};
-//    std::cout << node.val << "\n";
-
     DoubleLinkedList<double> l {};
 
-    for (int i = 1; i <= 10 ; i ++) {
+    for (int i = 1; i <= 3 ; i ++) {
         l.add(static_cast<double>(i));
     }
     std::cout << l.size() << "\n";
@@ -170,4 +163,5 @@ int main()
 {
 //game();
 dll_function();
+//array_function();
 }

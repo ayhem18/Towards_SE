@@ -39,5 +39,8 @@ add_executable(LearnC__ main.cpp
         ../Uni_assignments/itp2024/labs/objects.h
         ../Uni_assignments/itp2024/labs/objects.cpp
         CustomDS/list.h
-        CustomDS/list.cpp)
+        CustomDS/list.cpp
+        learnCppTutorials/arrays.cpp
+        learnCppTutorials/arrays.h
+        CustomDS/ArrayList.h)
 
