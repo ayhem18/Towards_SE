@@ -1,7 +1,9 @@
 // lvalue: is an expression that evaluates to an object (with an address in memory)
 // rvalue: basically a literal; an object with no address in memory
 
-#include<iostream>
+# include<iostream>
+# include "strings.h"
+# include <algorithm>
 
 void func() {
     int var {1};
@@ -61,4 +63,32 @@ void passByAddressCopy(int* ptr) {
     // the point here is that 'ptr' represents a copy of the actual pointer
     // we can modify the data by de-referring ptr, but cannot change the actual pointer...
 
+}
+
+
+void dynamic_array_allocation() {
+    // first ask the user for the number of names
+    std::cout << "How many names would like to enter\n";
+    int num_names;
+    std::cin >>num_names;
+
+    // allocated a dynamic array
+    std::string* names = new std::string[num_names];
+
+    for (int i = 0; i < num_names; i ++ ) {
+        std::string p = "Please enter the name number "  + std::to_string(i + 1);
+        std::string name {getStringInput(p)};
+        names[i] = name;
+    }
+
+    // sort the names
+    std::sort(names, names + num_names);
+
+    std::cout << "Here is the sorted the list of names\n";
+    for (int i = 0; i < num_names; i ++) {
+        std::cout << "name number " << i << " " << names[i] << "\n";
+    }
+
+    // free the memory
+    delete [] names;
 }

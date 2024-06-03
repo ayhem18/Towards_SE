@@ -4,4 +4,6 @@ void pointers_stuff();
 
 void reference_stuff();
 
+void dynamic_array_allocation();
+
 #endif

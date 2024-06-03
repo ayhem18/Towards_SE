@@ -9,7 +9,9 @@
 # include "oop/more_inheritance.h"
 # include "learnCppTutorials/compond_types.h"
 # include "learnCppTutorials/arrays.h"
+# include "learnCppTutorials/strings.h"
 # include "CustomDS/ArrayList.h"
+
 #include <cstdlib>
 
 int getInteger() {
@@ -91,13 +93,6 @@ void play_with_fractions_and_operators() {
 }
 
 
-// forward declaration to a function defined somewhere else
-std::string getStringInput(const std::string& input_prompt);
-//    std::cout << input_prompt <<'\n';
-//    std::string input_text {};
-//    std::getline(std::cin >> std::ws, input_text);
-//    return input_text;
-//}
 
 
 # include "small_game/game_play.h"
@@ -247,13 +242,7 @@ int main() {
 //array_function();
 //arrayListFunction();
 //oop_custom_containers();
-    Base b{1};
-    Derived d{2};
 
-    Base* p1 = &b;
-    Base* p2 = &d;
-
-    std::cout << *p1 << "\n";
-    std::cout << *p2 << "\n";
+dynamic_array_allocation();
 
 }

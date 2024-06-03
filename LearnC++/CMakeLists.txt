@@ -42,5 +42,6 @@ add_executable(LearnC__ main.cpp
         CustomDS/list.cpp
         learnCppTutorials/arrays.cpp
         learnCppTutorials/arrays.h
-        CustomDS/ArrayList.h)
+        CustomDS/ArrayList.h
+        learnCppTutorials/strings.h)
 
