@@ -28,8 +28,25 @@ public:
 
     virtual void removeAt(int index) = 0;
 
+    virtual T get(int index) const = 0;
+
     // define a virtual destructor since we will be used some non-trivial destruction process
     virtual ~List() = default;
+
+    friend std::ostream& operator <<(std::ostream& out, const List<T>& list){
+        // a default implementation of the << operator
+        out << "\nthe default implementation of << operator\n";
+        if (list.m_size == 0) {
+            out << "The list is empty";
+            return out;
+        }
+
+        for (int i = 0; i < list.m_size - 1; i ++ ){
+            out << list.get(i) << " ";
+        }
+        out << list.get(list.m_size - 1);
+        return out;
+    };
 };
 
 

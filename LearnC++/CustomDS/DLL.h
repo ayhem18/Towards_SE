@@ -38,6 +38,7 @@ public:
 
     // let's create the destructor
     ~DoubleLinkedList() {
+        std::cout << "\ncalling the DLL destructor\n";
         // create some traverse node
         DLLNode<T>* traverse_node = head;
         while (traverse_node != nullptr) {
@@ -55,8 +56,11 @@ public:
 
     void removeAt(int index) override;
 
+    T get (int index) const override;
+
     // let's create a friend function to display the content of the linked list
-    friend std::ostream& operator <<(std::ostream& out, const DoubleLinkedList<T>& list){
+    friend std::ostream& operator << (std::ostream& out, const DoubleLinkedList<T>& list) {
+        out << "\n the DLL implementation of <<\n";
         if (list.size() == 0) {
             out << "The list is empty";
             return out;
@@ -276,6 +280,19 @@ void DoubleLinkedList<T>::removeAt(int index) {
     traverse_node -> next = new_next_node;
 }
 
+template <typename T>
+T DoubleLinkedList<T>::get(int index) const {
+    // make sure to check the index range
+    assert((index >= 0) && (index < this -> m_size) && "the index should be larger than 0 and less or equal to the size of the list");
+    std::cout << "\nThe DoublyLinkedList class calling the 'get' function with index " << index << "\n";
+    DLLNode<T>* traverse_node = this -> head;
+    int count = 0;
+    while (count < index) {
+        count ++;
+        traverse_node = traverse_node -> next;
+    }
+    return traverse_node -> val;
+}
 
 
 #endif //LEARNC___DLL_H

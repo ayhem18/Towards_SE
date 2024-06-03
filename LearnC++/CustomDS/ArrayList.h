@@ -52,7 +52,7 @@ public:
 
     ~ ArrayList() {
 //         the main idea here is free all the memory currently allocated by the object
-        std::cout << "Calling the destructor\n";
+        std::cout << "\ncalling the ArrayList destructor\n";
         free(array);
     }
 
@@ -65,14 +65,22 @@ public:
 
     void removeAt(int index) override;
 
-    // implement the subscript operator
+    T get(int index) const override {
+        std::cout << "\nThe ArrayList class calling the 'get' function with index " << index << "\n";
+        // use the [] operator (keep in mind that [] returns a reference)
+        // so save it to a local
+        assert((index >= 0 && index < this -> m_size) && "the index should be larger than 0 and less or equal to the size of the list");
+        return array[index];
+    }
 
+    // implement the subscript operator
     T& operator [] (int index) {
         assert((index >= 0 && index < this -> m_size) && "the index should be larger than 0 and less or equal to the size of the list");
         return array[index];
     }
 
-    friend std::ostream& operator << (std::ostream& out, const ArrayList<T>& list){
+    friend std::ostream& operator << (std::ostream& out, ArrayList<T> list) {
+        out << "\n the ArrayList implementation of <<\n";
         if (list.size() == 0) {
             out << "The list is empty";
             return out;
@@ -139,9 +147,6 @@ void ArrayList<T>::removeAt(int index) {
     // make sure to update the size
     this -> m_size --;
 }
-
-
-
 
 
 #endif //LEARNC___ARRAYLIST_H

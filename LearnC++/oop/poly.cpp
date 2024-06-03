@@ -16,12 +16,15 @@ std::cout << rB.getName() << "\n";
 
 void polymorphism() {
     Derived d{10};
-    Base* pD = &d;
+    Base* pD = &d;//    // let's check with a reference
+//    Base& rD {d};
+//    std::cout << rD.abstract_function() << "\n";
+
     std::cout << pD -> getName() << "\n"; // this will print the derived class version
 
-    // let's check with a reference
-    Base& rD {d};
-    std::cout << rD.abstract_function() << "\n";
 
 }
 
+std::string_view f(const Base& b) {
+    return b.getName();
+}

@@ -163,55 +163,97 @@ void dll_function() {
 
 }
 
-void arrayListFunction() {
-    ArrayList<double> myArrayList {1, 2};
-    for (int i = 0; i < 10; i++) {
-        myArrayList.add(i);
-        std::cout << "adding " << i << " to the list\n";
-        std::cout << myArrayList << "\n";
-    }
-//    std::cout << "\n";
-//    std::cout << myArrayList << "\n";
-
-    int s = myArrayList.size();
-
-    std:: cout << "the length of the list is " << s << "\n";
-
-    for (int i = 0; i < 5; i++) {
-        myArrayList.addAt(std::pow(i, 2), i);
-        std::cout << "attempting to add " << std::pow(i, 2) << " at position " << i << "\n";
-        std::cout << myArrayList << "\n";
-    }
+//void arrayListFunction() {
+//    ArrayList<double> myArrayList {1, 2};
+//    for (int i = 0; i < 10; i++) {
+//        myArrayList.add(i);
+//        std::cout << "adding " << i << " to the list\n";
+//        std::cout << myArrayList << "\n";
+//    }
+////    std::cout << "\n";
+////    std::cout << myArrayList << "\n";
 //
+//    int s = myArrayList.size();
+//
+//    std:: cout << "the length of the list is " << s << "\n";
+//
+//    for (int i = 0; i < 5; i++) {
+//        myArrayList.addAt(std::pow(i, 2), i);
+//        std::cout << "attempting to add " << std::pow(i, 2) << " at position " << i << "\n";
+//        std::cout << myArrayList << "\n";
+//    }
+////
+//
+//    std::cout << "the length of this list at this point is " << myArrayList.size() << "\n";
+//
+//    for (int i = 0; i < 5; i++) {
+//        std:: cout << "attempting to remove the element at position " << i << "\n";
+//        myArrayList.removeAt(i);
+//        std::cout << myArrayList << "\n";
+//    }
+//
+//    std::cout << "the length of this list at this point is " << myArrayList.size() << "\n";
+//
+//    // seed the random generator
+//    srand(0);
+//
+//    for (int i = 0; i < 5; i++) {
+//        int value{mod(rand(), 10)};
+//        std::cout << "attempting to remove " << value << "\n";
+//        myArrayList.remove(value);
+//        std::cout << myArrayList << "\n";
+//    }
+//
+//}
 
-    std::cout << "the length of this list at this point is " << myArrayList.size() << "\n";
 
-    for (int i = 0; i < 5; i++) {
-        std:: cout << "attempting to remove the element at position " << i << "\n";
-        myArrayList.removeAt(i);
-        std::cout << myArrayList << "\n";
+void oop_custom_containers() {
+    ArrayList<double> l1 {3};
+    DoubleLinkedList<double> l2 {1};
+    std::vector<List<double>*> vec_lists {&l1, &l2};
+
+    for (auto c : vec_lists) {
+        std::cout << c ->size() << "\n";
+        for (int i = 0; i < 5; i ++) {
+            c ->add(i);
+        }
+        std::cout << c -> size() << "\n";
     }
 
-    std::cout << "the length of this list at this point is " << myArrayList.size() << "\n";
-
-    // seed the random generator
-    srand(0);
-
-    for (int i = 0; i < 5; i++) {
-        int value{mod(rand(), 10)};
-        std::cout << "attempting to remove " << value << "\n";
-        myArrayList.remove(value);
-        std::cout << myArrayList << "\n";
+    for (auto c: vec_lists) {
+        std:: cout << *c << "\n";
     }
+
+    // if the 'get' function is made to return by reference instead of value
+    // then uncomment the few lines below to
+
+//    for (auto c: vec_lists){
+//        std::cout << "before assignment: " << c -> get(0) << "\n";
+//        double& val{c -> get(0)};
+//        val = 10;
+//        std::cout << "after assignment: " << c -> get(0) << "\n";
+//
+////        for (int j = 0; j < 3; j ++) {
+////            std:: cout << c -> get(j) << "\n";
+////        }
+//    }
 
 }
 
 
-
-int main()
-{
+int main() {
 //game();
 //dll_function();
 //array_function();
-arrayListFunction();
+//arrayListFunction();
+//oop_custom_containers();
+    Base b{1};
+    Derived d{2};
+
+    Base* p1 = &b;
+    Base* p2 = &d;
+
+    std::cout << *p1 << "\n";
+    std::cout << *p2 << "\n";
+
 }

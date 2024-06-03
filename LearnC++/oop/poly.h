@@ -14,7 +14,12 @@ public:
 
     virtual std::string_view getName() const { return "Base"; };
     int getValue() const { return m_value; }
-    virtual int abstract_function() const = 0;
+
+    friend std::ostream& operator << (std::ostream& out, const Base& b) {
+        out << "\nBase object with value " << b.m_value;
+        return out;
+    }
+
     virtual ~Base(){};
 };
 
@@ -26,8 +31,9 @@ public:
 
     virtual std::string_view getName() const { return "Derived"; }
 
-    int abstract_function() const {
-        return 0;
+    friend std::ostream& operator << (std::ostream& out, const Derived& d) {
+        out << "\nDerived object with value " << d.m_value;
+        return out;
     }
 
     int getValueDoubled() const { return m_value * 2; }
@@ -36,5 +42,5 @@ public:
 
 void polymorphism();
 void function_with_inheritance();
-
+std::string_view f(const Base& b);
 #endif //LEARNC___POLY_H
