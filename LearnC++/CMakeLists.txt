@@ -22,8 +22,8 @@ add_executable(LearnC__ main.cpp
         learnCppTutorials/functions.cpp
         learnCppTutorials/functions.h
         learnCppTutorials/compond_types.h
-        CustomDS/dll.h
-        CustomDS/dll.cpp
+        CustomDS/DLL.h
+        CustomDS/DLL.cpp
         oop/oop_more.h
         oop/oop_more.cpp
         oop/more_inheritance.h

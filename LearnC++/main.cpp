@@ -4,14 +4,20 @@
 # include "oop/oop_starter.h"
 # include "oop/oop_inheritance.h"
 # include "learnCppTutorials/functions.h"
-# include "CustomDS/dll.h"
+# include "CustomDS/DLL.h"
 # include "oop/oop_more.h"
 # include "oop/more_inheritance.h"
 # include "learnCppTutorials/compond_types.h"
 # include "learnCppTutorials/arrays.h"
+# include "CustomDS/ArrayList.h"
+#include <cstdlib>
 
 int getInteger() {
     return 0;
+}
+
+int mod(int value, int mod) {
+    return ((value % mod) + mod) %  mod;
 }
 
 void test_bst(){
@@ -157,11 +163,55 @@ void dll_function() {
 
 }
 
+void arrayListFunction() {
+    ArrayList<double> myArrayList {1, 2};
+    for (int i = 0; i < 10; i++) {
+        myArrayList.add(i);
+        std::cout << "adding " << i << " to the list\n";
+        std::cout << myArrayList << "\n";
+    }
+//    std::cout << "\n";
+//    std::cout << myArrayList << "\n";
+
+    int s = myArrayList.size();
+
+    std:: cout << "the length of the list is " << s << "\n";
+
+    for (int i = 0; i < 5; i++) {
+        myArrayList.addAt(std::pow(i, 2), i);
+        std::cout << "attempting to add " << std::pow(i, 2) << " at position " << i << "\n";
+        std::cout << myArrayList << "\n";
+    }
+//
+
+    std::cout << "the length of this list at this point is " << myArrayList.size() << "\n";
+
+    for (int i = 0; i < 5; i++) {
+        std:: cout << "attempting to remove the element at position " << i << "\n";
+        myArrayList.removeAt(i);
+        std::cout << myArrayList << "\n";
+    }
+
+    std::cout << "the length of this list at this point is " << myArrayList.size() << "\n";
+
+    // seed the random generator
+    srand(0);
+
+    for (int i = 0; i < 5; i++) {
+        int value{mod(rand(), 10)};
+        std::cout << "attempting to remove " << value << "\n";
+        myArrayList.remove(value);
+        std::cout << myArrayList << "\n";
+    }
+
+}
+
 
 
 int main()
 {
 //game();
-dll_function();
+//dll_function();
 //array_function();
+arrayListFunction();
 }

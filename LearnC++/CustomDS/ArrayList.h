@@ -12,7 +12,7 @@ private:
     inline static int DEFAULT_INITIAL_CAPACITY {8};
     int capacity {DEFAULT_INITIAL_CAPACITY};
     // dynamically allocated memory for the initial value
-    T* array = new T[DEFAULT_INITIAL_CAPACITY];
+    T* array; // = new T[DEFAULT_INITIAL_CAPACITY];
 
     // let's define a function to reallocate memory
     void reallocate() {
@@ -20,8 +20,14 @@ private:
         int new_capacity = 2 * capacity;
         // first allocate memory for the new array
         T* new_array = new T[new_capacity];
-        // copy the elements
-        std::copy(std::begin(array), std::end(array), new_array);
+
+        // copy the first m->size elements to the new array
+        for (int i = 0; i < this -> m_size; i ++) {
+            new_array[i] = array[i];
+        }
+
+        // free the old array
+        free(array);
 
         // make sure to set the 'array' field to the new one
         array = new_array;
@@ -30,30 +36,24 @@ private:
     }
 
 public:
-    ArrayList():List<T>{}, capacity {DEFAULT_INITIAL_CAPACITY}{};
+    ArrayList():List<T>{}, capacity {DEFAULT_INITIAL_CAPACITY}{
+        array = new T[DEFAULT_INITIAL_CAPACITY];
+    };
 
-    explicit ArrayList(T val): ArrayList(val, DEFAULT_INITIAL_CAPACITY) {};
+    explicit ArrayList(T val): ArrayList(val, ArrayList::DEFAULT_INITIAL_CAPACITY) {};
 
     ArrayList(T val, int initial_capacity): List<T>{1}, capacity(initial_capacity) {
         assert(initial_capacity > 0 && "The internal array must have a non-negative capacity");
-        if (initial_capacity != DEFAULT_INITIAL_CAPACITY) {
-            // free all the memory allocated by default
-            for (int x = 0; x < DEFAULT_INITIAL_CAPACITY; x++) {
-                free(array + x);
-            }
-            // reallocate memory again
-            array = new T[capacity];
-        }
+        // allocate the memory according to the initial capacity
+        array = new T[initial_capacity];
         // set the first element to 'val'
         array[0] = val;
     };
 
     ~ ArrayList() {
-        // the main idea here is free all the memory currently allocated by the object
+//         the main idea here is free all the memory currently allocated by the object
         std::cout << "Calling the destructor\n";
-        for (int x = 0; x < capacity; x++){
-            free(array + x);
-        }
+        free(array);
     }
 
     // let's override some methods
@@ -68,23 +68,21 @@ public:
     // implement the subscript operator
 
     T& operator [] (int index) {
-        assert((index >= 0) && (index < this -> m_size) && "the index should be larger than 0 and less or equal to the size of the list");
+        assert((index >= 0 && index < this -> m_size) && "the index should be larger than 0 and less or equal to the size of the list");
         return array[index];
     }
 
-    // implement the << operator
-    friend std::ostream& operator <<(std::ostream& out, const ArrayList<T>& list){
+    friend std::ostream& operator << (std::ostream& out, const ArrayList<T>& list){
         if (list.size() == 0) {
             out << "The list is empty";
             return out;
         }
         for (int i = 0; i < list.size() - 1; i ++) {
-            out << list[i] << " ";
+            out << list.array[i] << " ";
         }
-        out << list[list.size() - 1];
+        out << list.array[list.size() - 1];
         return out;
     };
-
 
 };
 
@@ -99,7 +97,7 @@ void ArrayList<T>::add(const T& val) {
     // set the value
     array[this -> m_size] = val;
     // increase the size
-    this -> m_size += 1;
+    this -> m_size ++;
 }
 
 template<typename T>
@@ -113,10 +111,10 @@ void ArrayList<T>::addAt(const T &val, int index) {
     }
     for (int x = this -> m_size - 1; x >= index; x--) {
         // shift all the elements to the right
-        array[x] = array[x + 1];
+        array[x + 1] = array[x];
     }
     // set the value at the correct index
-    val[index] = val;
+    array[index] = val;
     this -> m_size ++;
 }
 
@@ -136,12 +134,14 @@ void ArrayList<T>::removeAt(int index) {
     assert((index >= 0) && (index < this -> m_size) && "the index should be larger than 0 and less or equal to the size of the list");
     // shift all elements to the left
     for (int x = index + 1; x < this -> m_size; x++) {
-        // shift all the elements to the right
         array[x - 1] = array[x];
     }
     // make sure to update the size
     this -> m_size --;
 }
+
+
+
 
 
 #endif //LEARNC___ARRAYLIST_H

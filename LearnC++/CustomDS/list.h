@@ -12,9 +12,9 @@ protected:
     // the constructor is made protected so no List object could be created explicitly
     // but can be used by the derived classes
     explicit List(int v): m_size{v} {};
+    List(): List{0} {};
 
 public:
-    List(): m_size{0}{};
 
     int size() const {
         return m_size;
