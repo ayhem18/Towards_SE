@@ -1,11 +1,7 @@
 # include "oop_more.h"
 
-Fraction Fraction:: operator * (const double& d) {
+Fraction Fraction:: operator * (const double& d) const{
     return {numerator * d, denominator};
-}
-
-Fraction operator * (const Fraction& f1, const double& v){
-    return {f1.getNumerator() * v,f1.getDenominator()};
 }
 
 
