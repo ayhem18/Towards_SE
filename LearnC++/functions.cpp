@@ -224,3 +224,17 @@ void oop_custom_containers() {
 //    }
 
 }
+
+const Fraction& return_by_ref () {
+    return Fraction{3, 7};
+}
+
+
+void function() {
+//    const Fraction& rval_ref_fraction {};
+//    std::cout << rval_ref_fraction << "\n";
+    int x = {10};
+    const int& ref {x};
+    x++;
+    std::cout << ref << "\n";
+}

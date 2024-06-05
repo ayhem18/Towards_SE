@@ -6,4 +6,6 @@ void reference_stuff();
 
 void dynamic_array_allocation();
 
+void references_move();
+
 #endif

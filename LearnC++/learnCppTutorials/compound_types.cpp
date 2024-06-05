@@ -62,7 +62,6 @@ void printByAddress(const int* ptr)
 void passByAddressCopy(int* ptr) {
     // the point here is that 'ptr' represents a copy of the actual pointer
     // we can modify the data by de-referring ptr, but cannot change the actual pointer...
-
 }
 
 
@@ -91,4 +90,13 @@ void dynamic_array_allocation() {
 
     // free the memory
     delete [] names;
+}
+
+
+
+void references_move() {
+    int x {10};
+    int& ref1 {x};
+    const int& ref2 {10};
+
 }
