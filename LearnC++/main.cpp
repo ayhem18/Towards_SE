@@ -4,32 +4,34 @@
 # include "learnCppTutorials/functions.h"
 # include "oop/more_inheritance.h"
 # include "oop/oop_more.h"
+# include <array>
+# include "string.h"
 
 void oop_custom_containers();
 void arrayListFunction();
 void dll_function();
 void test_bst();
 
-// let's play with class template
-template <typename T = std::string>
-class cls{
-public:
-    cls() = default;
-    bool lessThan (const T& v1, const T& v2) {
-        std::cout << "\ncalling the general member function\n";
-        return v1 < v2;
-    }
-};
-
-template <>
-class cls<double>{
-public:
-    cls() = default;
-    bool lessThan (const double& v1, const double& v2) {
-        std::cout << "\ncalling the special double member function\n";
-        return abs(v1) < abs(v2);
-    }
-};
+//// let's play with class template
+//template <typename T = std::string>
+//class cls{
+//public:
+//    cls() = default;
+//    bool lessThan (const T& v1, const T& v2) {
+//        std::cout << "\ncalling the general member function\n";
+//        return v1 < v2;
+//    }
+//};
+//
+//template <>
+//class cls<double>{
+//public:
+//    cls() = default;
+//    bool lessThan (const double& v1, const double& v2) {
+//        std::cout << "\ncalling the special double member function\n";
+//        return abs(v1) < abs(v2);
+//    }
+//};
 
 
 template <typename T>
@@ -84,72 +86,51 @@ int factorial<0>() {
 void function();
 
 
-template<typename T>
-class Auto_ptr3
+template <typename T>
+concept greaterThan = requires(T a, T b) { a > b;};
+
+template <typename T>
+concept lessThan = requires(T a, T b) { a < b;};
+
+//template <typename T>
+//concept IntAddable = requires (T a, int b) {a + b;};
+
+// let's code the barrier function from the itp2 lecture
+template <typename T>
+void alignArray( T* array, int size, T barrier ) requires greaterThan<T> && lessThan<T>
 {
-    T* m_ptr {};
-public:
-    Auto_ptr3(T* ptr = nullptr)
-            : m_ptr { ptr }
+    for ( int i=0; i < size; i++ )
     {
+        if ( array[i] < barrier )
+            array[i] = array[i] + 2.0;
+        else if ( array[i] > barrier )
+            array[i] = array[i] - 2.0;
     }
-
-    ~Auto_ptr3()
-    {
-        delete m_ptr;
-    }
-
-    // Copy constructor
-    // Do deep copy of a.m_ptr to m_ptr
-    Auto_ptr3(const Auto_ptr3& a)
-    {
-        m_ptr = new T;
-        *m_ptr = *a.m_ptr;
-    }
-
-    // Copy assignment
-    // Do deep copy of a.m_ptr to m_ptr
-    Auto_ptr3& operator=(const Auto_ptr3& a)
-    {
-        // Self-assignment detection
-        if (&a == this)
-            return *this;
-
-        // Release any resource we're holding
-        delete m_ptr;
-
-        // Copy the resource
-        m_ptr = new T;
-        *m_ptr = *a.m_ptr;
-
-        return *this;
-    }
-
-    T& operator*() const { return *m_ptr; }
-    T* operator->() const { return m_ptr; }
-    bool isNull() const { return m_ptr == nullptr; }
-};
-
-class Resource
-{
-public:
-    Resource() { std::cout << "Resource acquired\n"; }
-    ~Resource() { std::cout << "Resource destroyed\n"; }
-};
-
-Auto_ptr3<Resource> generateResource()
-{
-    Auto_ptr3<Resource> res{new Resource};
-    return res; // this return value will invoke the copy constructor
 }
 
-//int main()
-//{
-//    Auto_ptr3<Resource> mainres;
-//    mainres = generateResource(); // this assignment will invoke the copy assignment
-//
-//    return 0;
-//}
+template <typename T>
+requires lessThan<T>
+class cls {
+private:
+    T m_value;
+public:
+    explicit cls(const T& value): m_value(value){}
+
+    bool operator < (const cls another) {
+        return m_value < another.m_value;
+    }
+};
+
+template <>
+class cls <char*> {
+private:
+    char* m_value;
+public:
+    cls(char* value): m_value(value){}
+    bool operator < (const cls another) {
+        return strcmp(m_value, another.m_value) < 0;
+    }
+};
 
 
 int main() {
@@ -159,8 +140,16 @@ int main() {
 //arrayListFunction();
 //oop_custom_containers();
 
-    Auto_ptr3<Resource> mainres;
-    mainres = generateResource(); // this assignment will invoke the copy assignment
-    return 0;
 
+
+Fraction a[] = {Fraction(3, 4)
+                , Fraction(1, 2),
+                Fraction(-3, 7),
+                Fraction {15,4}};
+
+//// let's call the alignArray with the Fraction class
+Fraction barrier {1, 2};
+alignArray(a, 4, barrier);
+//
+std::cout << a[0] << " " << a[1] << " " << a[2] << " " << a[3] << " "  << "\n";
 }

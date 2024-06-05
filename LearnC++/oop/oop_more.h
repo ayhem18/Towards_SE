@@ -51,26 +51,34 @@ public:
     // unary operators are usually implemented as member functions since they operate only on the operand:
     // the class instance
     Fraction operator - () const;
+
+    Fraction operator - (const Fraction& another) const;
+
+    Fraction operator - (double) const;
+
+    Fraction operator + (const Fraction& another) const;
+
+    Fraction operator + (double value) const;
+
     // the '!' (logical not) operator returns 'bool'
     bool operator ! () const;
 
     bool operator == (const Fraction& otherFrac) const;
 
-    operator bool() const {
+    // conversion function
+    explicit operator bool() const {
         return numerator != 0;
     }
+
+    Fraction& operator = (const Fraction& another);
+    bool operator < (const Fraction& another) const;
+    bool operator > (const Fraction& another) const;
 
 };
 
 std::istream& operator >> (std::istream& in, Fraction& frac);
 std::ostream& operator << (std::ostream& out, const Fraction& f);
 
-
-
-//Fraction operator * (const Fraction& f1, const Fraction& f2);
-//Fraction operator * (const Fraction& f1, const double& v);
-Fraction operator + (const Fraction& f1, const Fraction& f2);
-Fraction operator - (const Fraction& f1, const Fraction& f2);
 
 
 #endif //LEARNC___OOP_MORE_H

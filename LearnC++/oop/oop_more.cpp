@@ -5,16 +5,25 @@ Fraction Fraction:: operator * (const double& d) const{
 }
 
 
-Fraction operator + (const Fraction& f1, const Fraction& f2) {
-    double f1n = f1.getNumerator(), f1d = f1.getDenominator();
-    double f2n = f2.getNumerator(), f2d = f2.getDenominator();
+Fraction Fraction::operator + (const Fraction& another) const{
+    double f1n = getNumerator(), f1d = getDenominator();
+    double f2n = another.getNumerator(), f2d = another.getDenominator();
     return {f1n * f2d + f2n * f1d, f1d * f2d};
 }
 
-Fraction operator - (const Fraction& f1, const Fraction& f2) {
-    double f1n = f1.getNumerator(), f1d = f1.getDenominator();
-    double f2n = f2.getNumerator(), f2d = f2.getDenominator();
+Fraction Fraction::operator + (double value) const{
+     return Fraction:: operator + (Fraction{value});
+}
+
+
+Fraction Fraction::operator - (const Fraction& another) const{
+    double f1n = getNumerator(), f1d = getDenominator();
+    double f2n = another.getNumerator(), f2d = another.getDenominator();
     return {f1n * f2d - f2n * f1d, f1d * f2d};
+}
+
+Fraction Fraction::operator - (double value) const{
+    return Fraction:: operator - (Fraction{value});
 }
 
 // unary operators
@@ -29,6 +38,27 @@ bool Fraction:: operator ! () const {
 bool Fraction:: operator == (const Fraction& otherFrac) const {
     return (getNumerator() == otherFrac.getNumerator()) & (getDenominator() == otherFrac.getDenominator());
 }
+
+Fraction& Fraction::operator = (const Fraction& another) {
+    // recognize self assignment
+    if (*this == another) {
+        return *this;
+    }
+    numerator = another.numerator;
+    denominator = another.denominator;
+    return *this;
+}
+
+
+// define comparison operator
+bool Fraction:: operator < (const Fraction& another) const {
+    return (numerator / denominator) < (another.numerator / another.denominator);
+}
+
+bool Fraction:: operator > (const Fraction& another) const {
+    return (numerator / denominator) > (another.numerator / another.denominator);
+}
+
 
 
 // the code needed to overload the std::cout << operator
