@@ -17,9 +17,16 @@ public:
     // this is referred to as a conversion constructor
     explicit Fraction(double a): Fraction(a, 1) {};
 
-
     // let's delete the copy constructor
-    Fraction(const Fraction& another): Fraction(another.getNumerator(), another.getDenominator()) {};
+    Fraction(const Fraction& another): Fraction(another.getNumerator(), another.getDenominator()) {
+        std::cout << "calling the copy constructor\n";
+    };
+
+    // let's add the move constructor
+    Fraction(Fraction&&  another) noexcept: Fraction(another.numerator, another.denominator){
+        std::cout << "calling the move constructor\n";
+        delete &another;
+    }
 
     Fraction() = default;
 
@@ -40,13 +47,6 @@ public:
         this -> denominator = val;
     }
 
-// let's overload the multiplication operator using friend functions
-//    friend Fraction operator * (const Fraction& f1, const double& v);
-//    friend Fraction operator * (const Fraction& f1, const Fraction& f2);
-//    friend Fraction operator + (const Fraction& f1, const Fraction& f2);
-//    friend Fraction operator - (const Fraction& f1, const Fraction& f2);
-
-// what about overloading the operators as member functions
     Fraction operator * (const double& v) const;
     // unary operators are usually implemented as member functions since they operate only on the operand:
     // the class instance

@@ -225,16 +225,56 @@ void oop_custom_containers() {
 
 }
 
-const Fraction& return_by_ref () {
-    return Fraction{3, 7};
+
+# include <vector>
+# include <utility>
+void some_function() {
+    std::vector<std::string> v {"a", "b", "c"};
+    std::string str = {"well"};
+    v.push_back(std::move(str));
+    std::cout << "the last element of 'v':" << v[static_cast<int>(v.size() - 1)] << "\n";
+    std::cout << "the 'str' variable after moving: " << str << "\n";
+
+    // let's do some copying
+    std::string str2 = {"well"};
+    v.push_back(str2);
+    std::cout << "the last element of 'v':" << v[static_cast<int>(v.size() - 1)] << "\n";
+    std::cout << "the 'str2' variable after usual assignment: " << str2 << "\n";
 }
 
+# include<memory>
+void unique_pointers() {
+    std::unique_ptr<Fraction> p_frac = std::make_unique<Fraction>(3, 4);
+    std::unique_ptr<std::vector<int>> p_vec = std::make_unique<std::vector<int>>(4);
+    // the syntax is as follow: std::make_unique <Type> (*constructor args)
+    std::unique_ptr<std::string> p_string = std::make_unique<std::string>("ayhembouabid", 0, 5);
 
-void function() {
-//    const Fraction& rval_ref_fraction {};
-//    std::cout << rval_ref_fraction << "\n";
-    int x = {10};
-    const int& ref {x};
-    x++;
-    std::cout << ref << "\n";
+    std::unique_ptr<Fraction> p1 {new Fraction()};
+    std::unique_ptr<Fraction> p2 {}; // always set with {} not nullptr
+
+    // assignment is disabled; which makes sense ...
+    p2 = std::move(p1);
+
+    if (p1 == nullptr) {
+        std::cout << "p1 after move is nullptr\n";
+    }
+
+    std::cout << *p2 << "\n";
+
+    std::cout << *p_frac << "\n";
+    std::cout << *p_string << "\n";
+
+}
+
+# include "GeneralProgramming/iterators.h"
+
+void play_with_iterators() {
+    // let's make an array of Fractions
+    Fraction* frs = new Fraction[4];
+    for (int i = 0; i < 4; i ++) {
+        frs[i] = Fraction(2, 7);
+    }
+    int num_frac = count(frs, frs + 4, Fraction{2, 7});
+    std::cout << num_frac << "\n";
+    delete[] frs;
 }

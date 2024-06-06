@@ -44,5 +44,8 @@ add_executable(LearnC__ main.cpp
         learnCppTutorials/arrays.h
         CustomDS/ArrayList.h
         learnCppTutorials/strings.h
-        functions.cpp)
+        functions.cpp
+        GeneralProgramming/iterators.cpp
+        GeneralProgramming/iterators.h
+        GeneralProgramming/templates.cpp)
 
