@@ -4,11 +4,11 @@
 # include "oop/oop_starter.h"
 # include "oop/oop_inheritance.h"
 # include "learnCppTutorials/functions.h"
-# include "CustomDS/DLL.h"
+# include "CustomDS/data_structures/DLL.h"
 # include "oop/oop_more.h"
 # include "oop/more_inheritance.h"
 # include "learnCppTutorials/strings.h"
-# include "CustomDS/ArrayList.h"
+# include "CustomDS/data_structures/ArrayList.h"
 # include "small_game/game_play.h"
 
 int mod(int value, int mod) {
@@ -268,13 +268,14 @@ void unique_pointers() {
 
 # include "GeneralProgramming/iterators.h"
 
-void play_with_iterators() {
-    // let's make an array of Fractions
-    Fraction* frs = new Fraction[4];
-    for (int i = 0; i < 4; i ++) {
-        frs[i] = Fraction(2, 7);
-    }
-    int num_frac = count(frs, frs + 4, Fraction{2, 7});
-    std::cout << num_frac << "\n";
-    delete[] frs;
-}
+//void play_with_iterators() {
+//    // let's make an array of Fractions
+//    Fraction* frs = new Fraction[4];
+//    for (int i = 0; i < 4; i ++) {
+//        frs[i] = Fraction(2, 7);
+//    }
+//    int num_frac = count(frs, frs + 4, Fraction{2, 7});
+//    std::cout << num_frac << "\n";
+//    delete[] frs;
+//}
+

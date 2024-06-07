@@ -2,10 +2,10 @@
 #define LEARNC___DLL_H
 
 // let's start with a fast implementation of the array List
-
 #include <cstdlib>
 #include <iostream>
-# include "list.h"
+#include "list.h"
+#include "../iterators/iterators.h."
 
 template <typename T>
 class DLLNode {
@@ -17,9 +17,18 @@ public:
     // calling the 3 argument constructor
     // either specify both next and previous nodes or none of them
     explicit DLLNode(T val): DLLNode(val, nullptr, nullptr) {};
+
+    bool operator == (const DLLNode<T>& another_node ) const {
+        return val == another_node.val && next == another_node.next && previous == another_node.previous;
+    }
 };
 
 
+/////////////////////////////////// forward Declaration of the iterator ///////////////////////////////////
+template <typename T>
+class MutableDLLIterator;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 class DoubleLinkedList: public List<T> {
 private:
@@ -76,9 +85,19 @@ public:
         }
         return out;
     };
-};
+    // adding the iterator as a friend class
+    friend class MutableDLLIterator<T>;
 
-// member functions definitions
+    // create a function to get the head iterator
+    MutableDLLIterator<T> begin () const {
+        return MutableDLLIterator(head);
+    }
+
+    MutableDLLIterator<T> end () const {
+        return MutableDLLIterator(nullptr);
+    }
+
+};
 
 template<typename T>
 void DoubleLinkedList<T>::add(const T& val) {
@@ -294,5 +313,27 @@ T DoubleLinkedList<T>::get(int index) const {
     return traverse_node -> val;
 }
 
+/////////////////////////////////////////// iterator definition ///////////////////////////////////////////
+
+template <typename T>
+class MutableDLLIterator: public MutableIterator<T> {
+private:
+    DLLNode<T>& m_node;
+public:
+    explicit MutableDLLIterator(const DLLNode<T>& node): m_node(node){};
+    // override the * operator
+    T& operator * () const override {
+        return m_node.val;
+    }
+
+    MutableDLLIterator& operator ++ () const override {
+        m_node = m_node -> next;
+        return *this;
+    }
+
+    bool operator == (const MutableDLLIterator& another) const override {
+        return m_node == another.m_node;
+    }
+};
 
 #endif //LEARNC___DLL_H

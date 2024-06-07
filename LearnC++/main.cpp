@@ -4,13 +4,25 @@
 # include "learnCppTutorials/functions.h"
 # include "oop/more_inheritance.h"
 # include "GeneralProgramming/iterators.h"
+# include "algorithm"
+# include "CustomDS/data_structures/DLL.h"
+# include "CustomDS/algorithms/search.h"
 
 void oop_custom_containers();
 void arrayListFunction();
 void dll_function();
 void test_bst();
-
 void play_with_iterators();
+
+
+void custom_ds_algo_iterator() {
+    DoubleLinkedList<double> list {};
+    for (int i = 0; i < 5; i++) {
+        list.add(i);
+    }
+    std::cout << "The list: "<< list << "\n";
+
+}
 
 
 int main() {
@@ -22,5 +34,9 @@ int main() {
 //some_function();
 //unique_pointers();
 
-play_with_iterators();
+//auto increment = [] (int x) -> int {return x + 1;};
+//
+//play_with_iterators();
+
 }
+

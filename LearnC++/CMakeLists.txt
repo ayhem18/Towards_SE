@@ -22,8 +22,7 @@ add_executable(LearnC__ main.cpp
         learnCppTutorials/functions.cpp
         learnCppTutorials/functions.h
         learnCppTutorials/compond_types.h
-        CustomDS/DLL.h
-        CustomDS/DLL.cpp
+        CustomDS/data_structures/DLL.h
         oop/oop_more.h
         oop/oop_more.cpp
         oop/more_inheritance.h
@@ -38,14 +37,16 @@ add_executable(LearnC__ main.cpp
         ../Uni_assignments/itp2024/main.cpp
         ../Uni_assignments/itp2024/labs/objects.h
         ../Uni_assignments/itp2024/labs/objects.cpp
-        CustomDS/list.h
-        CustomDS/list.cpp
+        CustomDS/data_structures/list.h
         learnCppTutorials/arrays.cpp
         learnCppTutorials/arrays.h
-        CustomDS/ArrayList.h
+        CustomDS/data_structures/ArrayList.h
         learnCppTutorials/strings.h
         functions.cpp
         GeneralProgramming/iterators.cpp
         GeneralProgramming/iterators.h
-        GeneralProgramming/templates.cpp)
+        GeneralProgramming/templates.cpp
+        CustomDS/iterators/iterators.h
+        CustomDS/algorithms/search.h
+)
 

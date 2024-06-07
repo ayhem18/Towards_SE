@@ -1,7 +1,7 @@
 #ifndef LEARNC___LIST_H
 #define LEARNC___LIST_H
-# include <iostream>
 
+# include <iostream>
 # include <cassert>
 
 template <typename T>
@@ -9,8 +9,8 @@ class List {
 protected:
     // this variable stores the number of elements in the list
     int m_size {0};
-    // the constructor is made protected so no List object could be created explicitly
-    // but can be used by the derived classes
+    // the constructor is defined to allow derived classes
+    // to initialize with initial elements all while correctly initializing the size field
     explicit List(int v): m_size{v} {};
     List(): List{0} {};
 

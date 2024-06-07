@@ -48,11 +48,11 @@ void lab4_task1_main() {
 
     // the line below would not compile since the copy constructor is deleted in the 'Account' class
 //    SavingAccount s2 {s1};
-    // the line below would not compile since the = operats is deleted in the 'Account' class
+    // the line below would not compile since the = operator is deleted in the 'Account' class
     SavingAccount anotherAcc {2, 500, "another", 0.025};
     //
 //    anotherAcc = s1;
 }
 
-int main() {
-}
+//int main() {
+//}
