@@ -5,7 +5,8 @@
 #include <cstdlib>
 #include <iostream>
 #include "list.h"
-#include "../iterators/iterators.h."
+#include "../iterators/iterators.h"
+#include <typeinfo>
 
 template <typename T>
 class DLLNode {
@@ -13,20 +14,73 @@ public:
     T val;
     DLLNode<T> *next {nullptr};
     DLLNode<T> *previous {nullptr};
+
+    // initialize the field 'val' to the default value of type T and null pointers to 'next' and 'previous' fields
+    DLLNode() = default;
+
     DLLNode(T val, DLLNode* n, DLLNode*prev): val{val}, next{n}, previous{prev} {};
     // calling the 3 argument constructor
     // either specify both next and previous nodes or none of them
     explicit DLLNode(T val): DLLNode(val, nullptr, nullptr) {};
 
-    bool operator == (const DLLNode<T>& another_node ) const {
+//     copy constructor
+    DLLNode(const DLLNode& another): DLLNode(another.val, another.next, another.previous) {};
+
+    DLLNode& operator = (const DLLNode& another) {
+        if (another == *this){
+            return *this;
+        }
+        val = another.val;
+        next = another.next;
+        previous = another.previous;
+        return *this;
+    }
+
+    bool operator == ( const DLLNode<T>& another_node) {
         return val == another_node.val && next == another_node.next && previous == another_node.previous;
     }
+
 };
 
 
 /////////////////////////////////// forward Declaration of the iterator ///////////////////////////////////
 template <typename T>
-class MutableDLLIterator;
+class MutableDLLIterator: public MutableBiDirIterator<T> {
+private:
+    DLLNode<T> m_node;
+public:
+    explicit MutableDLLIterator(const DLLNode<T>& node): m_node(node){};
+    // override the * operator
+    T& operator * () {
+        return m_node.val;
+    }
+
+    bool operator == (const MutableIterator<T>& another) {
+        // first check for the type
+        if (typeid(another) != typeid(*this)){
+            return false;
+        }
+
+        // at this point of the code,  another can be cast to MutableDLLIterator
+        auto final_another = dynamic_cast<MutableDLLIterator>(another);
+        return m_node == final_another.m_node;
+    }
+
+    MutableDLLIterator& operator = (const MutableDLLIterator<T>& another) {
+        m_node = another.m_node;
+        return *this;
+    }
+    MutableDLLIterator& operator ++ () override{
+        m_node = m_node.next;
+        return *this;
+    }
+//
+    MutableDLLIterator& operator -- ()  override {
+        m_node = m_node.previous;
+        return *this;
+    }
+
+};
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
@@ -36,12 +90,14 @@ private:
     DLLNode<T>* head {nullptr};
     // the tail
     DLLNode<T>* tail {nullptr};
-
+    // the sentinel node: represents the end of the linked list
+    DLLNode<T>* sentinel {nullptr};
 public:
     explicit DoubleLinkedList(T val):
-            List<T>(1), head{nullptr}, tail{nullptr} {
-        this -> head = new DLLNode(val);
+            List<T>(1), head{nullptr}, tail{nullptr}, sentinel{nullptr}{
+        this -> head = new DLLNode<T>(val);
         this -> tail = head;
+        this -> sentinel = new DLLNode<T>();
     }
     DoubleLinkedList():List<T>{}, head{nullptr}, tail{nullptr} {};
 
@@ -52,7 +108,7 @@ public:
         DLLNode<T>* traverse_node = head;
         while (traverse_node != nullptr) {
             DLLNode<T>* next = traverse_node -> next;
-            free(traverse_node);
+            delete traverse_node;
             traverse_node = next;
         }
     }
@@ -69,7 +125,7 @@ public:
 
     // let's create a friend function to display the content of the linked list
     friend std::ostream& operator << (std::ostream& out, const DoubleLinkedList<T>& list) {
-        out << "\n the DLL implementation of <<\n";
+//        out << "\n the DLL implementation of <<\n";
         if (list.size() == 0) {
             out << "The list is empty";
             return out;
@@ -79,8 +135,8 @@ public:
         // first display the value at the head
         out << traverse_node -> val;
         traverse_node = traverse_node -> next;
-        while (traverse_node != nullptr) {
-            out << "-->" << traverse_node -> val;
+        while (traverse_node != list.sentinel) {
+            out << " --> " << traverse_node -> val;
             traverse_node = traverse_node -> next;
         }
         return out;
@@ -89,39 +145,46 @@ public:
     friend class MutableDLLIterator<T>;
 
     // create a function to get the head iterator
-    MutableDLLIterator<T> begin () const {
-        return MutableDLLIterator(head);
+    MutableDLLIterator<T> begin() {
+        // make sure to return the sentinel node if the list is empty
+        if (this -> m_size == 0) {
+            return MutableDLLIterator<T>(*sentinel);
+        }
+        return MutableDLLIterator<T>(*head);
     }
 
-    MutableDLLIterator<T> end () const {
-        return MutableDLLIterator(nullptr);
-    }
-
+//    MutableDLLIterator<T> end () {
+//        // this is always a valid call since the sentinel field is never set as to 'nullptr'
+//        return MutableDLLIterator<T>(*sentinel);
+//    }
 };
 
 template<typename T>
 void DoubleLinkedList<T>::add(const T& val) {
     // start with the simple case, if the list is empty
     if (this -> m_size == 0) {
-    this -> head = new DLLNode<T>(val);
-    this -> tail = head;
+        this -> head = new DLLNode<T>(val);
+        this -> tail = head;
+        this -> sentinel = new DLLNode<T>();
     }
 
     // if there is only one element
     else if (this -> m_size == 1) {
-    auto * new_node = new DLLNode<T>(val, nullptr,  head);
-    head -> next = new_node;
-    tail = new_node;
+        auto * new_node = new DLLNode<T>(val, nullptr,  head);
+        head -> next = new_node;
+        tail = new_node;
     }
 
     else {
-    // create a new node
-    auto * new_node = new DLLNode<T>(val, nullptr,  tail);
-    // link the tail to the new node
-    tail -> next = new_node;
-    tail = new_node;
+        // create a new node
+        auto * new_node = new DLLNode<T>(val, nullptr,  tail);
+        // link the tail to the new node
+        tail -> next = new_node;
+        tail = new_node;
     }
 
+    tail -> next = sentinel;
+    // make sure to link the tail to the sentinel node
     // regardless increase the size
     this -> m_size += 1;
 }
@@ -134,18 +197,19 @@ void DoubleLinkedList<T>::remove(const T &val) {
     }
     if ((this->m_size == 1) && (head->val == val)) {
         // free the memory allocated by the head
-        free(head);
+        delete head;
         head = nullptr;
         tail = nullptr;
         this->m_size = 0;
+        return;
     }
     // we have at least 2 elements in the list: head and tail are supposedly different
     DLLNode<T>* traverse_node = head;
-    while ((traverse_node != nullptr) && (traverse_node->val != val)) {
+    while ((traverse_node != sentinel) && (traverse_node->val != val)) {
         traverse_node = traverse_node->next;
     }
 
-    if (traverse_node == nullptr) {
+    if (traverse_node == sentinel) {
         // the element to be removed was not found here, abort
         return;
     }
@@ -163,23 +227,23 @@ void DoubleLinkedList<T>::remove(const T &val) {
         // if previous is nullptr, that means that traverse_node is the head
         next -> previous = nullptr;
         head = next;
-        free(traverse_node);
+        delete traverse_node;
         return;
     }
 //
     // if next is null, then we are dealing with the tail of the list
-    if (next == nullptr) {
+    if (next == sentinel) {
         // the 'prev' node should point to null now
-        prev->next = nullptr;
+        prev->next = sentinel;
         tail = prev;
-        free(traverse_node);
+        delete traverse_node;
         return;
     }
 
     // we are neither at the head nor the tail
     prev-> next = next;
     next-> previous = prev;
-    free(traverse_node);
+    delete traverse_node;
 }
 
 template <typename T>
@@ -196,6 +260,7 @@ void DoubleLinkedList<T>::addAt(const T &val, int index) {
         if (this -> m_size == 0) {
             this -> head = new_node;
             this -> tail = new_node;
+            tail -> next = sentinel;
             this -> m_size ++;
             return;
         }
@@ -227,6 +292,7 @@ void DoubleLinkedList<T>::addAt(const T &val, int index) {
         // modify the tail if the element is added to the end of the list
         traverse_node -> next = new_node;
         this -> tail = new_node;
+        this -> tail -> next = sentinel;
         this ->  m_size += 1;
         return;
     }
@@ -280,9 +346,9 @@ void DoubleLinkedList<T>::removeAt(int index) {
     if (index == this -> m_size - 1) {
         // it means we are removing the last element of the list
         // free the last element
-        free(traverse_node -> next);
-        // set it to nullptr
-        traverse_node -> next = nullptr;
+        delete traverse_node -> next;
+        // set it to sentinel
+        traverse_node -> next = sentinel;
         // set the tail to the traverse node
         this -> tail = traverse_node;
         this -> m_size --;
@@ -295,7 +361,7 @@ void DoubleLinkedList<T>::removeAt(int index) {
     // link the new next node to the traverse node
     new_next_node -> previous = traverse_node;
 
-    free(traverse_node -> next);
+    delete traverse_node -> next;
     traverse_node -> next = new_next_node;
 }
 
@@ -312,28 +378,5 @@ T DoubleLinkedList<T>::get(int index) const {
     }
     return traverse_node -> val;
 }
-
-/////////////////////////////////////////// iterator definition ///////////////////////////////////////////
-
-template <typename T>
-class MutableDLLIterator: public MutableIterator<T> {
-private:
-    DLLNode<T>& m_node;
-public:
-    explicit MutableDLLIterator(const DLLNode<T>& node): m_node(node){};
-    // override the * operator
-    T& operator * () const override {
-        return m_node.val;
-    }
-
-    MutableDLLIterator& operator ++ () const override {
-        m_node = m_node -> next;
-        return *this;
-    }
-
-    bool operator == (const MutableDLLIterator& another) const override {
-        return m_node == another.m_node;
-    }
-};
 
 #endif //LEARNC___DLL_H

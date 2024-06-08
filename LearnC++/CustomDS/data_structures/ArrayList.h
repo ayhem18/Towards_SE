@@ -27,7 +27,7 @@ private:
         }
 
         // free the old array
-        free(array);
+        delete [] array;
 
         // make sure to set the 'array' field to the new one
         array = new_array;
@@ -53,7 +53,7 @@ public:
     ~ ArrayList() {
 //         the main idea here is free all the memory currently allocated by the object
         std::cout << "\ncalling the ArrayList destructor\n";
-        free(array);
+        delete [] array;
     }
 
     // let's override some methods
