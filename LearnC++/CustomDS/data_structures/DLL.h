@@ -26,17 +26,17 @@ public:
 //     copy constructor
     DLLNode(const DLLNode& another): DLLNode(another.val, another.next, another.previous) {};
 
-    DLLNode& operator = (const DLLNode& another) {
-        if (another == *this){
-            return *this;
-        }
-        val = another.val;
-        next = another.next;
-        previous = another.previous;
-        return *this;
-    }
+//    DLLNode& operator = (const DLLNode<T>& another) {
+//        if (another == *this){
+//            return *this;
+//        }
+//        val = another.val;
+//        next = another.next;
+//        previous = another.previous;
+//        return *this;
+//    }
 
-    bool operator == ( const DLLNode<T>& another_node) {
+    bool operator == ( const DLLNode<T>& another_node) const {
         return val == another_node.val && next == another_node.next && previous == another_node.previous;
     }
 
@@ -47,12 +47,26 @@ public:
 template <typename T>
 class MutableDLLIterator: public MutableBiDirIterator<T> {
 private:
-    DLLNode<T> m_node;
+    DLLNode<T>* m_node;
 public:
-    explicit MutableDLLIterator(const DLLNode<T>& node): m_node(node){};
+    MutableDLLIterator() = default;
+    explicit MutableDLLIterator(DLLNode<T>* node): m_node(node) {};
     // override the * operator
     T& operator * () {
-        return m_node.val;
+        return m_node -> val;
+    }
+//
+
+    bool operator != (const MutableIterator<T>& another) override{
+        // first check for the type
+        if (typeid(another) != typeid(*this)){
+            return true;
+        }
+
+        // return true;
+
+        auto final_another = dynamic_cast<const MutableDLLIterator*>(&another);
+        return m_node != final_another -> m_node;
     }
 
     bool operator == (const MutableIterator<T>& another) {
@@ -60,26 +74,26 @@ public:
         if (typeid(another) != typeid(*this)){
             return false;
         }
-
-        // at this point of the code,  another can be cast to MutableDLLIterator
-        auto final_another = dynamic_cast<MutableDLLIterator>(another);
-        return m_node == final_another.m_node;
+//        return true;
+//        // at this point of the code,  another can be cast to MutableDLLIterator
+        auto final_another = dynamic_cast<const MutableDLLIterator*>(&another);
+        return m_node == final_another -> m_node;
     }
-
-    MutableDLLIterator& operator = (const MutableDLLIterator<T>& another) {
-        m_node = another.m_node;
+//
+    MutableDLLIterator& operator = (const MutableDLLIterator& another) {
+        m_node = another -> m_node;
         return *this;
     }
-    MutableDLLIterator& operator ++ () override{
-        m_node = m_node.next;
+
+    MutableDLLIterator<T>& operator ++ (int) override{
+        m_node = m_node -> next;
         return *this;
     }
 //
-    MutableDLLIterator& operator -- ()  override {
-        m_node = m_node.previous;
+    MutableDLLIterator<T>& operator -- (int)  override {
+        m_node = m_node -> previous;
         return *this;
     }
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148,15 +162,15 @@ public:
     MutableDLLIterator<T> begin() {
         // make sure to return the sentinel node if the list is empty
         if (this -> m_size == 0) {
-            return MutableDLLIterator<T>(*sentinel);
+            return MutableDLLIterator<T>(sentinel);
         }
-        return MutableDLLIterator<T>(*head);
+        return MutableDLLIterator<T>(head);
     }
 
-//    MutableDLLIterator<T> end () {
-//        // this is always a valid call since the sentinel field is never set as to 'nullptr'
-//        return MutableDLLIterator<T>(*sentinel);
-//    }
+    MutableDLLIterator<T> end() {
+        // this is always a valid call since the sentinel field is never set as to 'nullptr'
+        return MutableDLLIterator<T>(sentinel);
+    }
 };
 
 template<typename T>

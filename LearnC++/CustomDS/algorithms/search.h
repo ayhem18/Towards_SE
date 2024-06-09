@@ -5,7 +5,6 @@
 template <typename T>
 concept isEqual = requires(T a, T b) {
     a == b;
-    a != b;
 };
 
 template <typename T, typename P>
@@ -15,8 +14,8 @@ template <typename P>
 concept Incremental = requires(P p) {p ++;};
 
 template <typename T, typename P>
-int count(P begin, P end, const T& element) requires T_reference<T,P> && Incremental<P> && isEqual<T> {
-    T* traverse = begin;
+int count(P begin, P end, const T& element) requires Incremental<P> && isEqual<T> {
+    P traverse = begin;
     int count {0};
     while (traverse != end) {
         count += (*traverse == element);

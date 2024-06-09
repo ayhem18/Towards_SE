@@ -4,8 +4,6 @@
 # include "learnCppTutorials/functions.h"
 # include "oop/more_inheritance.h"
 # include "CustomDS/data_structures/DLL.h"
-# include <utility>
-# include "CustomDS/iterators/iterators.h"
 # include "CustomDS/algorithms/search.h"
 
 void oop_custom_containers();
@@ -17,19 +15,20 @@ void play_with_iterators();
 void custom_ds_algo_iterator() {
     DoubleLinkedList<double> list {};
     for (int i = 0; i < 5; i++) {
+        list.add(1);
+    }
+    for (int i = 5; i >= 0; i--) {
         list.add(i);
     }
     std::cout << "The list: "<< list << "\n";
 
-
-    //    MutableDLLIterator<double> being = list.end();
-    DLLNode<double> node{12};
-    DLLNode<double> anotherNode {node};
-    anotherNode = node;
-    MutableDLLIterator<double> iterator {node};
-
-    //    std::cout << node.val  << " " << node.next << " " << node.previous << "\n";
-//    std::cout << anotherNode.val  << " " << anotherNode.next << " " << anotherNode.previous << "\n";
+    for (int i = 0; i <= 5; i++) {
+        // define the 'begin' and 'end' iterators for each use
+        auto begin = list.begin();
+        auto end = list.end();
+        int c = count(begin, end, i);
+        std::cout << i << " appears "<< c << " times in the list" << "\n";
+    }
 }
 
 
