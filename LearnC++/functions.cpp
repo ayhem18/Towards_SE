@@ -11,9 +11,9 @@
 # include "CustomDS/data_structures/linear/ArrayList.h"
 # include "small_game/game_play.h"
 
-int mod(int value, int mod) {
-    return ((value % mod) + mod) %  mod;
-}
+//int mod(int value, int mod) {
+//    return ((value % mod) + mod) %  mod;
+//}
 
 
 void test_bst(){

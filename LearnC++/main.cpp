@@ -40,23 +40,10 @@ void customBinaryTree() {
     std::cout << tree << "\n";
 }
 
+# include "ProblemSolving/DivideAndConquer/problems_set1.h"
+
 int main() {
-//game();
-//dll_function();
-//array_function();
-//oop_custom_containers();
-arrayListFunction();
-//some_function();
-//unique_pointers();
-
-//custom_ds_algo_iterator();
-customBinaryTree();
-
-//int * array;
-//array = new int [2];
-//array[0] = 0;
-//array[1] = 0;
-//delete [] array;
-
+    int a [] = {0, 1, 1, 2,2, 4, 4, 5, 5, 8, 8, 10, 10};
+    std::cout << findOnce(a, 13) << "\n";
 }
 
