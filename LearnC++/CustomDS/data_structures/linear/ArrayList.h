@@ -16,6 +16,7 @@ private:
 
     // let's define a function to reallocate memory
     void reallocate() {
+        std::cout << "\ncalling reallocation\n";
         // define the new capacity as twice the current capacity
         int new_capacity = 2 * capacity;
         // first allocate memory for the new array
@@ -24,9 +25,10 @@ private:
         // copy the first m->size elements to the new array
         for (int i = 0; i < this -> m_size; i ++) {
             new_array[i] = array[i];
+//            delete (array + i);
         }
 
-        // free the old array
+//        // free the old array
         delete [] array;
 
         // make sure to set the 'array' field to the new one
@@ -53,7 +55,10 @@ public:
     ~ ArrayList() {
 //         the main idea here is free all the memory currently allocated by the object
         std::cout << "\ncalling the ArrayList destructor\n";
-        delete [] array;
+//        for (int i = 0; i < this -> m_size; i++) {
+//            delete (array + i);
+//        }
+        delete[] array;
     }
 
     // let's override some methods
@@ -80,7 +85,7 @@ public:
     }
 
     friend std::ostream& operator << (std::ostream& out, ArrayList<T> list) {
-        out << "\n the ArrayList implementation of <<\n";
+//        out << "\n the ArrayList implementation of <<\n";
         if (list.size() == 0) {
             out << "The list is empty";
             return out;
@@ -97,15 +102,7 @@ public:
 
 template<typename T>
 void ArrayList<T>::add(const T& val) {
-    // the first step is to check whether the number of elements will exceed the capacity
-    // after the addition or not
-    if ((this -> m_size + 1) > capacity) {
-        reallocate();
-    }
-    // set the value
-    array[this -> m_size] = val;
-    // increase the size
-    this -> m_size ++;
+    return addAt(val, this -> m_size);
 }
 
 template<typename T>

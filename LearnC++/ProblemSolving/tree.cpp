@@ -20,7 +20,7 @@ int min_int = std::numeric_limits<int>::min();
 
 void inorderTraversal(Node* head) {
     if (head == nullptr) {
-        std:: cout << "The tree is empty\n";
+        std:: cout << "The trees is empty\n";
         return;
     }
 
@@ -104,7 +104,7 @@ int smallestValue(Node* root) {
 }
 
 
-// this function finds the lowest common ancestor of 2 values in a binary search tree
+// this function finds the lowest common ancestor of 2 values in a binary search trees
 Node* LCA(Node *root, int n1, int n2) {
     int min = std::min(n1, n2);
     int max = std::max(n1, n2);
@@ -140,7 +140,7 @@ int largestValue(Node* root) {
     }
     return traverse_node -> data;
 }
-// this function counts the number of elements in a given binary search tree
+// this function counts the number of elements in a given binary search trees
 int bstCount(Node* root) {
     int left_count = 0;
     int right_count = 0;
@@ -153,7 +153,7 @@ int bstCount(Node* root) {
     }
     return 1 + left_count + right_count;
 }
-// this function finds the k-th largest element in a binary search tree
+// this function finds the k-th largest element in a binary search trees
 int kthLargest(Node *root, int k)
 {
     // let's start with the base case:
@@ -196,7 +196,7 @@ Node *deleteNode(Node *root, int x) {
             next_value = smallestValue(root -> right);
         }
         else {
-            // we are discarding the degenerate case where there is only one element in the tree
+            // we are discarding the degenerate case where there is only one element in the trees
             next_value = largestValue(root -> left);
         }
         // create a new root

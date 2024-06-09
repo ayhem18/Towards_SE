@@ -1,5 +1,5 @@
 # include <iostream>
-#ifndef LEARNC___BST_H
+#ifndef LEARNC___TREE_H
 #define LEARNC___BST_H
 
 struct Node{
@@ -26,13 +26,13 @@ struct NodeBST{
 
 class BST {
 private:
-    // the number of elements in the tree
+    // the number of elements in the trees
     int size = 0;
     NodeBST *  root = nullptr;
 
     void m_inorder_traversal(NodeBST* head) {
         if (head == nullptr) {
-            std:: cout << "The tree is empty\n";
+            std:: cout << "The trees is empty\n";
         }
         std:: cout << head -> value;
         if (head -> left != nullptr) {
@@ -49,7 +49,7 @@ private:
 
 public:
     BST(int value) {
-        // initialize the tree
+        // initialize the trees
         this -> root = new NodeBST(value);
     }
 
@@ -94,4 +94,4 @@ Node *deleteNode(Node *root, int x);
 
 void inorderTraversal(Node* root);
 
-#endif //LEARNC___BST_H
+#endif //LEARNC___TREE_H

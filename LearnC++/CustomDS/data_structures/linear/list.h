@@ -30,7 +30,7 @@ public:
 
     virtual T get(int index) const = 0;
 
-    // define a virtual destructor since we will be used some non-trivial destruction process
+    // define a virtual destructor since the derived class will have to deallocate memory
     virtual ~List() = default;
 
     friend std::ostream& operator <<(std::ostream& out, const List<T>& list){

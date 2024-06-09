@@ -11,7 +11,7 @@ add_executable(LearnC__ main.cpp
         ProblemSolving/linked_list.cpp
         ProblemSolving/Stack.cpp
         ProblemSolving/linked_list.h
-        ProblemSolving/BST.cpp
+        ProblemSolving/tree.cpp
         ProblemSolving/BST.h
         containers.h
         oop/oop_starter.cpp
@@ -22,7 +22,7 @@ add_executable(LearnC__ main.cpp
         learnCppTutorials/functions.cpp
         learnCppTutorials/functions.h
         learnCppTutorials/compond_types.h
-        CustomDS/data_structures/DLL.h
+        CustomDS/data_structures/linear/DLL.h
         oop/oop_more.h
         oop/oop_more.cpp
         oop/more_inheritance.h
@@ -37,10 +37,10 @@ add_executable(LearnC__ main.cpp
         ../Uni_assignments/itp2024/main.cpp
         ../Uni_assignments/itp2024/labs/objects.h
         ../Uni_assignments/itp2024/labs/objects.cpp
-        CustomDS/data_structures/list.h
+        CustomDS/data_structures/linear/list.h
         learnCppTutorials/arrays.cpp
         learnCppTutorials/arrays.h
-        CustomDS/data_structures/ArrayList.h
+        CustomDS/data_structures/linear/ArrayList.h
         learnCppTutorials/strings.h
         functions.cpp
         GeneralProgramming/iterators.cpp
@@ -48,5 +48,7 @@ add_executable(LearnC__ main.cpp
         GeneralProgramming/templates.cpp
         CustomDS/iterators/iterators.h
         CustomDS/algorithms/search.h
+        CustomDS/data_structures/trees/tree.h
+        CustomDS/data_structures/trees/binaryTree.h
 )
 

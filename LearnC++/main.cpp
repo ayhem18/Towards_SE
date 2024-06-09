@@ -3,7 +3,8 @@
 # include "oop/oop_starter.h"
 # include "learnCppTutorials/functions.h"
 # include "oop/more_inheritance.h"
-# include "CustomDS/data_structures/DLL.h"
+# include "CustomDS/data_structures/linear/DLL.h"
+# include "CustomDS/data_structures/trees/binaryTree.h"
 # include "CustomDS/algorithms/search.h"
 
 void oop_custom_containers();
@@ -31,20 +32,31 @@ void custom_ds_algo_iterator() {
     }
 }
 
+void customBinaryTree() {
+    BinaryTree<double> tree;
+    for (int i = 0; i < 4; i ++) {
+        tree.add(i);
+    }
+    std::cout << tree << "\n";
+}
 
 int main() {
 //game();
 //dll_function();
 //array_function();
-//arrayListFunction();
 //oop_custom_containers();
+arrayListFunction();
 //some_function();
 //unique_pointers();
 
-//auto increment = [] (int x) -> int {return x + 1;};
-//
-//play_with_iterators();
+//custom_ds_algo_iterator();
+customBinaryTree();
 
-custom_ds_algo_iterator();
+//int * array;
+//array = new int [2];
+//array[0] = 0;
+//array[1] = 0;
+//delete [] array;
+
 }
 
