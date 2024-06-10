@@ -11,6 +11,7 @@ int numberSequenceQ0(int m, int n, int q0);
 // https://www.geeksforgeeks.org/problems/find-the-element-that-appears-once-in-sorted-array0624/1?page=1&category=Divide%20and%20Conquer&difficulty=Easy,Medium&status=unsolved&sortBy=accuracy
 int findOnce(int arr[], int n);
 
+int kthElement(int arr1[], int arr2[], int n, int m, int k);
 
 
 #endif //LEARNC___PROBLEMS_SET1_H

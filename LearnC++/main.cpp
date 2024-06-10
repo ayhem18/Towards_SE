@@ -41,9 +41,20 @@ void customBinaryTree() {
 }
 
 # include "ProblemSolving/DivideAndConquer/problems_set1.h"
+# include "ProblemSolving/strings/basics.h"
 
 int main() {
-    int a [] = {0, 1, 1, 2,2, 4, 4, 5, 5, 8, 8, 10, 10};
-    std::cout << findOnce(a, 13) << "\n";
+//    const int n1 = 5;
+//    const int n2 = 6;
+//    int a1 [n1] = {1, 2, 3, 10, 15};
+//    int a2 [n2] = {5, 6,7, 8, 9, 21 };
+//
+//    for (int i = 1; i <= n1 + n2; i++) {
+//        std::cout << "output for value " << i << "\n";
+//        std::cout << kthElement(a1, a2, n1, n2, i) << "\n";
+//    }
+    std::string s = {"ayhem"};
+    std::cout << reverseWords(s) << "\n";
+
 }
 

@@ -52,5 +52,7 @@ add_executable(LearnC__ main.cpp
         CustomDS/data_structures/trees/binaryTree.h
         ProblemSolving/DivideAndConquer/problems_set1.cpp
         ProblemSolving/DivideAndConquer/problems_set1.h
+        ProblemSolving/strings/basics.cpp
+        ProblemSolving/strings/basics.h
 )
 
