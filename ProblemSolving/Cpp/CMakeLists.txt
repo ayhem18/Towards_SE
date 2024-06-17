@@ -9,4 +9,6 @@ add_executable(Cpp main.cpp
         arrays/prefixSum.h
         arrays/prefixSum.cpp
         utils.cpp
-        utils.h)
+        utils.h
+        twoPointers/file1.cpp
+        twoPointers/file1.h)

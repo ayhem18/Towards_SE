@@ -36,6 +36,7 @@ def longSubarrWthSumDivByK (arr: list[int],  n: int, K) :
     return max_len
 
 
+
 if __name__ == '__main__':
     arr = [-2, 2, -5, 12, -11, -1, 7]
     print(longSubarrWthSumDivByK(arr, -1, 3))
