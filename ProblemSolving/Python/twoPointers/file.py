@@ -46,8 +46,60 @@ def countDistinctSubarray(arr, n = None):
 
     return total_count
 
-if __name__ == '__main__':
+
+def longestKSubstr(s: str, k: int):
+    n = len(s)
     
-    arr = [2, 4, 4, 2, 4]
-    v = countDistinctSubarray(arr)
-    print(v)
+    occ_count = {}
+
+    ptr1, ptr2 = 0, 0
+    
+    max_length = -1
+
+    while (ptr2 < n):
+
+        while (ptr2 < n):
+            v = s[ptr2]
+            
+            if v in occ_count:
+                occ_count[v] += 1
+            else:
+                occ_count[v] = 1
+
+            if len(occ_count) == k + 1:
+                break
+
+            ptr2 += 1
+        
+        if ptr2 == n and len(occ_count) != k:
+            return max_length
+
+
+        if ptr2 != n:
+            # remove the element from the last ptr2
+            occ_count.pop(s[ptr2])
+
+        ptr2 = ptr2 - 1
+
+        max_length = max(max_length, ptr2 - ptr1 + 1)
+
+        while len(occ_count) == k:            
+            v = s[ptr1]
+            occ_count[v] -= 1
+
+            if occ_count[v] == 0:
+                occ_count.pop(v)
+            
+            ptr1 += 1
+
+        ptr2 += 1
+
+    return max_length
+
+
+
+if __name__ == '__main__':
+    string = "aaaaabba"
+    
+    for k in range(1, len(string)):
+        print(f"k : {k} -> {longestKSubstr(string, k=k)}")

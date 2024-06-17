@@ -1,6 +1,7 @@
 #ifndef CPP_FILE1_H
 #define CPP_FILE1_H
 
+# include<vector>
 
 // define the Node used for Linked Lists
 struct Node {
@@ -15,6 +16,7 @@ struct Node {
 
 int findFirstNode(Node* head);
 
-int countDistinctSubarray(int arr[], int n);
+std::vector<long long> printFirstNegativeInteger(long long int A[],
+                                            long long int N, long long int K);
 
 #endif //CPP_FILE1_H

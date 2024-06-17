@@ -43,17 +43,29 @@ int findFirstNode(Node* head) {
     return ptr1->data;
 }
 
-# include<map>
-# include<utility>
-
-int countDistinctSubarray(int arr[], int n){
-    /**
-     * https://www.geeksforgeeks.org/problems/equivalent-sub-arrays3731/1?page=1&category=two-pointer-algorithm&difficulty=Easy,Medium&status=unsolved&sortBy=accuracy
-     */
-
-    std::map<int, std::pair<int, int>> indices_map = {};
-    // iterate through the array
-    for (int i = 0; i < n; i ++) {
-
+# include <queue>
+std::vector<long long> printFirstNegativeInteger(long long int A[],
+                                                 long long int N, long long int K) {
+    std::vector<long long> res = {};
+    std::queue<long long> neg = {};
+    for (int i = 0; i <K; i++ ) {
+        if (A[i] < 0) {
+            neg.push(A[i]);
+        }
     }
+    for (int i = 0; i <= N - K; i++) {
+        if (neg.size() > 0) {
+            res.push_back(neg.front());
+        }
+        else {
+            res.push_back(0);
+        }
+        if (A[i] < 0) {
+            neg.pop();
+        }
+        if (A[i + K] < 0) {
+            neg.push(A[i + K]);
+        }
+    }
+    return res;
 }

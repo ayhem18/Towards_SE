@@ -2,30 +2,21 @@
 # include "arrays/searching.h"
 # include "arrays/prefixSum.h"
 # include "twoPointers/file1.h"
-void f() {
-    int n = 7;
-    int a [] =  {-2, 2, -5, 12, -11, -1, 7};
-    std::cout << longSubarrWthSumDivByK(a, 7, 3)  << "\n";
 
-}
+void negNumbers() {
+    long long int A[] = {-1, -2, 1, -4, -5};
+    int K = 1;
+    for (int k = 1; k <= 5; k++) {
+        auto res = printFirstNegativeInteger(A, 5, k);
 
-void loopLinkedList() {
-
-    Node n5 = Node(5);
-    Node n4 = Node(4);
-    n4.next = &n5;
-    Node n3 = Node(2);
-    n3.next = &n4;
-    Node n2 = Node(3);
-    n2.next = &n3;
-    Node n1 = Node(1);
-    n1.next = &n2;
-
-    n5.next = &n5;
-    int v = findFirstNode(&n1);
-    std::cout << v << "\n";
+        std:: cout << "K: " << k << "\n";
+        for (auto& v: res) {
+            std::cout << v << " ";
+        }
+        std::cout << "\n";
+    }
 }
 
 int main() {
-    loopLinkedList();
+    negNumbers();
 }
