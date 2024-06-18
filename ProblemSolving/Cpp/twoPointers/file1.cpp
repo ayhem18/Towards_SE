@@ -69,3 +69,4 @@ std::vector<long long> printFirstNegativeInteger(long long int A[],
     }
     return res;
 }
+

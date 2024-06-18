@@ -54,5 +54,7 @@ add_executable(LearnC__ main.cpp
         ProblemSolving/DivideAndConquer/problems_set1.h
         ProblemSolving/strings/basics.cpp
         ProblemSolving/strings/basics.h
+        ProblemSolving/graph/basics.h
+        ProblemSolving/graph/basics.cpp
 )
 

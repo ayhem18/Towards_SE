@@ -97,9 +97,43 @@ def longestKSubstr(s: str, k: int):
     return max_length
 
 
+def minimumStepRec(n: int, memo=None):
+    if memo is None:
+        memo = {}
+    
+    if n <= 1:
+        return 0
+    
+    if n in memo:
+        return memo[n]
+    
+    if n % 3 == 0:
+        return 1 + minimumStepRec(n // 3, memo=memo)
+                       
+    return 1 + minimumStepRec(n - 1, memo=memo)
+
+
+def maxWeightCell(n, edges):
+    weight_map = {}
+    
+    max_weight = 0
+    best_index = n - 1
+
+    for index, v in enumerate(edges):
+        # this means the index is not pointing to another cell
+        if v == -1:
+            continue
+        
+        if v not in weight_map :
+            weight_map[v] = 0
+        
+        weight_map[v] += index
+        
+        if weight_map[v] >= max_weight:
+            max_weight = weight_map[v]
+
+            best_index = v
+    return best_index
 
 if __name__ == '__main__':
-    string = "aaaaabba"
-    
-    for k in range(1, len(string)):
-        print(f"k : {k} -> {longestKSubstr(string, k=k)}")
+    print(maxWeightCell(3, edges=[-1, -1, -1]))
