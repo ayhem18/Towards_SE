@@ -11,4 +11,6 @@ add_executable(Cpp main.cpp
         utils.cpp
         utils.h
         twoPointers/file1.cpp
-        twoPointers/file1.h)
+        twoPointers/file1.h
+        trees/file1.h
+        trees/file1.cpp)

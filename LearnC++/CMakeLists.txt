@@ -56,5 +56,7 @@ add_executable(LearnC__ main.cpp
         ProblemSolving/strings/basics.h
         ProblemSolving/graph/basics.h
         ProblemSolving/graph/basics.cpp
+        ProblemSolving/trees/file1.cpp
+        ProblemSolving/trees/file1.h
 )
 
