@@ -14,15 +14,42 @@ void trees_f() {
     Node n7(7);
     Node n8(8);
     Node n9(9);
+    Node n10(10);
+    Node n11(11);
+    Node n12(12);
+    Node n13(13);
 
-    n1.right = &n2;
+    n1.left = &n2;
+    n1.right = &n7;
 
-    auto res = boundary(&n1);
+    n2.left = &n3;
+    n2.right = &n4;
 
-    for (int v: res) {
-        std::cout << v << " ";
-    }
-    std::cout << "\n";
+    n4.left = &n5;
+    n4.right = &n6;
+
+    n7.right = &n8;
+
+    n8.right = &n9;
+
+    n9.left = &n11;
+    n9.right = &n10;
+
+    n11.left = &n12;
+    n11.right = &n13;
+
+    n9.right = &n10;
+
+//    n3.left = &n5;
+//    n5.left = &n8;
+//
+//    n2.right = &n4;
+//    n4.left = &n6;
+//    n6.left = &n7;
+
+    auto res = depth_and_diameter(&n1);
+
+    std::cout << "depth " << res.first << " diameter " << res.second << "\n";
 }
 
 int main() {

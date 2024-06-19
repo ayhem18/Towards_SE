@@ -100,6 +100,11 @@ std::vector<int> treeRightMostBoundary(Node* root) {
 }
 
 std::vector <int> boundary(Node *root) {
+    /**
+     * the solution below keeps raising an error on the GFG server...
+     * well I am kinda proud of the solution, but have no clue how to fix the error (19th of June 2024)
+     */
+
     std::vector<int> left = treeLeftMostBoundary(root);
     std::vector<int> right = treeRightMostBoundary(root);
     std::vector<int> leafs = binaryTreeLeafs(root);
@@ -125,5 +130,92 @@ std::vector <int> boundary(Node *root) {
     }
 
     return res;
+}
+
+# include<algorithm>
+
+std::vector<int> topView(Node *root) {
+    std::queue<std::pair<Node*, std::pair<int, int>>> q;
+    q.push({root, { 0, 0}});
+    std::vector<std::vector<int>> res;
+
+    while (! q.empty()) {
+        auto current_node  = q.front();
+        Node* node = current_node.first;
+        int level = current_node.second.first, pos = current_node.second.second;
+
+        if (node -> left != nullptr) {
+            q.push({node -> left, {level + 1, pos - 1}});
+        }
+
+        if (node -> right != nullptr) {
+            q.push({node -> right, {level + 1, pos + 1}});
+        }
+        // add it to the vector
+        res.push_back({node -> data, level, pos});
+        // remove it from the queue
+        q.pop();
+    }
+
+    auto comparison_function = [] (std::vector<int>& v1, std::vector<int>& v2) -> bool {
+        int level1 = v1[1];
+        int level2 = v2[1];
+        int pos1 = v1[2], pos2 = v2[2];
+
+        if (pos1 < pos2) {
+            return true;
+        }
+
+        if (pos1 > pos2) {
+            return false;
+        }
+
+        return level1 < level2;
+    };
+
+    // time to sort the vector
+    std::sort(res.begin(), res.end(), comparison_function);
+    int current_pos = res[0][2];
+    std::vector<int> final_res {res[0][0]};
+
+    for (auto& v: res) {
+        int pos = v[2];
+        if (pos > current_pos) {
+            current_pos = pos;
+            final_res.push_back(v[0]);
+        }
+    }
+    return final_res;
+}
+
+
+std::pair<int, int> depth_and_diameter(Node* root) {
+    int leftDepth = 0, rightDepth = 0;
+    int leftDiameter = 0, rightDiameter = 0;
+
+    if (root -> left != nullptr) {
+        auto leftPair = depth_and_diameter(root -> left);
+        leftDepth = leftPair.first;
+        leftDiameter = leftPair.second;
+    }
+
+    if (root -> right != nullptr) {
+        auto rightPair = depth_and_diameter(root -> right);
+        rightDepth = rightPair.first;
+        rightDiameter = rightPair.second;
+    }
+
+    // as for the depth
+    int depth = 1 + std::max(leftDepth, rightDepth);
+
+    int diameter = std::max(leftDiameter, rightDiameter);
+    diameter = std::max(1 + leftDepth + rightDepth, diameter);
+
+    return {depth, diameter};
+}
+
+int diameter(Node* root) {
+    auto res = depth_and_diameter(root);
+    return res.second;
 }
 
