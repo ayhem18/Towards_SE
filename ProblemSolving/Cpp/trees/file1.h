@@ -23,4 +23,10 @@ std::vector<int> topView(Node *root);
 
 std::pair<int, int> depth_and_diameter(Node* root);
 
+bool isSumTree(Node* root);
+
+std::vector<int> verticalOrder(Node *root);
+
+Node* lca(Node* root ,int n1 ,int n2 );
+
 #endif //CPP_FILE1_H

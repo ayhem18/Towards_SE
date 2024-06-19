@@ -219,3 +219,165 @@ int diameter(Node* root) {
     return res.second;
 }
 
+
+
+std::pair<bool, int> SumBinaryTree(Node* root) {
+    int node_val = root -> data;
+    int leftSum = 0, rightSum = 0;
+
+    if (root -> left != nullptr) {
+        auto leftRes = SumBinaryTree(root -> left);
+        if (! leftRes.first) {
+            return {false, node_val};
+        }
+        leftSum = leftRes.second;
+    }
+
+    if (root -> right != nullptr) {
+        auto rightRes = SumBinaryTree(root -> right);
+        if (! rightRes.first) {
+            return {false, node_val};
+        }
+        rightSum = rightRes.second;
+    }
+
+    // check if it is a leaf
+    if ((root -> right == nullptr) && (root -> left == nullptr)) {
+        return {true, node_val};
+    }
+
+    return {(node_val == leftSum + rightSum), node_val + leftSum + rightSum};
+}
+
+bool isSumTree(Node* root) {
+    /**
+     * https://www.geeksforgeeks.org/problems/sum-tree/1?page=1&category=Tree&difficulty=Medium&sortBy=submissions
+     */
+    auto res = SumBinaryTree(root);
+    return res.first;
+}
+
+std::vector<int> verticalOrder(Node *root){
+    /**
+     * https://www.geeksforgeeks.org/problems/print-a-binary-tree-in-vertical-order/1?page=1&category=Tree&difficulty=Medium&sortBy=submissions
+     */
+    std::queue<std::pair<Node*, std::vector<int>>> q;
+    q.push({root, { 0, 0, 0}});
+    std::vector<std::vector<int>> res;
+
+    int index = 0;
+    while (! q.empty()) {
+        auto current_node  = q.front();
+        Node* node = current_node.first;
+        int level = current_node.second[0];
+        int pos = current_node.second[1];
+
+        if (node -> left != nullptr) {
+            index ++;
+            q.push({node -> left, {level + 1, pos - 1, index}});
+        }
+
+        if (node -> right != nullptr) {
+            index ++;
+            q.push({node -> right, {level + 1, pos + 1, index}});
+        }
+        // add it to the vector
+        res.push_back({node -> data, level, pos});
+        // remove it from the queue
+        q.pop();
+    }
+
+    auto comparison_function = [] (std::vector<int>& v1, std::vector<int>& v2) -> bool {
+        int level1 = v1[1];
+        int level2 = v2[1];
+        int pos1 = v1[2], pos2 = v2[2];
+
+        if (pos1 < pos2) {
+            return true;
+        }
+
+        if (pos1 > pos2) {
+            return false;
+        }
+
+        if (level1 < level2) {
+            return true;
+        }
+
+        if (level1 > level2) {
+            return false;
+        }
+
+        int i1 = v1[2], i2 = v2[2];
+        return i1 < i2;
+    };
+
+    // time to sort the vector
+    std::sort(res.begin(), res.end(), comparison_function);
+    std::vector<int> final_res {};
+    for (auto & p: res) {
+        final_res.push_back(p[0]);
+    }
+    return final_res;
+}
+
+
+std::pair<Node*, std::pair<bool, bool>> lca_(Node* root, int n1, int n2) {
+    // check if the node is a leaf
+    if (root -> left == nullptr && root -> right == nullptr) {
+        return {nullptr, {root -> data == n1, root -> data == n2}};
+    }
+    // bool flags
+    bool containsN1 = (root -> data == n1), containsN2 = (root -> data == n2);
+
+    // start with the left subtree
+    if (root -> left != nullptr){
+        auto leftSubtree = lca_(root -> left, n1, n2);
+        // this means that the lca of (n1, n2) is in the left subtree
+        if (leftSubtree.first != nullptr) {
+            return leftSubtree;
+        }
+
+        // update the contains n1 and n2 bool flags
+        containsN1 = (containsN1 || leftSubtree.second.first);
+        containsN2 = (containsN2 || leftSubtree.second.second);
+    }
+
+
+    if (root -> right != nullptr){
+        auto rightSubtree = lca_(root -> right, n1, n2);
+        // this means that the lca of (n1, n2) is in the left subtree
+        if (rightSubtree.first != nullptr) {
+            return rightSubtree;
+        }
+
+        // update the contains n1 and n2 bool flags
+        containsN1 = (containsN1 || rightSubtree.second.first);
+        containsN2 = (containsN2 || rightSubtree.second.second);
+    }
+
+    // at this point
+    if (containsN1 && containsN2) {
+        return {root,{containsN1, containsN2}};
+    }
+
+    return {nullptr, {containsN1, containsN2}};
+}
+
+
+Node* lca(Node* root ,int n1 ,int n2 ){
+    /**
+     * https://www.geeksforgeeks.org/problems/lowest-common-ancestor-in-a-binary-tree/1?page=1&category=Tree&difficulty=Medium&sortBy=submissions
+     */
+    return lca_(root, n1, n2).first;
+}
+
+
+
+//int findDist(Node* root, int a, int b) {
+//    /**
+//     * https://www.geeksforgeeks.org/problems/min-distance-between-two-given-nodes-of-a-binary-tree/1?page=1&category=Tree&difficulty=Medium&sortBy=submissions
+//     */
+//
+//}
+

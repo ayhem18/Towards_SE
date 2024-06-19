@@ -20,36 +20,29 @@ void trees_f() {
     Node n13(13);
 
     n1.left = &n2;
-    n1.right = &n7;
+    n1.right = &n3;
 
-    n2.left = &n3;
-    n2.right = &n4;
+    n2.left = &n4;
+    n2.right = &n5;
 
-    n4.left = &n5;
-    n4.right = &n6;
+    n3.left = &n6;
+    n3.right = &n7;
 
-    n7.right = &n8;
+    n6.left = &n8;
+    n6.right = &n9;
 
-    n8.right = &n9;
+    auto res = lca(&n1, 10, 9);
 
-    n9.left = &n11;
-    n9.right = &n10;
-
-    n11.left = &n12;
-    n11.right = &n13;
-
-    n9.right = &n10;
-
-//    n3.left = &n5;
-//    n5.left = &n8;
-//
-//    n2.right = &n4;
-//    n4.left = &n6;
-//    n6.left = &n7;
-
-    auto res = depth_and_diameter(&n1);
-
-    std::cout << "depth " << res.first << " diameter " << res.second << "\n";
+    if (res != nullptr) {
+        std::cout << res -> data;
+    }
+    else {
+        std::cout << "no common ancestor";
+    }
+//    for (int v : res) {
+//        std::cout << v << " ";
+//    }
+    std::cout << "\n";
 }
 
 int main() {
