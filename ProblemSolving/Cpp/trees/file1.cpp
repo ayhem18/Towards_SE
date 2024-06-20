@@ -133,58 +133,27 @@ std::vector <int> boundary(Node *root) {
 }
 
 # include<algorithm>
-
 std::vector<int> topView(Node *root) {
     std::queue<std::pair<Node*, std::pair<int, int>>> q;
     q.push({root, { 0, 0}});
     std::vector<std::vector<int>> res;
-
     while (! q.empty()) {
         auto current_node  = q.front();
         Node* node = current_node.first;
         int level = current_node.second.first, pos = current_node.second.second;
-
-        if (node -> left != nullptr) {
-            q.push({node -> left, {level + 1, pos - 1}});
-        }
-
-        if (node -> right != nullptr) {
-            q.push({node -> right, {level + 1, pos + 1}});
-        }
-        // add it to the vector
+        if (node -> left != nullptr) {q.push({node -> left, {level + 1, pos - 1}});}
+        if (node -> right != nullptr) {q.push({node -> right, {level + 1, pos + 1}});        }
         res.push_back({node -> data, level, pos});
-        // remove it from the queue
         q.pop();
     }
-
     auto comparison_function = [] (std::vector<int>& v1, std::vector<int>& v2) -> bool {
-        int level1 = v1[1];
-        int level2 = v2[1];
-        int pos1 = v1[2], pos2 = v2[2];
-
-        if (pos1 < pos2) {
-            return true;
-        }
-
-        if (pos1 > pos2) {
-            return false;
-        }
-
+        int level1 = v1[1], level2 = v2[1], pos1 = v1[2], pos2 = v2[2];
+        if (pos1 < pos2) { return true;}
+        if (pos1 > pos2) {return false;}
         return level1 < level2;
     };
-
-    // time to sort the vector
-    std::sort(res.begin(), res.end(), comparison_function);
-    int current_pos = res[0][2];
-    std::vector<int> final_res {res[0][0]};
-
-    for (auto& v: res) {
-        int pos = v[2];
-        if (pos > current_pos) {
-            current_pos = pos;
-            final_res.push_back(v[0]);
-        }
-    }
+    std::sort(res.begin(), res.end(), comparison_function); int current_pos = res[0][2]; std::vector<int> final_res {res[0][0]};
+    for (auto& v: res) {int pos = v[2]; if (pos > current_pos) { current_pos = pos; final_res.push_back(v[0]);}}
     return final_res;
 }
 
@@ -373,11 +342,62 @@ Node* lca(Node* root ,int n1 ,int n2 ){
 }
 
 
+std::pair<Node*, std::pair<int, int>> lca_distance(Node* root, int n1, int n2) {
+    // check if the node is a leaf
+    if (root -> left == nullptr && root -> right == nullptr) {
+        return {nullptr, {(root ->  data == n1) - 1, (root -> data == n2) - 1}};
+    }
+    // bool flags
+    int distanceN1 = (root -> data == n1) - 1, distanceN2 = (root -> data == n2) - 1;
 
-//int findDist(Node* root, int a, int b) {
-//    /**
-//     * https://www.geeksforgeeks.org/problems/min-distance-between-two-given-nodes-of-a-binary-tree/1?page=1&category=Tree&difficulty=Medium&sortBy=submissions
-//     */
-//
-//}
+    // start with the left subtree
+    if (root -> left != nullptr){
+        auto leftSubtree = lca_distance(root -> left, n1, n2);
+        // this means that the lca of (n1, n2) is in the left subtree
+        if (leftSubtree.first != nullptr) {
+            return leftSubtree;
+        }
+
+        // update the contains n1 and n2 bool flags
+        if (leftSubtree.second.first != -1) {
+            distanceN1 = leftSubtree.second.first + 1;
+        }
+
+        if (leftSubtree.second.second != -1) {
+            distanceN2 = leftSubtree.second.second + 1;
+        }
+    }
+
+
+    if (root -> right != nullptr) {
+        auto rightSubtree = lca_distance(root->right, n1, n2);
+        // this means that the lca of (n1, n2) is in the left subtree
+        if (rightSubtree.first != nullptr) {
+            return rightSubtree;
+        }
+
+        if (rightSubtree.second.first != -1) {
+            distanceN1 = rightSubtree.second.first + 1;
+        }
+
+        if (rightSubtree.second.second != -1) {
+            distanceN2 = rightSubtree.second.second + 1;
+        }
+    }
+
+    if (distanceN1 != -1 && distanceN2 != -1) {
+        return {root, {distanceN1, distanceN2}};
+    }
+    return {nullptr, {distanceN1, distanceN2}};
+}
+
+
+
+int findDist(Node* root, int a, int b) {
+    /**
+     * https://www.geeksforgeeks.org/problems/min-distance-between-two-given-nodes-of-a-binary-tree/1?page=1&category=Tree&difficulty=Medium&sortBy=submissions
+     */
+    auto res = lca_distance(root, a, b);
+    return res.second.first + res.second.second;
+}
 

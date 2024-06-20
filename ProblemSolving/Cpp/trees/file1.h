@@ -29,4 +29,8 @@ std::vector<int> verticalOrder(Node *root);
 
 Node* lca(Node* root ,int n1 ,int n2 );
 
+std::pair<Node*, std::pair<int, int>> lca_distance(Node* root, int n1, int n2);
+
+int findDist(Node* root, int a, int b);
+
 #endif //CPP_FILE1_H

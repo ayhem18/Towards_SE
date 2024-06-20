@@ -31,14 +31,30 @@ void trees_f() {
     n6.left = &n8;
     n6.right = &n9;
 
-    auto res = lca(&n1, 10, 9);
+    n9.left = &n10;
+    n10.right = &n11;
+
+    int v1= 2, v2 = 2;
+
+    auto pair_res = lca_distance(&n1, v1, v2);
+
+    Node* res = pair_res.first;
+
+    int d1 = pair_res.second.first, d2 = pair_res.second.second;
+
+    int d = findDist(&n1, v1, v2);
 
     if (res != nullptr) {
-        std::cout << res -> data;
+        std::cout << "LCA: " << res -> data << "\n";
+        std::cout << "distance to " << v1 << " : " << d1 << " and distance to " << v2 << " : " << d2 << "\n";
+
+        std::cout << "Distance between " << v1 << " and " << v2 << " : " << d << "\n";
     }
     else {
         std::cout << "no common ancestor";
     }
+
+
 //    for (int v : res) {
 //        std::cout << v << " ";
 //    }
