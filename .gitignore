@@ -13,4 +13,5 @@ Information_retrieval/Uni_course/shard/
 *.rnote
 *.exe
 *cmake-build-debug*
+*env
 
