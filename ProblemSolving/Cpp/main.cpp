@@ -64,51 +64,48 @@ void trees_f() {
 
 
 void bst_f() {
-    Node n1(1);
-    Node n2(2);
-    Node n3(3);
-    Node n4(5);
-    Node n5(10);
-    Node n6(3);
+    Node n1(2);
+    Node n2(1);
+    Node n3(5);
+    Node n4(20);
+    Node n5(40);
+    Node n6(4);
+//    Node n6(12);
     Node n7(7);
-    Node n8(22);
+//    Node n8(9);
 //    Node n9(12);
 
     n1.left = &n2;
     n1.right = &n3;
-    n2.left = &n4;
-    n2.right = &n5;
-//    n3.left = &n6;
-//    n3.right = &n7;
-//
-//    n7.left = &n8;
+//    n2.left = &n4;
+//    n2.right = &n5;
+    n3.left = &n6;
+    n3.right = &n7;
+//    n4.right = &n5;
+//    n5.right = &n6;
+//    n5.right = &n8;
 
-//    n7.left = &n8;
-    //    n7.right = &n8;
-    //    n8.right = &n9;
-    std::vector<int> values {};
-    inorderTraversal(&n1, values);
 
-    for (auto & v: values) {
-        std::cout << v << " ";
-    }
-    std::cout << "\n";
+    auto newRoot = modify(&n1);
 
-    auto newRoot = binaryTreeToBST(&n1);
+    std::vector<int> values  {};
 
-    values.clear();
     inorderTraversal(newRoot, values);
 
-    for (auto & v: values) {
+    for (int v: values) {
         std::cout << v << " ";
     }
     std::cout << "\n";
 
-
-//    for (int j = 1; j <= 10; j++) {
-//        int v = KthSmallestElement(&n1, j);
-//        std:: cout << "the " << j << " smallest element in the binary tree is:  " << v << "\n";
+//    for (int j = 1; j <= 20; j++) {
+//        auto v = printNearNodes(&n1, 1, j);
+//        std::cout << "the elements in the range " << 1 << " " << j << " are:\n";
+//        for (int i: v) {
+//            std::cout << i << " ";
+//        }
+//        std::cout << "\n";
 //    }
+
 }
 int main() {
     bst_f();

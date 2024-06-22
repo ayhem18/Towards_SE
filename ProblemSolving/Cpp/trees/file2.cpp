@@ -97,3 +97,118 @@ Node *binaryTreeToBST (Node *root){
     setBST(root, values, 0);
     return root;
 }
+
+
+int maxPathSum(Node* root) {
+    int leftSum = 0, rightSum = 0;
+    if (root -> left != nullptr) {
+        leftSum = maxPathSum(root -> left);
+    }
+
+    if (root -> right != nullptr) {
+        rightSum = maxPathSum(root -> right);
+    }
+
+    return root -> data + std::max(leftSum, rightSum);
+}
+
+
+std::pair<Node*, Node*> flattenBSTBothEnds(Node* root) {
+    Node* newRoot = root;
+    if (root -> left != nullptr) {
+        auto res = flattenBSTBothEnds(root -> left);
+        Node* leftSubRoot = res.first, *leftSubLeaf = res.second;
+        leftSubLeaf -> right = root;
+        newRoot = leftSubRoot;
+    }
+
+    // make sure to clear the left child of the root
+    root -> left = nullptr;
+    Node* newLeaf= root;
+
+    if (root -> right) {
+        auto res = flattenBSTBothEnds(root -> right);
+        Node* rightSubRoot = res.first, *rightSubLeaf = res.second;
+        root -> right =  rightSubRoot;
+        newLeaf = rightSubLeaf;
+    }
+
+    return {newRoot, newLeaf};
+}
+
+Node *flattenBST(Node *root){
+    auto res = flattenBSTBothEnds(root);
+    return res.first;
+}
+
+
+void valuesInRange(Node *root, int low, int high, std::vector<int> &values) {
+    if (root -> data <= low) {
+        // this means that none of the nodes in the left subtree will be in the range
+        if (root -> data == low) {
+            values.push_back(low);
+        }
+
+        if (root -> right != nullptr) {
+            valuesInRange(root -> right, low, high, values);
+        }
+        return;
+    }
+
+    if (root -> data > high) {
+        // this means that none of the nodes in the right subtree will be in the range
+        if (root -> left != nullptr) {
+            valuesInRange(root -> left, low, high, values);
+        }
+        return;
+    }
+
+    // at this point, the function should recursively call the two subtrees
+    // the left one first
+    if (root -> left != nullptr) {
+        valuesInRange(root -> left, low, high, values);
+    }
+    // the root
+    values.push_back(root -> data);
+
+    // the right subtree
+    if (root -> right != nullptr) {
+        valuesInRange(root -> right, low, high, values);
+    }
+
+}
+
+std::vector<int> printNearNodes(Node *root, int low, int high) {
+    std::vector<int> res{};
+    valuesInRange(root, low, high, res);
+    return res;
+}
+
+
+int addSum(Node* root, int prevSubTreeSum) {
+    int rightSubTreeSum = prevSubTreeSum;
+    if (root -> right != nullptr) {
+        rightSubTreeSum = addSum(root -> right, prevSubTreeSum);
+    }
+
+    int leftSubTreeSum = rightSubTreeSum + root -> data;
+
+    if (root -> right != nullptr && root -> right -> data == root -> data) {
+        // this means we store the value from the right subtree, but we do not add it to the node data
+        root -> data += prevSubTreeSum;
+    }
+    else {
+        root -> data += rightSubTreeSum;
+    }
+
+    if (root -> left != nullptr) {
+        return addSum(root -> left, leftSubTreeSum);
+    }
+
+    return leftSubTreeSum;
+}
+
+Node* modify(Node *root){
+    addSum(root, 0);
+    return root;
+}
