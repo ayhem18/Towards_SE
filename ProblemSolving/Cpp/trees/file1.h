@@ -2,17 +2,7 @@
 #define CPP_FILE1_H
 
 # include <vector>
-
-struct Node{
-    int data;
-    struct Node* left;
-    struct Node* right;
-
-    Node(int x){
-        data = x;
-        left = right = nullptr;
-    }
-};
+# include "common.h"
 
 
 std::vector<int> leftView(Node *root);

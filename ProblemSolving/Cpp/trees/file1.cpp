@@ -396,6 +396,8 @@ std::pair<Node*, std::pair<int, int>> lca_distance(Node* root, int n1, int n2) {
 int findDist(Node* root, int a, int b) {
     /**
      * https://www.geeksforgeeks.org/problems/min-distance-between-two-given-nodes-of-a-binary-tree/1?page=1&category=Tree&difficulty=Medium&sortBy=submissions
+
+     the solution did not work sadly; ((
      */
     auto res = lca_distance(root, a, b);
     return res.second.first + res.second.second;
