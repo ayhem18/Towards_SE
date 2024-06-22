@@ -1,6 +1,8 @@
 # include <set>
 # include "prefixSum.h"
 # include "../utils.h"
+# include <map>
+# include <utility>
 
 void update(int a[], int n, int updates[], int k) {
     /**
@@ -39,6 +41,7 @@ int equilibriumPoint(long long arr[], int n) {
     return -1;
 }
 
+
 bool subArrayExists(int arr[], int n){
     /**
      * https://www.geeksforgeeks.org/problems/subarray-with-0-sum-1587115621/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=bottom_sticky_on_article
@@ -68,8 +71,6 @@ bool subArrayExists(int arr[], int n){
     return distinct_sums.size() != n;
 }
 
-# include <map>
-# include <utility>
 
 int longSubarrWthSumDivByK(int arr[], int n, int k){
     int prefixSum[n];

@@ -5,3 +5,6 @@ from django.http import HttpResponse
 
 def index(request):
     return HttpResponse("First view; THe poll index view")
+
+def anotherView(request):
+    return HttpResponse("Another View: shup up !!")

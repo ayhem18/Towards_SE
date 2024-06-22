@@ -14,4 +14,6 @@ Information_retrieval/Uni_course/shard/
 *.exe
 *cmake-build-debug*
 *env
+*.pyc
+web_dev\django\TutorialProject\db.sqlite3
 

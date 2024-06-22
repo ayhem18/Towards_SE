@@ -189,7 +189,6 @@ int diameter(Node* root) {
 }
 
 
-
 std::pair<bool, int> SumBinaryTree(Node* root) {
     int node_val = root -> data;
     int leftSum = 0, rightSum = 0;
@@ -333,7 +332,6 @@ std::pair<Node*, std::pair<bool, bool>> lca_(Node* root, int n1, int n2) {
     return {nullptr, {containsN1, containsN2}};
 }
 
-
 Node* lca(Node* root ,int n1 ,int n2 ){
     /**
      * https://www.geeksforgeeks.org/problems/lowest-common-ancestor-in-a-binary-tree/1?page=1&category=Tree&difficulty=Medium&sortBy=submissions
@@ -390,7 +388,6 @@ std::pair<Node*, std::pair<int, int>> lca_distance(Node* root, int n1, int n2) {
     }
     return {nullptr, {distanceN1, distanceN2}};
 }
-
 
 
 int findDist(Node* root, int a, int b) {

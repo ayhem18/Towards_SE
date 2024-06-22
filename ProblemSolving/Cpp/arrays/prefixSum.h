@@ -2,7 +2,6 @@
 #define CPP_PREFIXSUM_H
 
 void update(int a[], int n, int updates[], int k);
-
 int equilibriumPoint(long long arr[], int n);
 bool subArrayExists(int arr[], int n);
 int longSubarrWthSumDivByK(int arr[], int n, int k);

@@ -1,8 +1,8 @@
 # include "searching.h"
+# include <algorithm>
 
 
-std::vector <int> commonElements (int a1[], int a2[], int n1, int n2)
-{
+std::vector <int> commonElements (int a1[], int a2[], int n1, int n2){
     std::vector<int> common{};
     int i1 = 0, i2 = 0;
     while ((i1 < n1) && (i2 < n2)) {
@@ -59,6 +59,7 @@ std::vector <int> commonElements (int A[], int B[], int C[], int n1, int n2, int
     return commonElements(commonArray, C, n, n3);
 }
 
+
 int majorityElement(std::vector<int>& nums) {
     /**
      * https://leetcode.com/problems/majority-element/
@@ -67,7 +68,7 @@ int majorityElement(std::vector<int>& nums) {
      */
 }
 
-# include <algorithm>
+
 std::vector<int> leaders(int n, int arr[]) {
     // the idea here is to calculate the maximum number starting from the right
     int maxes[n];

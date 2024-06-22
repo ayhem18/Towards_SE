@@ -37,6 +37,7 @@ int getCount(Node *root, int low, int high) {
     return 1 + leftCount + rightCount;
 }
 
+
 std::pair<Node*, int> kthSmallestElementBST(Node*  root, int k, int counter) {
     int inner_counter = counter;
     if (root -> left != nullptr) {
@@ -63,7 +64,6 @@ std::pair<Node*, int> kthSmallestElementBST(Node*  root, int k, int counter) {
 
     return {nullptr, inner_counter};
 }
-
 int KthSmallestElement(Node *root, int K) {
     auto res = kthSmallestElementBST(root, K, 0);
     if (res.first != nullptr) {
@@ -71,6 +71,7 @@ int KthSmallestElement(Node *root, int K) {
     }
     return -1;
 }
+
 
 int setBST(Node* root, const std::vector<int> &sortedArray, int counter) {
     int innerCounter = counter;
@@ -87,8 +88,6 @@ int setBST(Node* root, const std::vector<int> &sortedArray, int counter) {
 
     return innerCounter;
 }
-
-
 Node *binaryTreeToBST (Node *root){
     std::vector<int> values {};
     inorderTraversal(root, values);
@@ -135,12 +134,10 @@ std::pair<Node*, Node*> flattenBSTBothEnds(Node* root) {
 
     return {newRoot, newLeaf};
 }
-
 Node *flattenBST(Node *root){
     auto res = flattenBSTBothEnds(root);
     return res.first;
 }
-
 
 void valuesInRange(Node *root, int low, int high, std::vector<int> &values) {
     if (root -> data <= low) {
@@ -177,7 +174,6 @@ void valuesInRange(Node *root, int low, int high, std::vector<int> &values) {
     }
 
 }
-
 std::vector<int> printNearNodes(Node *root, int low, int high) {
     std::vector<int> res{};
     valuesInRange(root, low, high, res);
@@ -207,7 +203,6 @@ int addSum(Node* root, int prevSubTreeSum) {
 
     return leftSubTreeSum;
 }
-
 Node* modify(Node *root){
     addSum(root, 0);
     return root;
