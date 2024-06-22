@@ -19,6 +19,7 @@ from django.urls import include, path
 
 
 urlpatterns = [
-    path("polls/", include("polls.urls")),
-    path("admin/", admin.site.urls),
+    path("polls/", include("polls.urls")), # this tells the django web server for views in the polls app whenever it receives a request of an url starting with "poll"
+    path("", include("polls.urls")), 
+    path("admin/", admin.site.urls), # maps any url that ends with admin/ to an administrative dashboard.
 ]
