@@ -7,7 +7,7 @@
 # include <cassert>
 #include <functional>
 #include <numeric>
-
+# include "utils.h"
 
 void trees_f() {
     Node n1(1);
@@ -144,10 +144,20 @@ for (int s = 1; s <= 200; s++) {
 }
 
 void some_dp2() {
-    int n = 4;
-    for (int j = 1; j <= 3; j++) {
-        std::cout << "ways (" << n << " , " << j << " ) = " << countWays(n, j) <<"\n";
+    for (int n = 1; n <= 2000; n++) {
+        for (int k = 1; k <= 100; k++) {
+            lli r1 = countWays(n, k);
+            lli r2 = countWaysDP(n, k);
+            assert (r1 == r2 && "The resuls are differnet");
+        }
     }
+
+//    int n = 3;
+//    for (int j = 1; j <= 4; j++) {
+//        std::cout << "ways (" << n << " , " << j << " ) = " << countWays(n, j) <<"\n";
+//    }
+//    int k = 99999;
+//    std::cout << "ways (" << n << " , " << k << " ) = " << countWays(n, k) <<"\n";
 }
 
 int main() {

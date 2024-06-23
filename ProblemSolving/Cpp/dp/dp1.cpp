@@ -3,8 +3,6 @@
 # include <vector>
 
 
-typedef long long int lli;
-typedef std::vector<lli> vll;
 
 
 /**
@@ -98,67 +96,72 @@ bool isSubsetSum(std::vector<int>&arr, int sum){
  */
 
 
+
 lli M = static_cast<lli>(pow(10, 9) + 7);
 
-lli f(int n, int k, vll& memo1, vll& memo2, vll& memo);
-lli f1(int n, int k, vll& memo1, vll& memo2, vll& memo);
-lli  f2(int n, int k, vll& memo1, vll& memo2, vll& memo);
-
-
-lli f(int n, int k, vll& memo1, vll& memo2, vll& memo) {
-    if (n == 0) {
-        return 0;
+lli countWays(int n, int k) {
+    if (k <= 1) {
+        if (n > 2) {
+            return 0;
+        }
+        return 1;
     }
-    if (k < 1) {
-        return 0;
+    // we know that k >= 2
+//    lli dp[n + 1][3];
+//
+//    dp[0][0] = 0;
+//    dp[0][1] = 0;
+//    dp[0][2] = 0;
+//
+//    dp[1][0] = 0;
+//    dp[1][1] = k;
+//    dp[1][2] = k;
+
+
+    lli n1Prev = 0, n2Prev = k, n3Prev = k;
+    lli n1 = 0, n2 = k , n3 = k;
+
+    for (int i = 2; i <= n; i++) {
+        n1 = n2Prev;
+        n2 = mod((k - 1) * n3Prev, M);
+        n3 = mod((k - 1) * n1Prev + k * n2Prev, M);
+        n1Prev = n1;
+        n2Prev = n2;
+        n3Prev = n3;
     }
-
-    if (memo[n] != - 1) {
-        return memo[n];
-    }
-
-    auto res = (k - 1) * f1(n - 1, k, memo1, memo2, memo) +
-            k * f2(n - 1, k, memo1, memo2, memo);
-
-
-    memo[n] = mod(res, M);
-    return memo[n];
+//    for (int i = 2; i <= n; i++) {
+//        dp[i][0] = dp[i - 1][1];
+//        dp[i][1] = mod((k - 1)  * dp[i - 1][2], M);
+//        dp[i][2] = mod((k - 1) * dp[i - 1][0] + k * dp[i - 1][1], M);
+//    }
+    return n3;
+//    return dp[n][2];
 }
 
-lli  f1(int n, int k, vll& memo1, vll& memo2, vll& memo) {
-    if (n == 1) {
-        return 0;
+lli countWaysDP(int n, int k) {
+    if (k <= 1) {
+        if (n > 2) {
+            return 0;
+        }
+        return 1;
     }
-    if (memo1[n] != -1) {
-        return memo1[n];
+    // we know that k >= 2
+    lli dp[n + 1][3];
+
+    dp[0][0] = 0;
+    dp[0][1] = 0;
+    dp[0][2] = 0;
+
+    dp[1][0] = 0;
+    dp[1][1] = k;
+    dp[1][2] = k;
+
+
+    for (int i = 2; i <= n; i++) {
+        dp[i][0] = dp[i - 1][1];
+        dp[i][1] = mod((k - 1)  * dp[i - 1][2], M);
+        dp[i][2] = mod((k - 1) * dp[i - 1][0] + k * dp[i - 1][1], M);
     }
+    return dp[n][2];
 
-    memo1[n] = mod(f2(n - 1, k, memo1, memo2, memo), M);
-    return memo1[n];
-}
-
-lli  f2(int n, int k, vll& memo1, vll& memo2, vll& memo) {
-    if (n == 1) {
-        return k;
-    }
-
-    if (memo2[n] != -1) {
-        return memo2[n];
-    }
-
-    memo2[n] = (k - 1) * f(n - 1, k, memo1, memo2, memo);
-    memo2[n] = mod(memo2[n], M);
-    return memo2[n];
-}
-
-
-lli countWays(int n, int k){
-
-    std::vector<lli>  memo {n + 1,  -1};
-    std::vector<lli>  memo1 {n + 1,  -1};
-    std::vector<lli>  memo2 {n + 1,  -1};
-
-    // code here
-
-    return f(n, k, memo1, memo2, memo);
 }
