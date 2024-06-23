@@ -17,4 +17,6 @@ add_executable(Cpp main.cpp
         trees/file2.cpp
         trees/common.cpp
         dp/dp1.cpp
-        dp/dp1.h)
+        dp/dp1.h
+        backtracking/bt1.cpp
+        backtracking/bt1.h)

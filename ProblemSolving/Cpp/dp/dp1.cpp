@@ -1,53 +1,16 @@
 # include "../utils.h"
 # include <cmath>
 # include <vector>
-# include <utility>
-# include <algorithm>
-
-/**
- * these functions below are written to solve:
- * https://www.geeksforgeeks.org/program-for-nth-fibonacci-number/
- */
-long long int _topDown(int n, int a[]) {
-    int M = static_cast<int> (pow(10, 9) + 7);
-    if (a[n] != -1) {
-        return mod(a[n], M);
-    }
-
-    // make sure to save the value in the value storage
-    a[n] = (mod(_topDown(n - 1, a), M) + mod(_topDown(n - 2, a), M));
-    a[n] = mod(a[n], M);
-    return a[n];
-}
-
-long long int topDown(int n) {
-    int a[n + 1];
-    for (int i = 0; i < n + 1; i++) {
-        a[i] = -1;
-    }
-    a[0] = 0;
-    a[1] = 1;
-    return _topDown(n, a) ;
-}
 
 
+typedef long long int lli;
+typedef std::vector<lli> vll;
 
-long long int bottomUp(int n) {
-    int arr[n+1];
-    arr[0]=0;
-    arr[1]=1;
-    int M = static_cast<int> (pow(10, 9) + 7);
-    for (int i = 2; i < n + 1; i++) {
-        arr[i] = mod(arr[i - 1], M) + mod(arr[i - 2], M);
-    }
-    return mod(arr[n], M);
-}
 
 /**
  * solve:
  * https://www.geeksforgeeks.org/problems/coin-change2448/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=bottom_sticky_on_article
  */
-
 
 long long int _count(int coins[], int n, int sum, std::vector<std::vector<long long int>> & memo) {
     if (n <= 0) {
@@ -85,7 +48,6 @@ long long int _count(int coins[], int n, int sum, std::vector<std::vector<long l
     return total;
 }
 
-
 long long int count(int coins[], int N, int sum) {
     std::vector<std::vector<long long int>>  memo {};
     for (int i = 0;i < N + 1; i++) {
@@ -93,4 +55,110 @@ long long int count(int coins[], int N, int sum) {
         memo.push_back(vector_by_N);
     }
     return _count(coins, N, sum, memo);
+}
+
+/**
+ * solve: https://www.geeksforgeeks.org/problems/subset-sum-problem-1611555638/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=bottom_sticky_on_article
+ */
+bool _isSubsetSum(std::vector<int>&arr, int n, int sum, std::vector<std::vector<int>> & memo){
+    if (n == 1) {
+        return sum == arr[0];
+    }
+
+    if (sum <= 0) {
+        return false;
+    }
+
+    if (memo[n][sum] != -1) {
+        return memo[n][sum];
+    }
+
+    if (sum == arr[n - 1]) {
+        return true;
+    }
+
+    bool res = _isSubsetSum(arr, n - 1, sum - arr[n - 1], memo) || _isSubsetSum(arr, n - 1, sum, memo);
+    memo[n][sum] = static_cast<int>(res);
+    return res;
+}
+
+bool isSubsetSum(std::vector<int>&arr, int sum){
+    int N = arr.size();
+    std::vector<std::vector<int>>  memo {};
+    for (int i = 0;i < N + 1; i++) {
+        std::vector<int> vector_by_N(sum + 1, -1);
+        memo.push_back(vector_by_N);
+    }
+    return _isSubsetSum(arr, N, sum, memo);
+}
+
+
+/**
+ * solve https://www.geeksforgeeks.org/problems/painting-the-fence3727/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=bottom_sticky_on_article
+ */
+
+
+lli M = static_cast<lli>(pow(10, 9) + 7);
+
+lli f(int n, int k, vll& memo1, vll& memo2, vll& memo);
+lli f1(int n, int k, vll& memo1, vll& memo2, vll& memo);
+lli  f2(int n, int k, vll& memo1, vll& memo2, vll& memo);
+
+
+lli f(int n, int k, vll& memo1, vll& memo2, vll& memo) {
+    if (n == 0) {
+        return 0;
+    }
+    if (k < 1) {
+        return 0;
+    }
+
+    if (memo[n] != - 1) {
+        return memo[n];
+    }
+
+    auto res = (k - 1) * f1(n - 1, k, memo1, memo2, memo) +
+            k * f2(n - 1, k, memo1, memo2, memo);
+
+
+    memo[n] = mod(res, M);
+    return memo[n];
+}
+
+lli  f1(int n, int k, vll& memo1, vll& memo2, vll& memo) {
+    if (n == 1) {
+        return 0;
+    }
+    if (memo1[n] != -1) {
+        return memo1[n];
+    }
+
+    memo1[n] = mod(f2(n - 1, k, memo1, memo2, memo), M);
+    return memo1[n];
+}
+
+lli  f2(int n, int k, vll& memo1, vll& memo2, vll& memo) {
+    if (n == 1) {
+        return k;
+    }
+
+    if (memo2[n] != -1) {
+        return memo2[n];
+    }
+
+    memo2[n] = (k - 1) * f(n - 1, k, memo1, memo2, memo);
+    memo2[n] = mod(memo2[n], M);
+    return memo2[n];
+}
+
+
+lli countWays(int n, int k){
+
+    std::vector<lli>  memo {n + 1,  -1};
+    std::vector<lli>  memo1 {n + 1,  -1};
+    std::vector<lli>  memo2 {n + 1,  -1};
+
+    // code here
+
+    return f(n, k, memo1, memo2, memo);
 }
