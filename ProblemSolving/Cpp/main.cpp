@@ -1,10 +1,10 @@
 #include <iostream>
 # include "arrays/searching.h"
-# include "arrays/prefixSum.h"
 # include "trees/file1.h"
 # include "trees/file2.h"
+# include "dp/dp1.h"
 
-
+# include <cassert>
 void trees_f() {
     Node n1(1);
     Node n2(2);
@@ -62,7 +62,6 @@ void trees_f() {
     std::cout << "\n";
 }
 
-
 void bst_f() {
     Node n1(2);
     Node n2(1);
@@ -107,6 +106,24 @@ void bst_f() {
 //    }
 
 }
+
+void some_dp() {
+//    for (int i = 1000; i < 1005; i++) {
+//        std::cout << "index: " << i << " bottom up: " << bottomUp(i) << ", topdown: " << topDown(i) << "\n";
+//    }
+//
+////    std::cout << "index: " << i << " bottom up: " << bottomUp(i) << ", topdown: " << topDown(i) << "\n";
+
+int coins1[] = {4, 3, 2, 1};
+int coins2[] = {1, 2, 3, 4};
+for (int s = 1; s <= 2000; s++) {
+    long long int a1 = count(coins1, 4, s);
+    long long int a2 = count(coins2, 4, s);
+    assert (a1 == a2 && " The values are not the same !!");
+}
+
+}
+
 int main() {
-    bst_f();
+    some_dp();
 }

@@ -15,4 +15,6 @@ add_executable(Cpp main.cpp
         trees/file1.h
         trees/file1.cpp
         trees/file2.cpp
-        trees/common.cpp)
+        trees/common.cpp
+        dp/dp1.cpp
+        dp/dp1.h)

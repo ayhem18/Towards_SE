@@ -1,4 +1,14 @@
-
+# include <cassert>
 int mod(int a, int b) {
-    return ((a % b) + b) % b;
+    // returns a positive value of the expression (a mod b)
+    int x = ((a % b) + b) % b;
+    assert (x >= 0 && "the mod function returned a negative value");
+    return x;
+}
+
+long long int mod(long long int a, long long int b) {
+    // returns a positive value of the expression (a mod b)
+    long long int x = ((a % b) + b) % b;
+//    assert (x >= 0 && "the mod function returned a negative value");
+    return x;
 }

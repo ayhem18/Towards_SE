@@ -25,5 +25,6 @@ def say_hello(request):
 
 def load_html(request):
     # load the template
+    # this function did not work... it must have something to do with files (relative and absolute and shit, but not really sure...)
     template = loader.get_template(os.path.join('polls', 'html_files', 'basic_index.html')) 
     return HttpResponse(template.render({}, request))
