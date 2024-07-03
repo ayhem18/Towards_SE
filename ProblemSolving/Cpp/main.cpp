@@ -8,6 +8,7 @@
 #include <functional>
 #include <numeric>
 # include "utils.h"
+# include "arrays/must_do.h"
 
 void trees_f() {
     Node n1(1);
@@ -126,7 +127,7 @@ auto subsets = allSubsets(arr);
 
 std::vector<int> sums = {};
 for (auto & s: subsets) {
-    if (s.size() == 0){continue;};
+    if (s.size() == 0){continue;}
     sums.push_back(std:: accumulate(s.begin(), s.end(), 0));
 }
 
@@ -151,15 +152,35 @@ void some_dp2() {
             assert (r1 == r2 && "The resuls are differnet");
         }
     }
-
-//    int n = 3;
-//    for (int j = 1; j <= 4; j++) {
-//        std::cout << "ways (" << n << " , " << j << " ) = " << countWays(n, j) <<"\n";
-//    }
-//    int k = 99999;
-//    std::cout << "ways (" << n << " , " << k << " ) = " << countWays(n, k) <<"\n";
 }
 
+#include <cstdlib>
+
+void test_subarray_sum() {
+    for (int i = 0; i <= 10000; i++) {
+        int n = rand() % 10000;
+        std::vector<int> arr (n, 0);
+        for (int j = 0; j < n; j++) {
+            arr[j] = rand() % 1000;
+        }
+        int s = rand() % 1000;
+        auto sol = subarraySum(arr, n, s);
+        if (i % 10 == 0) {
+            std::cout << "we are at " << i << "\n";
+        }
+
+        if (sol[0] != -1) {
+            int start = sol[0] - 1, e = sol[1];
+            int v = std::accumulate(arr.begin() + start, arr.begin() + e, 0);
+            if (v != s) {
+                std::cout << "SOMETHING HAPPENED !!!" << "\n";
+                break;
+            }
+        }
+    }
+}
+
+
 int main() {
-    some_dp2();
+    test_subarray_sum();
 }

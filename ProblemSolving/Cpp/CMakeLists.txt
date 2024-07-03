@@ -19,4 +19,6 @@ add_executable(Cpp main.cpp
         dp/dp1.cpp
         dp/dp1.h
         backtracking/bt1.cpp
-        backtracking/bt1.h)
+        backtracking/bt1.h
+        arrays/must_do.cpp
+        arrays/must_do.h)
