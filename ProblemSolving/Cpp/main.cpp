@@ -118,9 +118,10 @@ for (int s = 1; s <= 200; s++) {
 }
 
 void dpf() {
-    for (int i = 1; i <= 10; i++) {
-        std::cout << "i: " << i << " number of ways to reach the stairs " << countWays(i) << "\n";
-    }
+    std::string s1 {"ttottoc"};
+    std::string s2 {"toc"};
+
+    std::cout << smallestWindow(s1, s2) << "\n";
 }
 
 #include <cstdlib>

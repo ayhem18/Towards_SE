@@ -21,4 +21,6 @@ int minCoins(std::vector<int> &coins, int n, int sum);
 
 int lcs(int n, int m, std::string& str1, std::string& str2);
 
+std::string smallestWindow (std::string& s, std::string& p);
+
 #endif //CPP_DP1_H

@@ -168,6 +168,7 @@ lli _countWaysDP(int n, int k) {
 
 
 #include <limits>
+#include <unordered_map>
 
 /**
 * https://www.geeksforgeeks.org/problems/number-of-coins1824/1?page=1&category=Dynamic%20Programming&status=unsolved&sortBy=submissions
@@ -250,7 +251,6 @@ int lcs(int n, int m, std::string& str1, std::string& str2) {
     return dp[n][m];
 }
 
-
 int countWaysDp(int n, vi& memo) {
     int M_int = static_cast<int>(pow(10, 9) + 7);
 
@@ -275,7 +275,6 @@ int countWaysDp(int n, vi& memo) {
     return memo[n];
 }
 
-
 int countWays(int n) {
     vi memo(n + 1, 0);
     if (n <= 0){
@@ -290,36 +289,149 @@ int countWays(int n) {
     return countWaysDp(n, memo);
 }
 
-//int countWays(int n){
-//    // let's do this bottom-up
-//    int M_int = static_cast<int>(pow(10, 9) + 7);
-//    if (n == 0) {
-//        return 0;
-//    }
-//
-//    if (n == 1) {
-//        return 1;
-//    }
-//
-//    if (n == 2 ) {
-//        return 1;
-//    }
-//
-//    vi dp (n + 1, 0);
-//    dp[1] = 1;
-////    dp[2] = 1;
-//
-//    for (int i = 1; i <= n; i++) {
-//        if (i + 1 <= n) {
-//            dp[i + 1] += dp[i];
-//            dp[i + 1] = mod(dp[i + 1], M_int);
-//        }
-//
-//        if (i + 2 <= n) {
-//            dp[i + 2] += dp[i];
-//            dp[i + 2] = mod(dp[i + 2], M_int);
-//        }
-//    }
-//
-//    return dp[n];
-//}
+
+/**
+ *https://www.geeksforgeeks.org/problems/smallest-window-in-a-string-containing-all-the-characters-of-another-string-1587115621/1?page=2&category=Dynamic%20Programming&status=unsolved&sortBy=submissions
+ */
+
+bool map_subset_map(std::unordered_map<char, vi> m1, std::unordered_map<char, int> m2) {
+    // check if m2 is a subset of m1
+    auto it = m2.begin();
+    while (it != m2.end()) {
+        char key = it -> first;
+        // check if the key is in m1
+
+        auto m1_key = m1.find(key);
+        if (m1_key == m1.end()) {
+            return false;
+        }
+
+        // check the occurrence
+        if ((m1_key -> second).size() < it -> second){
+            return false;
+        }
+        it ++;
+    }
+    return true;
+}
+
+# include <unordered_map>
+std::string smallestWindow (std::string& s, std::string& p) {
+
+    // consider the case where p is of length 1 independently
+    if (p.size() == 1) {
+        if (s.find(p) != std::string::npos) {
+            return p;
+        }
+        return "-1";
+    }
+
+
+    // let's build p as a dictionary
+    std::unordered_map<char, int> p_map{};
+    for (char c: p) {
+        if (p_map.find(c) == p_map.end()) {
+            p_map[c] = 1;
+        } else {
+            p_map[c] += 1;
+        }
+    }
+
+    int best_start = -1, best_end = static_cast<int>(s.size());
+
+    // let's first find a good start
+    int start = 0;
+    while (p_map.find(s[start]) == p_map.end()) {
+        start++;
+    }
+    // at this point of the program we know that p has at least two elements
+    // hence end should be at least start + 1
+
+    int end = start + 1;
+
+    // at this point we know that s[start] is common with 'p'
+    std::unordered_map<char, vi> segment_map = {{s[start], {start}}};
+
+    int n = static_cast<int> (s.size());
+
+    while (end < n) {
+        // check if s[end] is in the p_map
+        if (p_map.find(s[end]) != p_map.end()) {
+            // append the value of 'end' to the vector associated with s[end]
+            if (segment_map.find(s[end]) == segment_map.end()) {
+                segment_map[s[end]] = {end};
+            } else {
+                segment_map[s[end]].push_back(end);
+            }
+            // check if the segment contains 'p'
+            bool segment_contains_p = map_subset_map(segment_map, p_map);
+
+            if (segment_contains_p) {
+                if (end - start < best_end - best_start) {
+                    // update the best segment
+                    best_start = start;
+                    best_end = end;
+                }
+                // time to update the 'start' variable:
+                // first remove it from the segment
+                // choose start as the smallest value in the current segment
+                auto it = segment_map.begin();
+
+                int index_to_remove = start;
+                char char_to_remove = s[start];
+
+                while (it != segment_map.end()) {
+                    int size = static_cast<int>((it->second).size());
+                    int needed_size = p_map[it->first];
+
+                    if (size == needed_size) {
+                        it ++ ;
+                        continue;
+                    }
+
+                    int new_index = (it->second)[size - needed_size - 1];
+
+                    if (new_index > index_to_remove) {
+                        index_to_remove = std::max(index_to_remove, new_index);
+                        char_to_remove = it->first;
+                    }
+                    it ++ ;
+                }
+
+                int needed_size = p_map[char_to_remove], size = segment_map[char_to_remove].size();
+                auto b = segment_map[char_to_remove].begin(), e = b + size - needed_size;
+                segment_map[char_to_remove].erase(b, e);
+
+                int new_start = end;
+                it = segment_map.begin();
+                // find the new start
+                while (it != segment_map.end()) {
+                    new_start = std::min((it->second)[0], new_start);
+                    it ++;
+                }
+
+                start = new_start;
+                std::string r = "";
+            }
+
+        }
+
+        end++;
+    }
+
+    bool segment_contains_p = map_subset_map(segment_map, p_map);
+    if (segment_contains_p) {
+        if (end - start < best_end - best_start) {
+            // update the best segment
+            best_start = start;
+            best_end = end;
+        }
+    }
+        // make sure to consider the case where a match is not found
+    if (best_start == -1) {
+        return "-1";
+    }
+
+    return s.substr(best_start, best_end - best_start + 1);
+}
+
