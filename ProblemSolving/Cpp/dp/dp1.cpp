@@ -1,7 +1,7 @@
 # include "../utils.h"
 # include <cmath>
 # include <vector>
-
+# include <string>
 
 
 
@@ -99,7 +99,7 @@ bool isSubsetSum(std::vector<int>&arr, int sum){
 
 lli M = static_cast<lli>(pow(10, 9) + 7);
 
-lli countWays(int n, int k) {
+lli _countWays(int n, int k) {
     if (k <= 1) {
         if (n > 2) {
             return 0;
@@ -138,7 +138,7 @@ lli countWays(int n, int k) {
 //    return dp[n][2];
 }
 
-lli countWaysDP(int n, int k) {
+lli _countWaysDP(int n, int k) {
     if (k <= 1) {
         if (n > 2) {
             return 0;
@@ -165,3 +165,161 @@ lli countWaysDP(int n, int k) {
     return dp[n][2];
 
 }
+
+
+#include <limits>
+
+/**
+* https://www.geeksforgeeks.org/problems/number-of-coins1824/1?page=1&category=Dynamic%20Programming&status=unsolved&sortBy=submissions
+*/
+
+
+int _minCoins(std::vector<int> & coins, int n, int sum, std::vector<std::vector<int>>& memo) {
+    if (sum <= 0) {
+        return -1;
+    }
+
+    if (memo[sum][n] != 0){
+        return memo[sum][n];
+    }
+
+    if (n == 0) {
+        if (mod(sum, coins[0]) == 0) {
+            memo[sum][0] = sum / coins[0];
+        }
+        else{
+            memo[sum][0] = -1;
+        }
+        return memo[sum][0];
+    }
+
+    int max_num_coins = sum / coins[n];
+
+    int res = std::numeric_limits<int>::max();
+    bool modified = false;
+    for (int i = 0; i <= max_num_coins; i++) {
+        if (sum == i * coins[n]) {
+            res = std::min(res, i);
+            modified = true;
+            continue;
+        }
+
+        int temp_res = _minCoins(coins, n - 1, sum - coins[n] * i, memo);
+        if (temp_res != -1) {
+            res = std::min(res, temp_res + i);
+            modified = true;
+        }
+    }
+
+    // if at this point the value
+    if (! modified) {
+        res = -1;
+    }
+    memo[sum][n] = res;
+    return res;
+}
+
+int minCoins(std::vector<int> &coins, int n, int sum){
+    // prepare the dp memory
+    std::vector<std::vector<int>> memo(sum + 1);
+    for(int i = 0; i < sum + 1; i++) {
+        memo[i] = std::vector<int>(n, 0);
+    }
+    return _minCoins(coins, n - 1, sum, memo);
+}
+
+
+/**
+ * https://www.geeksforgeeks.org/problems/longest-common-subsequence-1587115620/1?page=1&category=Dynamic%20Programming&status=unsolved&sortBy=submissions
+ */
+int lcs(int n, int m, std::string& str1, std::string& str2) {
+    // this is somewhat a known problem
+    std::vector<std::vector<int>> dp(n + 1);
+    for (int i = 0; i <= n; i++) {
+        dp[i] = std::vector<int>(m + 1, 0);
+    }
+
+    // fill the grid
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            int res = std::max(std::max(dp[i - 1][j], dp[i][j-1]), dp[i - 1][j - 1] + int(str1[i - 1] == str2[j - 1]));
+            dp[i][j] = res;
+        }
+    }
+
+    return dp[n][m];
+}
+
+
+int countWaysDp(int n, vi& memo) {
+    int M_int = static_cast<int>(pow(10, 9) + 7);
+
+    if (n <= 0){
+        return 1;
+    }
+    if (n == 1) {
+        return 1;
+    }
+
+    if (memo[n] != 0) {
+        return memo[n];
+    }
+
+    int p1 = countWaysDp(n - 2, memo);
+    int p2 = countWaysDp(n - 1, memo);
+
+    p1 = mod(p1, M_int);
+    p2 = mod(p2, M_int);
+
+    memo[n] = mod(p1 + p2, M_int);
+    return memo[n];
+}
+
+
+int countWays(int n) {
+    vi memo(n + 1, 0);
+    if (n <= 0){
+        return 1;
+    }
+    if (n == 1) {
+        return 1;
+    }
+
+    memo[0] = 1;
+    memo[1] = 1;
+    return countWaysDp(n, memo);
+}
+
+//int countWays(int n){
+//    // let's do this bottom-up
+//    int M_int = static_cast<int>(pow(10, 9) + 7);
+//    if (n == 0) {
+//        return 0;
+//    }
+//
+//    if (n == 1) {
+//        return 1;
+//    }
+//
+//    if (n == 2 ) {
+//        return 1;
+//    }
+//
+//    vi dp (n + 1, 0);
+//    dp[1] = 1;
+////    dp[2] = 1;
+//
+//    for (int i = 1; i <= n; i++) {
+//        if (i + 1 <= n) {
+//            dp[i + 1] += dp[i];
+//            dp[i + 1] = mod(dp[i + 1], M_int);
+//        }
+//
+//        if (i + 2 <= n) {
+//            dp[i + 2] += dp[i];
+//            dp[i + 2] = mod(dp[i + 2], M_int);
+//        }
+//    }
+//
+//    return dp[n];
+//}

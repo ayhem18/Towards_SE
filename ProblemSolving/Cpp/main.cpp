@@ -9,6 +9,7 @@
 #include <numeric>
 # include "utils.h"
 # include "arrays/must_do.h"
+# include <string>
 
 void trees_f() {
     Node n1(1);
@@ -100,57 +101,25 @@ void bst_f() {
         std::cout << v << " ";
     }
     std::cout << "\n";
-
-//    for (int j = 1; j <= 20; j++) {
-//        auto v = printNearNodes(&n1, 1, j);
-//        std::cout << "the elements in the range " << 1 << " " << j << " are:\n";
-//        for (int i: v) {
-//            std::cout << i << " ";
-//        }
-//        std::cout << "\n";
-//    }
-
 }
 
 void some_dp1() {
-//    for (int i = 1000; i < 1005; i++) {
-//        std::cout << "index: " << i << " bottom up: " << bottomUp(i) << ", topdown: " << topDown(i) << "\n";
-//    }
-//
-////    std::cout << "index: " << i << " bottom up: " << bottomUp(i) << ", topdown: " << topDown(i) << "\n";
-
-int coins1[] = {4, 3, 2, 1};
-int coins2[] = {1, 2, 3, 4};
 std::vector<int> arr = {2, 3, 5, 10, 22, 24, 30, 1};
-
 auto subsets = allSubsets(arr);
-
 std::vector<int> sums = {};
 for (auto & s: subsets) {
     if (s.size() == 0){continue;}
     sums.push_back(std:: accumulate(s.begin(), s.end(), 0));
 }
 
-
 for (int s = 1; s <= 200; s++) {
     bool res = isSubsetSum(arr, s);
-    assert(res == (std::count(sums.begin(), sums.end(), s) >= 1));
-//    std::cout << "sum : " << s << " : " << std::boolalpha << isSubsetSum(arr, s) << "\n";
-
-    //    long long int a1 = count(coins1, 4, s);
-//    long long int a2 = count(coins2, 4, s);
-//    assert (a1 == a2 && " The values are not the same !!");
+    assert(res == (std::count(sums.begin(), sums.end(), s) >= 1));}
 }
 
-}
-
-void some_dp2() {
-    for (int n = 1; n <= 2000; n++) {
-        for (int k = 1; k <= 100; k++) {
-            lli r1 = countWays(n, k);
-            lli r2 = countWaysDP(n, k);
-            assert (r1 == r2 && "The resuls are differnet");
-        }
+void dpf() {
+    for (int i = 1; i <= 10; i++) {
+        std::cout << "i: " << i << " number of ways to reach the stairs " << countWays(i) << "\n";
     }
 }
 
@@ -182,5 +151,5 @@ void test_subarray_sum() {
 
 
 int main() {
-    test_subarray_sum();
+    dpf();
 }

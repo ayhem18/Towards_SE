@@ -140,5 +140,71 @@ def random_array(n:int, low=0, high=100):
     return [random.randint(low, high) for _ in range(n)]
 
 
+## this one is tough: 
+## https://www.geeksforgeeks.org/problems/minimum-number-of-jumps-1587115620/1?page=1&difficulty=Medium&status=unsolved&sprint=50746f92a895c22a50504ac0c1fb9c84&sortBy=submissions 
+def minJumps(arr, n = None):
+    if n is None:
+        n = len(arr)
+    count = 1
+    index = 0
+    current_limit = arr[0]
+
+    if current_limit >= n - 1:
+        return 1
+
+    while index < n:
+        next_limit = current_limit
+        
+        while index <= current_limit:
+            next_limit = max(next_limit, arr[index] + index)
+            next_limit = min(next_limit, n - 1)
+            index += 1
+    
+        if index == n:
+            return count
+
+        if next_limit == current_limit:
+            # this means, it is not possible to move further
+            return -1
+
+        current_limit = next_limit
+        count += 1
+    
+    return count
+
+def minJumpsNaive(arr, index = 0, memo=None):
+    n = len(arr)
+    if index == len(arr) - 1:
+        return 1
+    if index + arr[index] >= n - 1:
+        return 1
+
+    if arr[index] == 0:
+        return -1
+    if memo is None:
+        memo = {}
+
+    if index in memo:
+        return memo[index]
+
+    v = None
+    for i in range(1, arr[index] + 1):
+        t = minJumpsNaive(arr, index + i, memo=memo)
+        if t != -1:
+            v = t if v is None else min(v, t)
+    
+    if v is None:
+        memo[index] = -1
+    else:
+        memo[index] = 1 + v
+
+    return memo[index]
+
+
 if __name__ == "__main__":
-    pass
+    for i in range(100):
+        n = random.randint(5, 1000)
+        arr = random_array(n, low=0, high=20)
+        s1 = minJumpsNaive(arr)
+        s2 = minJumps(arr)
+        assert s1 == s2, "yo"        

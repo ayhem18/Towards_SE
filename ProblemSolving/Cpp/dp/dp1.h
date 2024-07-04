@@ -12,8 +12,13 @@ long long int count(int coins[], int N, int sum);
 
 bool isSubsetSum(std::vector<int>&arr, int sum);
 
-long long countWays(int n, int k);
+lli _countWays(int n, int k);
 
-lli countWaysDP(int n, int k);
+lli _countWaysDP(int n, int k);
+
+
+int minCoins(std::vector<int> &coins, int n, int sum);
+
+int lcs(int n, int m, std::string& str1, std::string& str2);
 
 #endif //CPP_DP1_H
