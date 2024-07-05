@@ -21,4 +21,6 @@ add_executable(Cpp main.cpp
         backtracking/bt1.cpp
         backtracking/bt1.h
         arrays/must_do.cpp
-        arrays/must_do.h)
+        arrays/must_do.h
+        greedy/g1.cpp
+        greedy/g1.h)

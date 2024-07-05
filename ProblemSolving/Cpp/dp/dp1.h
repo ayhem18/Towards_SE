@@ -21,6 +21,11 @@ int minCoins(std::vector<int> &coins, int n, int sum);
 
 int lcs(int n, int m, std::string& str1, std::string& str2);
 
-std::string smallestWindow (std::string& s, std::string& p);
+lli minTime(int arr[], int n, int k);
+
+int MinSquares(int n);
+
+
+int shortestCommonSupersequence(std::string& x, std::string& y, int m, int n);
 
 #endif //CPP_DP1_H

@@ -118,10 +118,11 @@ for (int s = 1; s <= 200; s++) {
 }
 
 void dpf() {
-    std::string s1 {"ttottoc"};
-    std::string s2 {"toc"};
 
-    std::cout << smallestWindow(s1, s2) << "\n";
+    std::string s1 {"t"};
+    std::string s2 {"awc"};
+    std::cout << shortestCommonSupersequence(s1, s2, s1.size(), s2.size()) << "\n";
+
 }
 
 #include <cstdlib>

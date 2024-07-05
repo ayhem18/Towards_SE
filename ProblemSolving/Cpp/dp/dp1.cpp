@@ -2,8 +2,9 @@
 # include <cmath>
 # include <vector>
 # include <string>
-
-
+# include <numeric>
+#include <limits>
+#include <algorithm>
 
 /**
  * solve:
@@ -94,11 +95,7 @@ bool isSubsetSum(std::vector<int>&arr, int sum){
 /**
  * solve https://www.geeksforgeeks.org/problems/painting-the-fence3727/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=bottom_sticky_on_article
  */
-
-
-
 lli M = static_cast<lli>(pow(10, 9) + 7);
-
 lli _countWays(int n, int k) {
     if (k <= 1) {
         if (n > 2) {
@@ -137,7 +134,6 @@ lli _countWays(int n, int k) {
     return n3;
 //    return dp[n][2];
 }
-
 lli _countWaysDP(int n, int k) {
     if (k <= 1) {
         if (n > 2) {
@@ -167,8 +163,6 @@ lli _countWaysDP(int n, int k) {
 }
 
 
-#include <limits>
-#include <unordered_map>
 
 /**
 * https://www.geeksforgeeks.org/problems/number-of-coins1824/1?page=1&category=Dynamic%20Programming&status=unsolved&sortBy=submissions
@@ -251,6 +245,10 @@ int lcs(int n, int m, std::string& str1, std::string& str2) {
     return dp[n][m];
 }
 
+
+/**
+ *
+ */
 int countWaysDp(int n, vi& memo) {
     int M_int = static_cast<int>(pow(10, 9) + 7);
 
@@ -290,148 +288,146 @@ int countWays(int n) {
 }
 
 
+
+lli minTimeDp(int arr[], int n, int index, int k, std::vector<vll>& memo) {
+    // let's take some base cases
+    if (index == 0) {
+        return 0;
+    }
+    if (index == 1) {
+        return arr[n - 1];
+    }
+
+    if (k == 1) {
+        return std::accumulate(arr + n - index, arr + n, 0);
+    }
+
+    if (memo[index][k] != 0) {
+        return memo[index][k];
+    }
+
+    lli first_painter_time = 0;
+    lli final_res = std::numeric_limits<lli>::max();
+
+    for (int i = n - index; i < n; i++) {
+        first_painter_time += arr[i];
+        lli temp_res = minTimeDp(arr, n, n - 1 - i, k - 1, memo);
+        lli i_res = std::max(first_painter_time, temp_res);
+        final_res = std::min(final_res, i_res);
+        if (temp_res <= first_painter_time) {
+            break;
+        }
+    }
+    memo[index][k] = final_res;
+    return final_res;
+}
+
+// the current implementation exceeds time limit
+lli minTime(int arr[], int n, int k){
+    // prepare the memo
+    std::vector<vll> memo;
+    for (int i = 0; i < n + 1; i++) {
+        memo.push_back(std::vector<lli>(k + 1, 0));
+    }
+    return minTimeDp(arr, n, n, k, memo);
+}
+
+
 /**
- *https://www.geeksforgeeks.org/problems/smallest-window-in-a-string-containing-all-the-characters-of-another-string-1587115621/1?page=2&category=Dynamic%20Programming&status=unsolved&sortBy=submissions
- */
-
-bool map_subset_map(std::unordered_map<char, vi> m1, std::unordered_map<char, int> m2) {
-    // check if m2 is a subset of m1
-    auto it = m2.begin();
-    while (it != m2.end()) {
-        char key = it -> first;
-        // check if the key is in m1
-
-        auto m1_key = m1.find(key);
-        if (m1_key == m1.end()) {
-            return false;
-        }
-
-        // check the occurrence
-        if ((m1_key -> second).size() < it -> second){
-            return false;
-        }
-        it ++;
+https://www.geeksforgeeks.org/problems/get-minimum-squares0538/1?page=1&difficulty=Medium&status=unsolved&sortBy=submissions
+*/
+int minSquaresDp(int n, vi& memo) {
+    // first check if n is a perfect square
+    int n_sqrt = static_cast<int>(sqrt(n));
+    if (n == n_sqrt * n_sqrt) {
+        return 1;
     }
-    return true;
+
+    if (memo[n] != -1) {
+        return memo[n];
+    }
+
+    int res = std::numeric_limits<int>::max();
+
+    for (int i = n_sqrt; i >= 1; i --) {
+        res = std::min(res,  1 + minSquaresDp(n - i * i, memo));
+    }
+    memo[n] = res;
+    return res;
 }
 
-# include <unordered_map>
-std::string smallestWindow (std::string& s, std::string& p) {
-
-    // consider the case where p is of length 1 independently
-    if (p.size() == 1) {
-        if (s.find(p) != std::string::npos) {
-            return p;
-        }
-        return "-1";
-    }
-
-
-    // let's build p as a dictionary
-    std::unordered_map<char, int> p_map{};
-    for (char c: p) {
-        if (p_map.find(c) == p_map.end()) {
-            p_map[c] = 1;
-        } else {
-            p_map[c] += 1;
-        }
-    }
-
-    int best_start = -1, best_end = static_cast<int>(s.size());
-
-    // let's first find a good start
-    int start = 0;
-    while (p_map.find(s[start]) == p_map.end()) {
-        start++;
-    }
-    // at this point of the program we know that p has at least two elements
-    // hence end should be at least start + 1
-
-    int end = start + 1;
-
-    // at this point we know that s[start] is common with 'p'
-    std::unordered_map<char, vi> segment_map = {{s[start], {start}}};
-
-    int n = static_cast<int> (s.size());
-
-    while (end < n) {
-        // check if s[end] is in the p_map
-        if (p_map.find(s[end]) != p_map.end()) {
-            // append the value of 'end' to the vector associated with s[end]
-            if (segment_map.find(s[end]) == segment_map.end()) {
-                segment_map[s[end]] = {end};
-            } else {
-                segment_map[s[end]].push_back(end);
-            }
-            // check if the segment contains 'p'
-            bool segment_contains_p = map_subset_map(segment_map, p_map);
-
-            if (segment_contains_p) {
-                if (end - start < best_end - best_start) {
-                    // update the best segment
-                    best_start = start;
-                    best_end = end;
-                }
-                // time to update the 'start' variable:
-                // first remove it from the segment
-                // choose start as the smallest value in the current segment
-                auto it = segment_map.begin();
-
-                int index_to_remove = start;
-                char char_to_remove = s[start];
-
-                while (it != segment_map.end()) {
-                    int size = static_cast<int>((it->second).size());
-                    int needed_size = p_map[it->first];
-
-                    if (size == needed_size) {
-                        it ++ ;
-                        continue;
-                    }
-
-                    int new_index = (it->second)[size - needed_size - 1];
-
-                    if (new_index > index_to_remove) {
-                        index_to_remove = std::max(index_to_remove, new_index);
-                        char_to_remove = it->first;
-                    }
-                    it ++ ;
-                }
-
-                int needed_size = p_map[char_to_remove], size = segment_map[char_to_remove].size();
-                auto b = segment_map[char_to_remove].begin(), e = b + size - needed_size;
-                segment_map[char_to_remove].erase(b, e);
-
-                int new_start = end;
-                it = segment_map.begin();
-                // find the new start
-                while (it != segment_map.end()) {
-                    new_start = std::min((it->second)[0], new_start);
-                    it ++;
-                }
-
-                start = new_start;
-                std::string r = "";
-            }
-
-        }
-
-        end++;
-    }
-
-    bool segment_contains_p = map_subset_map(segment_map, p_map);
-    if (segment_contains_p) {
-        if (end - start < best_end - best_start) {
-            // update the best segment
-            best_start = start;
-            best_end = end;
-        }
-    }
-        // make sure to consider the case where a match is not found
-    if (best_start == -1) {
-        return "-1";
-    }
-
-    return s.substr(best_start, best_end - best_start + 1);
+int MinSquares(int n){
+    // create the memo
+    vi memo(n + 1, -1);
+    return minSquaresDp(n, memo);
 }
 
+/**
+* https://www.geeksforgeeks.org/problems/shortest-common-supersequence0322/1?page=1&difficulty=Medium&status=unsolved&sortBy=submissions
+*/
+// this problem builds on the longest common subsequence problem
+
+std::pair<vi, vi> lcs(std::string& str1, std::string& str2) {
+    int n = static_cast<int> (str1.size()), m = static_cast<int> (str2.size());
+    // this is somewhat a known problem
+    std::vector<std::vector<int>> dp(n + 1);
+    for (int i = 0; i <= n; i++) {
+        dp[i] = std::vector<int>(m + 1, 0);
+    }
+
+    // fill the grid
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= m; j++) {
+            int res = std::max(std::max(dp[i - 1][j], dp[i][j-1]), dp[i - 1][j - 1] + int(str1[i - 1] == str2[j - 1]));
+            dp[i][j] = res;
+        }
+    }
+
+    // we need to backtrack, and find the indices of the characters belong to the longest subsequence in each string
+    vi indices1 {};
+    vi indices2 {};
+
+    int i = n, j = m;
+    while (i > 0 && j > 0) {
+        if (str1[i - 1] == str2[j - 1] && dp[i][j] == dp[i - 1][j - 1] + 1) {
+            indices1.push_back(i);
+            indices2.push_back(j);
+            j = j - 1;
+            i = i - 1;
+        }
+        else {
+            // find the minimum
+            std::vector<vi> pos {{i - 1, j - 1}, {i, j - 1}, {i - 1, j}};
+            auto res = std::max_element(pos.begin(), pos.end(),
+                                       [dp] (vi& p1, vi& p2) {return dp[p1[0]][p1[1]] < dp[p2[0]][p2[1]];});
+            i = (*res)[0];
+            j = (*res)[1];
+        }
+    }
+
+    return {indices1, indices2};
+}
+
+
+
+int shortestCommonSupersequence(std::string& x, std::string& y, int m, int n){
+    // first the set of indices
+    auto res = lcs(x, y);
+    vi indices1 = res.first, indices2 = res.second;
+
+    int len = static_cast<int>(indices1.size());
+
+    if (len <= 1) {
+        return m + n - len;
+    }
+
+    int final_res = len + (m - indices1[0] - 1) + (n - indices2[0] - 1);
+    for (int p = 0; p < len - 1; p++) {
+        int str1_chars = (indices1[p] - indices1[p + 1] - 1);
+        int str2_chars = (indices2[p] - indices2[p + 1] - 1);
+        final_res += (str1_chars + str2_chars);
+    }
+
+    final_res += (indices1[len - 1]) + (indices2[len - 1]);
+    return final_res;
+}
