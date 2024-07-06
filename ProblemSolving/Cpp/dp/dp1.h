@@ -25,7 +25,12 @@ lli minTime(int arr[], int n, int k);
 
 int MinSquares(int n);
 
-
 int shortestCommonSupersequence(std::string& x, std::string& y, int m, int n);
+
+int uniquePaths(int m, int n);
+
+bool isInterleave(std::string& s1, std::string& s2, std::string& s3);
+
+int numDistinct(std::string& s, std::string& t);
 
 #endif //CPP_DP1_H

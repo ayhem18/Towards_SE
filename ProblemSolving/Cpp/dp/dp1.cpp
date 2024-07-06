@@ -10,7 +10,6 @@
  * solve:
  * https://www.geeksforgeeks.org/problems/coin-change2448/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=bottom_sticky_on_article
  */
-
 long long int _count(int coins[], int n, int sum, std::vector<std::vector<long long int>> & memo) {
     if (n <= 0) {
         return 0;
@@ -167,7 +166,6 @@ lli _countWaysDP(int n, int k) {
 /**
 * https://www.geeksforgeeks.org/problems/number-of-coins1824/1?page=1&category=Dynamic%20Programming&status=unsolved&sortBy=submissions
 */
-
 
 int _minCoins(std::vector<int> & coins, int n, int sum, std::vector<std::vector<int>>& memo) {
     if (sum <= 0) {
@@ -366,7 +364,7 @@ int MinSquares(int n){
 * https://www.geeksforgeeks.org/problems/shortest-common-supersequence0322/1?page=1&difficulty=Medium&status=unsolved&sortBy=submissions
 */
 // this problem builds on the longest common subsequence problem
-
+// this function builds on the  lcs function and returns the indices of the longest common subsequence in both strings
 std::pair<vi, vi> lcs(std::string& str1, std::string& str2) {
     int n = static_cast<int> (str1.size()), m = static_cast<int> (str2.size());
     // this is somewhat a known problem
@@ -408,8 +406,6 @@ std::pair<vi, vi> lcs(std::string& str1, std::string& str2) {
     return {indices1, indices2};
 }
 
-
-
 int shortestCommonSupersequence(std::string& x, std::string& y, int m, int n){
     // first the set of indices
     auto res = lcs(x, y);
@@ -430,4 +426,137 @@ int shortestCommonSupersequence(std::string& x, std::string& y, int m, int n){
 
     final_res += (indices1[len - 1]) + (indices2[len - 1]);
     return final_res;
+}
+
+
+/**
+* Following the instructions of NeedCode: solving the first 2D dp problem:
+* https://leetcode.com/problems/unique-paths/
+*/
+
+int uniquePaths(int m, int n) {
+    if (m <= 0 || n <= 0) {
+        return 0;
+    }
+
+    std::vector<vi> dp(m);
+    for (int i = 0; i < m; i++) {
+        dp[i] = std::vector<int>(n, 0);
+    }
+    dp[0][0] = 1;
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            if (i > 0) {
+                dp[i][j] += dp[i - 1][j];
+            }
+            if (j > 0) {
+                dp[i][j] += dp[i][j - 1];
+            }
+        }
+    }
+    return dp[m - 1][n - 1];
+}
+/**
+ * https://leetcode.com/problems/interleaving-string/
+ */
+bool isInterleave(std::string& s1, std::string& s2, std::string& s3) {
+    int n1 = static_cast<int>(s1.size()), n2 = static_cast<int>(s2.size()), n3 = static_cast<int>(s3.size());
+
+    if (n3 != n1 + n2) {
+        return false;
+    }
+
+    // create the dp table
+    std::vector<std::vector<bool>> dp (n1 + 1);
+    for (int i = 0; i < n1 + 1; i++) {
+        dp[i] = std::vector<bool>(n2 + 1);
+    }
+
+    // dp[i, j] = whether the string s1[:i] and s2[:j] can be used to form s3[:i + j]
+
+    dp[0][0] = true; // this is the match between two empty strings
+
+    // let's start with the first row dp[0, i] = whether s1[:i - 1] and s3[: i - 1] are the same
+    for (int i = 1; i < n2 + 1; i++) {
+        dp[0][i] = (dp[0][i - 1]) && (s3[i - 1] == s2[i - 1]);
+    }
+
+    // do the same for first column
+    for (int i = 1; i < n1 + 1; i++) {
+        dp[i][0] = (dp[i - 1][0]) && (s3[i - 1] == s1[i - 1]);
+    }
+
+    for (int i = 1; i < n1 + 1; i++) {
+        char s1_char = s1[i - 1];
+        for (int j = 1; j < n2 + 1; j++) {
+            char s3_char = s3[i + j - 1];
+            char s2_char = s2[j - 1];
+
+            if ((s3_char != s1_char) && (s3_char != s2_char)) {
+                dp[i][j] = false;
+            }
+
+            else if (s3_char == s1_char && s3_char == s2_char) {
+                dp[i][j] = dp[i - 1][j] || dp[i][j - 1];
+            }
+
+            else if (s3_char == s1_char) {
+                dp[i][j] = dp[i - 1][j];
+            }
+            else {
+                dp[i][j] = dp[i][j - 1];
+            }
+        }
+    }
+    return dp[n1][n2];
+}
+
+/**
+* https://leetcode.com/problems/distinct-subsequences/
+*/
+
+
+int numDistinctDP(std::string& s, std::string& t, int n1, int n2, int i1, int i2, std::vector<vi> & memo) {
+    int nt1 = n1 - i1, nt2 = n2 - i2;
+
+    if (nt1 == 0 || nt2 == 0) {
+        return int (nt1 == nt2);
+    }
+
+    if (nt1 < nt2) {
+        return 0;
+    }
+
+    if (nt1 == nt2) {
+        std::string s1 = s.substr(i1, n1 - i1), t1 = t.substr(i2, n2 - i2);
+        return int(s1 == t1);
+    }
+
+    if (memo[i1][i2] != -1) {
+        int a = 0;
+        return memo[i1][i2];
+    }
+
+    // how we proceed depends on the characters s[i1], t[i2]
+    if (s[i1] != t[i2]) {
+        int res = numDistinctDP(s, t, n1, n2, i1 + 1, i2, memo);
+        memo[i1][i2] = res;
+        return res;
+    }
+
+    int c1 = numDistinctDP(s, t, n1, n2, i1 + 1, i2, memo);
+    int c2 = numDistinctDP(s, t, n1, n2, i1 + 1, i2 + 1, memo);
+
+    memo[i1][i2] = c1 + c2;
+    return memo[i1][i2];
+}
+
+int numDistinct(std::string& s, std::string& t) {
+    // let's create the memo
+    int n1 = static_cast<int> (s.size()), n2 = static_cast<int> (t.size());
+    std::vector<vi> memo (n1);
+    for (int i = 0; i < n1; i++) {
+        memo[i] = std::vector<int>(n2, -1);
+    }
+    return numDistinctDP(s, t, n1, n2, 0, 0, memo);
 }
