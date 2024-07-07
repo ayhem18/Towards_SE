@@ -23,4 +23,6 @@ add_executable(Cpp main.cpp
         arrays/must_do.cpp
         arrays/must_do.h
         greedy/g1.cpp
-        greedy/g1.h)
+        greedy/g1.h
+        trees/heaps/leetcode.cpp
+        trees/heaps/leetcode.h)

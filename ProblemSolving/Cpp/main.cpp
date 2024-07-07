@@ -150,6 +150,12 @@ void test_subarray_sum() {
 }
 
 
+
+
 int main() {
-    dpf();
+    vi h{1, 2, 3, 5, 8};
+    std::make_heap(h.begin(), h.end());
+    for (int v : h) {
+        std::cout << v<< "\n";
+    }
 }
