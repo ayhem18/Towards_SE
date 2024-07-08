@@ -29,9 +29,8 @@ def longestSubseq(n : int, a : List[int]) -> int:
         res = max(dp[i], res)
 
     return res
+
  
 
 if __name__ == '__main__':
-    a = [2, 8, 5, 1, 10, 5, 9, 9, 3,5]
-    n = len(a)
-    print(longestSubseq(n, a))
+    pass
