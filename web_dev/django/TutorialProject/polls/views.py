@@ -16,15 +16,24 @@ def index(request: HttpRequest):
     content = "<html><body><h1> this is a big ass header </h1></body></html>"
     return HttpResponse(content)
 
-def anotherView(request):
-    return HttpResponse("Another View: shup up !!")
+def get_user(request: HttpRequest, name: str, id: str):
+    # let's see if we can make this a little bit more complicated
+    # It is easy to see that this does not scale and hence the use of "template for display purposes..."
+    content = f"<html><body><h1> this is a big ass header <br> The user {name} with id: {id} sent this request </h1></body></html>"
+    return HttpResponse(content)
 
 
-def say_hello(request):
-    return HttpResponse("Hello Dear visitor !!")
+def get_user2(request: HttpRequest):
+    if 'name' in request.GET:
+        name = request.GET['name']
+    else:
+        name = 'unknown_name'
 
-def load_html(request):
-    # load the template
-    # this function did not work... it must have something to do with files (relative and absolute and shit, but not really sure...)
-    template = loader.get_template(os.path.join('polls', 'html_files', 'basic_index.html')) 
-    return HttpResponse(template.render({}, request))
+    if 'id' in request.GET:
+        id = request.GET['id']
+    else:
+        id = 'unknown_id'
+
+    content = f"<html><body><h1> this is a big ass header <br> The user {name} with id: {id} sent this request </h1></body></html>"
+    return HttpResponse(content)
+
