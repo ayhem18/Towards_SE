@@ -39,3 +39,10 @@ def get_user2(request: HttpRequest):
 
     content = f"<html><body><h1> this is a big ass header <br> The user {name} with id: {id} sent this request </h1></body></html>"
     return HttpResponse(content)
+
+
+def home_view(request: HttpRequest):
+    # first load the template
+    template = loader.get_template('basic_index.html')
+    context = {} # since no variables are expected in the html file
+    return HttpResponse(template.render(context, request))
