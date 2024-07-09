@@ -7,6 +7,8 @@ from django.template import loader
 # Create your views here.
 from django.http import HttpResponse, HttpRequest
 
+from .models import Dish, CuisineCategory
+
 SCRITP_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # a view in Django is just a function after all 
@@ -46,3 +48,20 @@ def home_view(request: HttpRequest):
     template = loader.get_template('basic_index.html')
     context = {} # since no variables are expected in the html file
     return HttpResponse(template.render(context, request))
+
+
+def display_dishes(request: HttpRequest) -> HttpResponse:
+    # first extract all dishes (we're only doing this since we have very few items)
+    all_dishes = Dish.objects.all()
+    
+    # used_categories_ids = [d.category_id.category_id for d in all_dishes]
+    
+    # cui_cats = CuisineCategory.objects.filter(category_id__in=used_categories_ids)
+    # cuisines_ids_and_names = {rec.category_id: rec.category_name for rec in cui_cats}
+
+    return render(request, 
+            "dishes.html", 
+           {"dishes": all_dishes}
+        )
+
+    

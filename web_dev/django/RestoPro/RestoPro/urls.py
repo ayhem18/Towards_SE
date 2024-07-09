@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path("menu/", include('menu.urls'))
+    path('admin/', admin.site.urls), # map any url that starts with 'admin' to the url specific to the admin site
+    path("menu/", include('menu.urls')),  # map any url that starts with 'menu' to the menu app
+    path("home/", include('resto.urls')) # home to the 'resto' app 
 ]

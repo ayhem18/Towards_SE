@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html> 
+    <head>
+        <link rel="stylesheet" href="style.css"/> 
+    </head>
+
+    <body>  
+
+        <h1 id="main_header">  
+            Your gate to a different food experience
+        </h1>
+
+        If food were an art, then our chefs would definitely be artists ? Well our art is from people to people and all about people (we really like the word <em> <i>people</i> </em>)
+        let us take 5 seconds of your time and show off our food (sorry meant masterpieces)
+
+        <ul>
+            {% for d in dishes %}
+            <li>{{d.name}}: belongs to the {{d.category_id.category_name}} category </li>         
+            {% endfor %}
+        </ul>
+    </body>
+
+</html>
+
+
