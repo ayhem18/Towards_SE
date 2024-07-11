@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework', # needed to use the "Django Rest Framework"
     'books.apps.BooksConfig',
     'django.contrib.admin',
     'django.contrib.auth',

@@ -1,16 +1,12 @@
 from django.shortcuts import render
-from django.http import HttpRequest, JsonResponse, QueryDict
+from django.http import HttpRequest, JsonResponse
 from django.db import IntegrityError
-
 from django.views.decorators.csrf import csrf_exempt
-
 from django.forms.models import model_to_dict
 from .models import Book
 
 
 def _book_get_request(request: HttpRequest) -> JsonResponse:
-    
-    
     all_books = Book.objects.all()
     
     # the idea here is to get all books
@@ -47,7 +43,7 @@ def _book_patch_request(request: HttpRequest) -> JsonResponse:
     try: 
         # make sure the book title is passed
         title = request.GET.get('title', None)
-        if 'title' is None:
+        if title is None:
             return JsonResponse(data={"error": "true", "message": f"the patch method requires passing the book title. Request data: {request.GET}"}, status=400)
 
         field_names = [f.name for f in Book._meta.get_fields()]
@@ -67,14 +63,13 @@ def _book_patch_request(request: HttpRequest) -> JsonResponse:
         return JsonResponse(data={"book": model_to_dict(book), "keys": list(kvs.keys())}, 
                             status=201 # status for the correct post operation
                             )
-    # except KeyError:
-    #     return JsonResponse(data={"error": "true", "messsage": f"some missing fields. Make sure the parameters {['title', 'author', 'price']} are all passed"}, 
-    #                         status=400)
     except Book.DoesNotExist:
-            return JsonResponse(data={"error": "true", "message": f"the title: {title} requested is not available"}, status=404)
+            return JsonResponse(data={"error": "true", "message": f"the title: {title} requested is not available"}, 
+                                status=404)
 
     except IntegrityError:
-        return JsonResponse(data={"error": "true", "messsage": "some issue with the passed data"}, status=400)
+        return JsonResponse(data={"error": "true", "messsage": "some issue with the passed data"}, 
+                            status=400)
     
 
 # view to return all books in the database
@@ -88,3 +83,13 @@ def books(request: HttpRequest) -> JsonResponse:
 
     if request.method == 'PATCH':
         return _book_patch_request(request=request)
+
+
+# experimenting with the Django rest Framework !!
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+@api_view(['get', 'post', 'patch'])
+def books_drf(request: HttpRequest):
+    return Response('list of books', status=status.HTTP_200_OK)

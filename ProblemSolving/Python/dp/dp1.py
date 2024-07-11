@@ -30,7 +30,96 @@ def longestSubseq(n : int, a : List[int]) -> int:
 
     return res
 
- 
+
+"""
+https://leetcode.com/problems/longest-increasing-subsequence/
+"""
+def lengthOfLIS(nums):
+    seq_end_at_i = [1 for _ in nums]
+    # the idea here is to proceed with caution
+    for i in range(1, len(nums)):
+        for j in range(i):
+            if nums[i] > nums[j]:
+                seq_end_at_i[i] = max(seq_end_at_i[i], seq_end_at_i[j] + 1)
+    
+    return max(seq_end_at_i)
+
+
+def _isSubsetSum(nums, sum, n, memo):
+    if sum <= 0:
+        return False
+
+    # consider the base case
+    if n == 1:
+        return nums[0] == sum
+
+    if memo[sum][n] != -1:
+        return memo[sum][n]
+    
+    if sum == nums[n - 1]:
+        return True
+
+    res = _isSubsetSum(nums, sum - nums[n - 1], n - 1, memo) or _isSubsetSum(nums, sum, n - 1, memo)
+    memo[sum][n] = res
+    return res
+
+def isSubsetSum(nums, sum):
+    n = len(nums)
+    dp = [[-1 for _ in range(n + 1)] for _ in range(sum + 1)]
+    return _isSubsetSum(nums, sum, n, dp)
+
+
+"""
+https://leetcode.com/problems/partition-equal-subset-sum/
+"""
+def canPartition(nums):
+    """
+    :type nums: List[int]
+    :rtype: bool
+    """ 
+    array_sum = sum(nums)
+    if array_sum % 2 != 0:
+        return False
+
+    target = array_sum // 2
+    return isSubsetSum(nums, target)
+
+
+
+
+
+
+"""
+https://leetcode.com/problems/decode-ways/
+"""
+def _numDecodings(string, n, memo):
+    if n == 1:
+        return int(string[0] != '0') 
+
+    if n == 0:
+        return 1
+
+    if memo[n] != -1:
+        return memo[n]
+    
+    c1 = 0
+    c2 = 0
+    if string[n - 1] != '0':
+        c1 = _numDecodings(string, n - 1, memo)
+    if (1 <= int(string[n - 2: n]) <= 26) and string[n - 2] != '0':
+        c2 = _numDecodings(string, n - 2, memo)
+
+    res = c1 + c2
+    memo[n] = res
+    return res 
+
+def numDecodings(s: str):
+    n = len(s)
+    memo = [-1 for _ in range(n + 1)]
+    memo[0] = 0
+    memo[1] = int(s[0] != '0')
+    return _numDecodings(s, n, memo)
 
 if __name__ == '__main__':
-    pass
+    s="106123"
+    print(numDecodings(s))
