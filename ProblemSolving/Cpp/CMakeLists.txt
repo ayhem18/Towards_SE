@@ -25,4 +25,8 @@ add_executable(Cpp main.cpp
         greedy/g1.cpp
         greedy/g1.h
         trees/heaps/leetcode.cpp
-        trees/heaps/leetcode.h)
+        trees/heaps/leetcode.h
+        graph/basics.cpp
+        graph/easy_gfg.cpp
+        graph/easy_gfg.h
+        graph/neetcode.cpp)
