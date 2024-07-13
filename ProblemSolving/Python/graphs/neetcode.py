@@ -3,8 +3,9 @@ This script contains my attempts to solve the NeetCode Problems in the Graph sec
 """
 
 from typing import List, Optional
+from collections import deque
 
-from .common import graph_dfs, graph_connected_components, _graph_bfs
+from .common import graph_dfs, graph_connected_components, _graph_bfs, edgesList2adjList, is_graph_connected
 
 """
 Problems: 
@@ -278,3 +279,103 @@ def solve(grid: List[List[str]]) -> None:
                 i, j = counter_coord_map[vc]
                 grid[i][j] = 'X'
     
+
+def validTree(n: int, edges: List[List[int]]) -> bool:
+    if len(edges) != n - 1:
+        return False
+    
+    # the graph should be connected
+    adj_list, _, _ = edgesList2adjList(n, edges)
+    return is_graph_connected(adj_list=adj_list)
+
+
+
+# def findRedundantConnection(edges: List[List[int]]) -> List[int]:
+#     visited = {}
+#     for v1, v2 in edges:
+#         visited[v1] = False
+#         visited[v2] = False
+    
+#     for v1, v2 in edges:
+#         if visited[v1] and visited[v2]:
+#             return [v1, v2]
+        
+#         visited[v1] = True 
+#         visited[v2] = True
+    
+#     return [v1, v2]
+
+def findRedundantConnection(edges: List[List[int]]) -> List[int]:
+    # convert to the edges representations to the adjacency list
+    # it is knowns that number of edges is equal to number of vertices
+    adj_list, val_key, key_val = edgesList2adjList(len(edges), edges)
+    
+    visited = dict([(v, False) for v in range(len(adj_list))])
+    queue = deque([0])
+    
+    visited[0] = True
+    visited_by = {0:0}
+
+    cv1, cv2 = None, None
+
+    while len(queue) != 0:
+        current_vertex = queue[0]
+        for nv in adj_list[current_vertex]:
+            if visited[nv] and nv != visited_by[current_vertex]:
+                # it means we found our cycle
+                cv1, cv2 = current_vertex, nv
+                # empty the queue to end the upper loop
+                while len(queue) != 0:
+                    queue.pop()
+                break            
+            else:      
+                visited[nv] = True
+                visited_by[nv] = current_vertex
+                queue.append(nv)
+
+        if len(queue) != 0:
+            queue.popleft()
+        
+
+    set1, set2 = set([cv1]), set([cv2])
+    d1, d2 = deque([cv1, cv2]), deque([cv2])
+    while True: 
+        cv1, cv2 = visited_by[cv1], visited_by[cv2]
+        set1.add(cv1)
+        set2.add(cv2)
+        d1.appendleft(cv1)
+        d2.appendleft(cv2)
+        if len(set1.intersection(set2)) != 0:
+            break
+    
+    common_element = list(set1.intersection(set2))[0]
+    # find the index of the common element in each of d1 and d2
+    i1 = 0 
+    for i1 in range(len(d1)):
+        if d1[i1] == common_element:
+            break
+    i2 = 0
+    
+    for i2 in range(len(d2)):
+        if d2[i2] == common_element:
+            break
+
+    # edges of the first cycle
+    ec1 = [[key_val[d1[i]], key_val[d1[i + 1]]] for i in range(i1, len(d1) - 1)]
+    ec2 = [[key_val[d2[i]], key_val[d2[i + 1]]] for i in range(i2, len(d2) - 1)]
+
+    max_index = 0
+    for ec in ec1:
+        for index, e in enumerate(edges):
+            if sorted(ec) == sorted(e):
+                max_index = max(max_index, index)
+                break
+
+    for ec in ec2:
+        for index, e in enumerate(edges):
+            if sorted(ec) == sorted(e):
+                max_index = max(max_index, index)
+                break
+    
+    return edges[max_index]
+

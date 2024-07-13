@@ -82,3 +82,40 @@ def _graph_bfs(adj_list: List[List[int]],
     return res 
 
 
+# write a function to determine whether a graph is connected
+def is_graph_connected(adj_list: List[List[int]]) -> bool:
+    n_vertices = len(adj_list)    
+    # create the visited dict
+    visited = dict([(v, False) for v in range(len(adj_list))])
+    start_vertex = 0
+    component_vertices = graph_dfs(adj_list=adj_list, start_vertex=start_vertex, visited=visited)
+    return len(component_vertices) == n_vertices
+
+
+# write a function to convert from the edges list to adjacency list
+def edgesList2adjList(n: int, edges:List[List]) -> Tuple[List[List], Dict]:
+    counter = 0
+    key_val = {}
+    val_key = {}
+    for (v1, v2) in edges:
+        if v1 not in val_key:
+            val_key[v1] = counter
+            key_val[counter] = v1
+            counter += 1
+            
+        if v2 not in val_key:
+            val_key[v2] = counter
+            key_val[counter] = v2
+            counter += 1
+
+    adj_list = [[] for _ in range(n)]   
+
+    # iterate through edges
+    for v1, v2 in edges:
+        k1, k2 = val_key[v1], val_key[v2]
+        adj_list[k1].append(k2)
+        adj_list[k2].append(k1)
+
+    return adj_list, val_key, key_val
+
+

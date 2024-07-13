@@ -9,11 +9,5 @@ def print_2d_array(a: List[List]):
     
 
 if __name__ == '__main__':
-    board = [["O","X","X","X", "X"],
-             ["X","O","X","O", "O"],
-             ["X","O","O","X", "X"],
-             ["X","X","X","O", "X"],
-             ["X","X","X","X", "X"],
-             ]
-    nc.solve(board)
-    print_2d_array(board)
+    edges = [[1,2],[2, 3], [1,3]]
+    print(nc.findRedundantConnection(edges))
