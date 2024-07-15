@@ -1,11 +1,8 @@
 
+"""
+https://www.geeksforgeeks.org/problems/equivalent-sub-arrays3731/1?page=1&category=two-pointer-algorithm&difficulty=Easy,Medium&status=unsolved&sortBy=accuracy
+"""
 def countDistinctSubarray(arr, n = None): 
-    """
-    https://www.geeksforgeeks.org/problems/equivalent-sub-arrays3731/1?page=1&category=two-pointer-algorithm&difficulty=Easy,Medium&status=unsolved&sortBy=accuracy
-    Args:
-        arr (_type_): _description_
-        n (_type_): _description_
-    """
     if n is None:
         n = len(arr)
 
@@ -135,5 +132,3 @@ def maxWeightCell(n, edges):
             best_index = v
     return best_index
 
-if __name__ == '__main__':
-    print(maxWeightCell(3, edges=[-1, -1, -1]))
