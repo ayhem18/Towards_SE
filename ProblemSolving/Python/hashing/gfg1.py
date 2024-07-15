@@ -27,6 +27,7 @@ def first_not_repeat_char_2_traversals(string: str) -> int:
             return c
     return -1
 
+# this is a better solution with only on string traversal
 def first_not_repeat_char_1_traversal(string: str) -> int:
     # my main line of thought before solving this question was: assuming at each step I am saving the current first character 
     # occuring once so far in the string, how can I get the next char with only one occurrence once the current save char is repeated
@@ -137,3 +138,85 @@ def majorityElement(A, N):
     if max_count >= maj_thresh:
         return max_val
     return -1
+
+
+"""
+https://www.geeksforgeeks.org/problems/largest-subarray-of-0s-and-1s/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=bottom_sticky_on_article
+"""
+def maxLen(arr, N=None):
+    if N is None:
+        N = len(arr)
+    # my solution combines the idea of hashing and PrefixSum array
+    count0 = 0
+    count1 = 0
+    prefixSum = [0 for _ in arr]
+    max_len = 0
+    for index, val in enumerate(arr):
+        count0 += int(val == 0)
+        count1 += int(val == 1) 
+        prefixSum[index] = count1 - count0
+        
+        if count0 == count1:
+            max_len = index + 1
+
+    if max_len == N:
+        return N
+
+    pfs_indices = defaultdict(lambda:[])
+
+    for index, val in enumerate(prefixSum):
+        pfs_indices[val].append(index)
+    
+    for _, v in pfs_indices.items():
+        max_len = max(max_len, abs(v[0] - v[-1]))
+    
+    return max_len
+
+
+"""
+https://www.geeksforgeeks.org/problems/array-pair-sum-divisibility-problem3257/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=bottom_sticky_on_article
+"""
+def canPair(nums, k):
+    if len(nums) % 2 == 1:
+        return False
+    
+    k_nums = [v % k for v in nums]
+    
+    k_map = dict([(v, 0) for v in k_nums])
+
+    for v in k_nums:
+        k_map[v] += 1
+
+    if 0 in k_map and  k_map[0] % 2 == 1:
+        return False
+    
+    if (k % 2 == 0) and (k // 2) in k_map and (k_map[k // 2] % 2 == 1):
+        return False
+    
+    for rem, _ in k_map.items():
+        other_rem = (k - rem) % k
+        
+        if (other_rem not in k_map) or (k_map[other_rem] != k_map[rem]):
+            return False
+        
+    return True
+
+
+
+# a problem from neetcode.io: https://neetcode.io/problems/string-encode-and-decode
+from typing import List
+def encode(strs: List[str]) -> str:
+    if len(strs) == 0:
+        return ""
+    
+    encoded_list = ["_".join([str(ord(c)) for c in s]) if len(s) > 0 else "" for s in strs]
+    return "*" + "*".join(encoded_list)
+    
+def decode(string: str) -> List[str]:
+    if len(string) == 0:
+        return []
+    
+    string = string[1:]
+    l = string.split("*")
+    return ["".join([chr(int(c)) for c in s.split("_")]) if len(s) > 0 else "" for s in l ]
+
