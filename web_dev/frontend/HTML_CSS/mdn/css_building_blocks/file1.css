@@ -1,0 +1,31 @@
+p {
+    font-family: cursive;
+    font-style: italic;
+}
+
+
+.note {
+    padding: 10px;
+    text-align: center;
+}
+
+
+p.note.danger {
+    border-style: solid;
+    border-color: red;
+    background-color: beige;
+    text-decoration:double;
+}
+
+p.note.warning {
+    border-style: dotted;
+    border-color: peru;
+    background-color: whitesmoke;
+    text-decoration: underline;
+}
+
+p.note.informal {
+    border-style:dashed;
+    border-color: grey;
+    background-color:bisque;
+}

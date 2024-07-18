@@ -2,8 +2,6 @@
 limited-
 */
 
-
-
 p {
     margin: auto;
     color: blue;
@@ -20,6 +18,19 @@ span {
     max-width: 400px;
     margin:auto
 }
+
+.div_with_dd .dd_content { /* basically this selector means any element with class 'dd_content' that inside a 'div_with_dd' content*/
+    display: none; /*this means the element is initially hidden*/
+    color: palevioletred;
+    background-color: whitesmoke;
+}
+
+/*we need to change the display of the hidden element with a certain condition*/
+
+.button_with_dd:hover+.dd_content {
+    display: inline;
+}
+
 
 
 
