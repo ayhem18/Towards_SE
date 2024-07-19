@@ -3,12 +3,10 @@ p {
     font-style: italic;
 }
 
-
 .note {
     padding: 10px;
     text-align: center;
 }
-
 
 p.note.danger {
     border-style: solid;
@@ -28,4 +26,36 @@ p.note.informal {
     border-style:dashed;
     border-color: grey;
     background-color:bisque;
+}
+
+.wrapper {
+    color: blue;
+    width:500px;
+    height: 100px;
+}
+
+.wrapper p {
+    max-width: 50%;
+    background-color: beige;
+}
+
+.wrapper img {
+    /* this mean the image can adhere to its initial width as long as it is less than 80% of the wrapper container*/
+    max-width: 80%; 
+
+    /*removing the term max- will set the image to that specific height*/
+    max-height:100%; 
+}
+
+.flex_wrapper {
+    margin-top:20px;
+    display:flex;
+    width: 200px;
+    background-color: aqua;
+}
+
+.flex_div {
+    margin-right: 20%;
+    background-color: grey;
+    border: 2px solid blue;
 }

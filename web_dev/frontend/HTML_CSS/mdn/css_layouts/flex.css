@@ -1,0 +1,45 @@
+header {
+    /*text properties*/
+    text-align: center;
+    text-decoration: underline;
+    font-family: 'Courier New', Courier, monospace;
+    color: white;
+
+    /*backgroun properties*/
+    background-color: purple;
+    border-radius: 5%;
+
+    /*size properties*/
+    min-height: 30px;
+    margin:10px;
+
+    
+}
+
+
+/*
+This is related mainly to the text within the main paragraphs
+*/
+
+section {
+    display:flex;
+}
+
+
+article {
+    background-color: aqua;
+    font-style: italic;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin:5px;
+}
+
+
+article *.text {
+    color:yellowgreen;
+}
+
+h2 {
+    line-height: 30px;
+    margin-top:10px;
+}
+
