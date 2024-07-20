@@ -1,0 +1,62 @@
+/*
+This styling is for the first task from the test your skill page on the flex layout
+https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox_skills
+*/
+
+nav_bar{
+    height: 50px;
+    border: 3px solid green;
+    color: blue;
+
+    display: flex;
+    flex-flow: wrap row;
+    /* this makes the elements take the mid of the flex container on the cross axis */
+    align-items: center; 
+    justify-content: space-around;
+}
+
+button {
+    flex-basis:150px; /*minimum width of each flex item within a flex container*/
+    background-color: lightsteelblue;
+}
+
+button a {
+    color:white;
+}
+
+
+/*
+Styling for the second task
+*/
+
+flex_container {
+    margin-top: 10px;
+    border:2px solid whitesmoke;
+    min-height: 100px;
+
+    display: flex;
+    flex-flow: wrap row;
+}
+
+flex_container div{    
+    flex:1; /*this value ensures all items are of the same width*/
+    margin:2px;    
+    background-color: lightskyblue;
+    color: white;
+    border: 2px solid black;
+    text-align: center;
+}
+
+
+.parent {
+    display: flex;
+    border: 2px solid greenyellow;
+    min-height: 100px;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.child {
+    color:white;
+    background-color: darkcyan;
+}

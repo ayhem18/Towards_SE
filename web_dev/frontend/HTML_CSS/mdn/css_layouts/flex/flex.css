@@ -22,11 +22,14 @@ This is related mainly to the text within the main paragraphs
 */
 
 section {
-    display:flex;
+    display: flex;
+    flex-direction: row;
+    /* flex-wrap: wrap; */  
 }
 
 
 article {
+    flex: 300px;
     background-color: aqua;
     font-style: italic;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
@@ -35,11 +38,18 @@ article {
 
 
 article *.text {
-    color:yellowgreen;
+    color:black;
 }
 
 h2 {
+    color: brown;
     line-height: 30px;
     margin-top:10px;
 }
+
+
+/*
+This is for the 3rd task
+*/
+
 
