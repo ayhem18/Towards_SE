@@ -1,0 +1,50 @@
+/*This is the first task*/
+.container1 {
+    position:relative;
+    border: 5px solid gray; 
+    width: 250px;
+}
+
+.target {
+    background-color: lightgreen;
+    border: 1px solid green;
+    border-radius: 1px;
+
+    width: 100px;
+    min-height: 100px;
+    /*
+    since I set the position of the container to relative 
+    (which is the same without as static without setting other parameters), the target block will be position with respect to the box 
+    */
+    position: absolute; 
+    top:0px;
+    right:0px;
+}
+
+
+/*
+This is for the 2nd task
+*/
+
+
+.container {
+    display:flex;
+    flex-flow: row;    
+    justify-content: space-around;
+}
+
+div.container {
+    flex:1;
+}
+
+.sidebar {
+    background-color: lightgreen;
+    opacity: 0.8;
+    color:black;
+
+    position:sticky;
+    top:100px;
+}
+
+
+

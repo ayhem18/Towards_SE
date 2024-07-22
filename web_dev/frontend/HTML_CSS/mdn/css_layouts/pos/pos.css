@@ -1,0 +1,51 @@
+header *{
+    /*this class is designed to appear not top the web page reaglrdless*/
+    position: fixed;
+    top: 0px;
+    margin-top:0px auto;
+    /*positioned elements (with position value != static) are stacked up on the web page depending on the value of z-index*/        
+    z-index:2; 
+}   
+
+div.rel_pos {
+    border:1px solid black; 
+    height: 200px;
+}
+
+/*make sure to push the first element with the normal flow by  a certain margin to leave space for the header*/
+div.rel_pos:nth-of-type(1) {
+    margin-top: 70px;
+}
+
+.rel_pos *{
+    position: relative;
+    top:10px;
+    margin-top:1px;
+}
+
+p {
+    border: 1px solid black;
+    background-color: whitesmoke;
+    color: red;
+}
+
+
+div.abs_pos {
+    border:1px solid black; 
+    height: 200px;
+}
+
+.abs_pos {
+    position: relative;
+}
+
+#special_paragraph {
+    color: green;
+    background-color: whitesmoke;
+
+    position: absolute; /*The absolute element will look for the nearest ancestor with the position attribute set to a value different form static*/
+    left: 200px;
+    top: 5%;
+}
+
+/*fixed is the same as absolute, but with respect to the viewport: the viewport is the page seen by the user at the time*/
