@@ -1,0 +1,59 @@
+container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    
+    column-gap: 2%; /*The gap between column is 2% of the available width*/
+    row-gap:5%; /*The gaps between rows is 5% of the document total height!!*/
+}
+
+header {
+    background-color: blueviolet;
+    grid-column: 1 / 4; /*specifies the columns spanned by the element*/
+    grid-row: 1;    
+}
+
+aside {
+    border: 2px solid black;
+    background-color: greenyellow;
+    grid-column: 1;
+    grid-row: 2 / minmax(auto, 7);
+
+}
+
+article {
+    grid-column: 2 / -1; /*the article part spand all columns starting from the second one*/
+    
+    background-color: lightcyan;
+    border: 2px solid black;
+}
+
+footer {
+    background-color: beige;
+    border: 2px solid black;
+    grid-column: 1 / -1;
+}
+
+
+h3 {
+    margin: 2px;
+    display: inline;
+}
+
+
+.flex {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+    /* align-items: start; */
+}
+
+.flex * {
+    flex: 1; /*this makes sure */
+    flex-basis:50px; /*any flex item should be of this minimum width*/
+    margin:2px;
+}
+
+div.flex {
+    border: 2px solid black;
+    min-height: 200px;
+}
