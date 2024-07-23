@@ -30,7 +30,7 @@ section {
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-template-rows: 100px 100px 100px;
     gap: 10px;
-  }
+}
   
 .item1 {
 background-color: green;
