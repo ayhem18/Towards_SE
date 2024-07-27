@@ -24,26 +24,58 @@
 // }
 
 
-const names = ['Chris', 'Li Kang', 'Anne', 'Francesca', 'Mustafa', 'Tina', 'Bert', 'Jada'];
-const para2 = document.createElement('p');
+// 
 
-// Add your code here
+let count = 0 // the number of times the button has been clicked on 
 
-function getRandomInt(min_int, max_int){
-    return Math.floor(Math.random() * (max_int - min_int)) + min_int
+// let's define a function that will create a paragraph element, and display the number of times the buttom has been clicked
+
+const paragraph = document.createElement("p")
+
+function on_click_buttom() {
+    count += 1;
+    paragraph.textContent = "This button has been clicked on " + String(count) + " time" + (count === 1 ?  "" : "s");
+    if (count == 1) {
+        document.body.appendChild(paragraph);
+    } 
 }
 
+// const bnt = document.querySelector("button");
+// bnt.addEventListener("click", on_click_buttom);
 
-function chooseName(array) {
-    let index = getRandomInt(0, array.length - 1);
-    return array[index];
-}
+// let original_button_text = "";
+// const mouse_hover_button_text = "Mind Your bussiness, would you?"
+// // let's create a functin that would change the text of the button whever the user hovers on it
 
-// Don't edit the code below here!
+// let first = True;
+// function on_mouse_hover_button(event) {
 
-section.innerHTML = ' ';
-para2.textContent = chooseName(names)
-section.appendChild(para2);
+//     document.body.style.backgroundColor = "green";
+//     // if (first) {
+//     //     original_button_text = bnt.textContent;
+//     //     first = False;
+//     // }
+//     // bnt.textContent = mouse_hover_button_text;
+// }
+
+// bnt.addEventListener("mouseover", on_mouse_hover_button)
+// // bnt.addEventListener("mouseout", () => {    document.body.style.backgroundColor = "white";})
 
 
-    
+// //  Adding a button whose text changes when clicking  
+
+const machine_btn = document.querySelector("button")
+let button_on = false;
+
+const button_on_text = "The machine is On";
+const button_off_text = "The machine is Off";
+
+machine_btn.addEventListener("click", () => {console.log("Button cliked !!!"); 
+                                            if (button_on) {                                                    
+                                                machine_btn.textContent = button_off_text; button_on=false} 
+                                            else {
+                                                machine_btn.textContent = button_on_text;
+                                                button_on = true;
+                                            }
+                                        }
+                            )
