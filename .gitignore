@@ -17,3 +17,5 @@ Information_retrieval/Uni_course/shard/
 *.pyc
 web_dev\django\TutorialProject\db.sqlite3
 
+web_dev\frontend\small_projects\newbie\personal_page\assets\fonts\
+
