@@ -4,7 +4,6 @@ body {
     background-size: cover;   
 }
 
-
 .container {
     position: absolute;
     border:1px solid black;
@@ -18,18 +17,12 @@ body {
     z-index:1;
 }
 
-
-
-
-
 .display {
     position: absolute; /* absolute with respect to the container class*/
     z-index:2; /* z-index to be displayed on top of th container*/
-    left:30%;
-    top:15%;
+    left:40%;
 
-    width:40%; /*seemed right with respect to the black container*/
-    height: 70%;
+    width:20%; /*seemed right with respect to the black container*/
     margin: 0;
 
     background-color: hsl(0, 0%, 20%); /*from the design readme*/
@@ -42,19 +35,42 @@ body {
     border: 1px solid green;
 }
 
-
-.display * {
-    border:1px solid green;
-    flex-basis:1;
+.info {
+    top:10%;
+    height: 30%;
 }
 
-.display *:last-of-type {
+.info * {
+    width: 90%;
+    border: 1px solid brown ;
+}
+
+.info img {
+    margin-top:10px;
+    flex: 2;
+
+    height:10px;
+    width: 40%;
+    min-width: 100px;
+}
+
+.info p, .info pre{
+    color:white;
+    text-align: center;
+}
+
+.links {
+    height:40%;
+    top:40%;
+}
+
+
+.links * {
+    width: 80%;
+    min-height: 40px;
+}
+
+.links *:nth-last-of-type() {
     margin-bottom: 20px;
-}
-
-.display img {
-    margin-top:20px;
-    flex-basis:2;
-    height:70px;
 }
 
