@@ -4,18 +4,14 @@ This is my solution to the [QR code component challenge on Frontend Mentor](http
 
 ## Table of contents
 
-- [Overview](#overview)
+- [Context](#overview)
   - [Screenshot](#screenshot)
   - [Links](#links)
 - [My process](#my-process)
-  - [Built with](#built-with)
-  - [What I learned](#what-i-learned)
-  - [Continued development](#continued-development)
+  - [Main Ideas](#built-with)
+  - [Next Steps](#continued-development)
   - [Useful resources](#useful-resources)
-- [Author](#author)
-- [Acknowledgments](#acknowledgments)
-
-**Note: Delete this note and update the table of contents based on what sections you keep.**
+- [About Me](#author)
 
 ## Context
 A bit of context; I am a recent Computer Science Graduate with a focus on Data Science. I am broadening my employment opportunities by picking up other skills suck as Web Dev. I am focused on learning what I would consider the most important aspects in Front-end: the layout and the visual structure of the site. More specifically, I do not concern myself with the details (exact color, font size, font family, border...) as my main goal is to write HTML AND CSS code where I have a firm grasp of the expected visual behavior of my elements. (I am planning to focus on the backend side after having a good understanding of Front-end basics)
@@ -26,71 +22,31 @@ A bit of context; I am a recent Computer Science Graduate with a focus on Data S
 
 ### Links
 
-- Solution URL: [Add solution URL here](https://your-solution-url.com)
-- Live Site URL: [Add live site URL here](https://your-live-site-url.com)
+- [Solution URL](https://github.com/ayhem18/Towards_SE/tree/main/front-end-projects/FrontEndMentor/NewBieProjects/qr_code_component)
+- [Live Site Url ](https://ayhem18.github.io/Towards_SE/front-end-projects/FrontEndMentor/NewBieProjects/qr_code_component/)
 
 ## My process
 
-### Built with
+### Main Ideas
+I only used HTML and CSS. The main ideas: 
 
-- Semantic HTML5 markup
-- CSS custom properties
-- Flexbox
-- CSS Grid
-- Mobile-first workflow
-- [React](https://reactjs.org/) - JS library
-- [Next.js](https://nextjs.org/) - React framework
-- [Styled Components](https://styled-components.com/) - For styles
+1. setting a container for the 3 components: (the image and the 2 paragraphs) such that: 
+  * position: 'fixed'
+  * 40% to the left and 40% to the right of the viewport 
+  * width=20% and the element is centered nicely
 
-**Note: These are just examples. Delete this note and replace the list above with your own choices**
+2. each sub component will be of width: 90% and of margin: 5% so each sub-component will be centered nicely within the container
 
-### What I learned
 
-Use this section to recap over some of your major learnings while working through this project. Writing these out and providing code samples of areas you want to highlight is a great way to reinforce your own knowledge.
-
-To see how you can add code snippets, see below:
-
-```html
-<h1>Some HTML code I'm proud of</h1>
-```
-```css
-.proud-of-this-css {
-  color: papayawhip;
-}
-```
-```js
-const proudOfThisFunc = () => {
-  console.log('🎉')
-}
-```
-
-If you want more help with writing markdown, we'd recommend checking out [The Markdown Guide](https://www.markdownguide.org/) to learn more.
-
-**Note: Delete this note and the content within this section and replace with your own learnings.**
-
-### Continued development
-
-Use this section to outline areas that you want to continue focusing on in future projects. These could be concepts you're still not completely comfortable with or techniques you found useful that you want to refine and perfect.
-
-**Note: Delete this note and the content within this section and replace with your own plans for continued development.**
+### Next steps
+1. go through the newBit Learning path as fast as possible
+2. focus on understnding the Grid and flex layout (mainly how they interact with the box model) in different positioning modes (fixed, absolute, relative)
+3. better understanding of units.
 
 ### Useful resources
+- [positioning](https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Positioning). Great intro to positioning
 
-- [Example resource 1](https://www.example.com) - This helped me for XYZ reason. I really liked this pattern and will use it going forward.
-- [Example resource 2](https://www.example.com) - This is an amazing article which helped me finally understand XYZ. I'd recommend it to anyone still learning this concept.
+## About Me:
+- Github - [Ayhem Bouabid](https://github.com/ayhem18)
+- Frontend Mentor - [@ayhem18](https://www.frontendmentor.io/profile/yourusername)
 
-**Note: Delete this note and replace the list above with resources that helped you during the challenge. These could come in handy for anyone viewing your solution or for yourself when you look back on this project in the future.**
-
-## Author
-
-- Website - [Add your name here](https://www.your-site.com)
-- Frontend Mentor - [@yourusername](https://www.frontendmentor.io/profile/yourusername)
-- Twitter - [@yourusername](https://www.twitter.com/yourusername)
-
-**Note: Delete this note and add/remove/edit lines above based on what links you'd like to share.**
-
-## Acknowledgments
-
-This is where you can give a hat tip to anyone who helped you out on this project. Perhaps you worked in a team or got some inspiration from someone else's solution. This is the perfect place to give them some credit.
-
-**Note: Delete this note and edit this section's content as necessary. If you completed this challenge by yourself, feel free to delete this section entirely.**
