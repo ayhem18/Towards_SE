@@ -1,17 +1,18 @@
 body {
     background-color: hsl(212, 45%, 89%);
-    position: relative;
 }
 
 
 .qr_container { 
-    position:absolute;    
+    position:fixed;    
     background-color: white;
     border: 1px solid white;
     border-radius: 3%;
 
-    top:200px;
-    left:40%;
+    top:max(25%, 25px); /* I do not have a clear rational behind the exact value*/
+
+    /*the distribution 40 20 40 seemed aesthetically appealing to me */
+    left:40%; 
     width: 20%;
 }
 
@@ -20,12 +21,12 @@ body {
     width:90%;
     margin:5%;    
     border-radius: 3%;
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
 
 
 .qr_container p {
-    color: hsl(216, 15%, 48%);
+    color: hsl(218, 44%, 22%);
     text-align: center;
     font-family: 'Crimson Pro', serif;
 }
@@ -38,6 +39,6 @@ body {
 
 .qr_container .p2 {
     font-size: 12px;
-    font-weight: 400;
+    font-weight: 4000;
     margin-bottom: 20px;
 }
