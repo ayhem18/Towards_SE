@@ -28,7 +28,7 @@ main {
 main > * {
     background-color: white;
     border: 1px solid black;
-    max-width: 40%;
+    max-width: 25%;
 }
 
 
@@ -45,6 +45,7 @@ main > * {
     box-shadow: 0.5rem 0.5rem 0 rgb(0, 0, 0);
 }
 
+/*a general container of all information of the */
 
 .blog_card > * {
     margin-left: 1rem;
@@ -52,6 +53,7 @@ main > * {
 }
 
 
+/*a wrapper around the blog image*/
 .blog_image {
     margin-top:1rem;
 }
@@ -63,6 +65,7 @@ main > * {
     border-radius: 8%;
 }
 
+/*the stying offers the possibility of using multiple tags and not just one*/
 
 .blog_tags {
     display: flex;
@@ -83,6 +86,11 @@ main > * {
     padding:0.5rem;
 }
 
+/*
+The blog information: title and description
+*/
+
+
 .blog_info {
     overflow: auto;
 }
@@ -100,6 +108,10 @@ main > * {
     font-family: design_font1;   
     font-size: 1rem; 
 }
+
+/*
+The components responsible for the author's information
+*/
 
 .blog_author {
     display:flex;
