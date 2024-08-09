@@ -1,0 +1,15 @@
+.container {
+    border: 1px blue solid;
+    overflow:auto;
+    
+    display:flex;
+    flex-direction: column;
+}
+
+.container > * {
+    border: 1px firebrick solid;
+    margin:5px;
+    flex-shrink: 1; /*make sure to have the columns shrink on the main axis*/
+    flex-grow:1; /*the columns can grow on the main axis*/
+    flex-basis: 0; /*this means that the initial dimension of each flex-item on the main axis is the same*/
+}
