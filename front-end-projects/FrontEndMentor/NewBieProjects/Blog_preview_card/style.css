@@ -1,0 +1,136 @@
+@font-face {
+    font-family: design_font1;
+    src: url(./assets/fonts/Figtree-VariableFont_wght.ttf);
+}
+
+@font-face {
+    font-family: design_font2;
+    src: url(./assets/fonts/Figtree-Italic-VariableFont_wght.ttf);
+}
+
+
+body {
+    background-color: hsl(47, 88%, 63%);
+}
+
+main {
+    display:flex;
+
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    /*100 vh will make the main component occupy the entire vertical view port*/
+    min-height: 100vh; 
+}
+
+
+main > * {
+    background-color: white;
+    border: 1px solid black;
+    max-width: 40%;
+}
+
+
+.blog_card {    
+    background-color: white;
+
+    border: 1px solid black;
+    border-radius: 5%;
+
+    display: flex;
+    flex-direction: column;
+    gap:1rem;
+
+    box-shadow: 0.5rem 0.5rem 0 rgb(0, 0, 0);
+}
+
+
+.blog_card > * {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+
+.blog_image {
+    margin-top:1rem;
+}
+
+.blog_image img {
+    margin:0;
+    padding:0;
+    width:100%;
+    border-radius: 8%;
+}
+
+
+.blog_tags {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    gap:0.2rem;
+
+    overflow: auto;
+}
+
+.blog_tags > *  {            
+    text-align: center;
+    font-weight: bold;
+
+    background-color: hsl(47, 88%, 63%);
+    border-radius:10%;
+    
+    padding:0.5rem;
+}
+
+.blog_info {
+    overflow: auto;
+}
+
+.blog_title {
+    color: black;
+    margin-top:0; 
+
+    font-weight: bold;
+  
+}
+
+.blog_description {
+    color: hsl(0, 0%, 42%);
+    font-family: design_font1;   
+    font-size: 1rem; 
+}
+
+.blog_author {
+    display:flex;
+    flex-direction: row;
+    flex-wrap:wrap;
+    align-items: center;
+
+    overflow:auto;
+
+    margin-bottom: 1rem;
+    gap:1rem;
+
+}
+
+
+/* uncomment to see the space take by the image and the author's name*/
+/* .blog_author > * {
+    border: 1px solid lightblue
+} */
+
+.blog_author img{
+    flex-shrink:1; /*flex shrink should always bet set to 1, so the elements can s */
+    flex-grow:1;
+    flex-basis:0; /*this means that the initial dimension (in this case on the row) will be the same for all elements*/
+}
+
+.blog_author span {
+    flex-shrink: 1;
+    flex-grow: 8; /*since the flex-grow of img element is set to 1. It means that author name will be able to grow as much as 8 times the size of the img*/
+    flex-basis: 0;
+
+    font-family: design_font2;
+    font-weight: bold;
+}  
