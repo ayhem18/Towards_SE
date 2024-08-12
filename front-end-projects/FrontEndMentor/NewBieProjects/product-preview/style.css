@@ -1,0 +1,87 @@
+body {
+    margin:0;
+    background-color: hsl(30, 38%, 92%);
+    font-size: max(1hv, 14px);
+}
+
+
+main {
+    height: 100vh;
+    border: 1px solid firebrick;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/*
+The tricky part about the card is that 
+The default will have a direction: row
+when the screen is small the default will be column 
+and the article will take much more width
+*/
+
+article {
+    display:flex;
+    flex-direction: row;
+    width: 40%;
+}
+
+
+article > * {
+    flex-shrink: 1;
+    flex-grow: 1;
+    flex-basis:0; /*both the text and the image will take the same space*/
+}
+
+
+@media screen and (width < 800px) {
+    article {
+        flex-direction: column;
+        width:80%;
+    }
+
+    /*on the phone, each of the text and the image will take the space they need, no more*/
+
+    /* article > * {
+        flex-basis:1;     
+    } */
+}
+
+
+article .card_img{
+    border: 1px solid black;
+}
+
+.card_img source, .card_img img {
+    height:100%;
+    width:100%;
+}
+
+
+article .card_text {
+    border: 1px solid green;
+    background-color: hsl(0, 0%, 100%);
+    
+    display:flex;
+    flex-direction: column;
+    /* justify-content: space-around; */
+    align-items: left;
+}
+
+.card_text > * {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    border: 1px red solid;
+}
+
+/* .card_prod_name {
+    font-size:2.5rem;
+} */
+
+/* .card_text button {
+    margin-bottom: 1rem;
+} */
+
