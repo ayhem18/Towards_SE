@@ -28,10 +28,6 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
-    def toJson(self):
-        return json.dumps(self, default=lambda o: o.__dict__)
-    
-
 
 class Blog(models.Model):
     # title, text, tag, date, id
@@ -51,5 +47,3 @@ class Blog(models.Model):
     class Meta: 
         ordering = ['created_at']
 
-    # since the Blog has a ManyToMany field, I cannot use the modelToDict directly, I need to create my own serializer
-    # def toJson(self):
