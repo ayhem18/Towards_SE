@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Blog, Tag
+
+# these few lines enable adding and modifying records using the admin site
+admin.site.register(Tag)
+admin.site.register(Blog)
+

@@ -1,3 +1,5 @@
+import json
+
 from django.db import models
 from django.db.models.functions import Lower
 
@@ -26,11 +28,15 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+    def toJson(self):
+        return json.dumps(self, default=lambda o: o.__dict__)
+    
+
 
 class Blog(models.Model):
     # title, text, tag, date, id
-    id = models.AutoField(verbose_name="blog_id", 
-                          primary_key=True)
+    # id = models.AutoField(verbose_name="blog_id", 
+    #                       primary_key=True)
 
     title = models.CharField(max_length=100, 
                              null=False, 
@@ -38,10 +44,12 @@ class Blog(models.Model):
 
     text = models.TextField() # the text itself can be quite large, so we use TextField
 
-    tags = models.ManyToManyField(Tag) # the 
+    tags = models.ManyToManyField(Tag, related_name="tags") # the 
 
     created_at = models.DateField(null=False)
 
     class Meta: 
         ordering = ['created_at']
 
+    # since the Blog has a ManyToMany field, I cannot use the modelToDict directly, I need to create my own serializer
+    # def toJson(self):

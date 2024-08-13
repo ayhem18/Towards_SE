@@ -12,6 +12,7 @@ urlpatterns = [
     # 3. create a new blog (using the POST http method)
     # 4. update a blog (using the PUT http method)
     # 5. delete ane existing blog (using the DELETE http method)
-    path("blog/", views.blog, name='blog') 
+    path("blog/", views.blog, name='blog'), 
+    path("tag/", views.tag, name='blog') 
 ]
 
