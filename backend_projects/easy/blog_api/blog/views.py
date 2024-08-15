@@ -128,8 +128,6 @@ def _get_blog_by_tag(request :HttpRequest) -> JsonResponse:
                                 )                
 
 
-from copy import copy
-
 def _blog_post(request :HttpRequest) -> JsonResponse:
     try:
         req = copy(request.POST)
@@ -141,7 +139,9 @@ def _blog_post(request :HttpRequest) -> JsonResponse:
 
         serializer = BlogSerializer(data=req.dict())
         if not serializer.is_valid():
-            return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            error_dict = copy(serializer.errors)
+            error_dict['_source'] = 'BlogSerializer'
+            return JsonResponse(error_dict, status=status.HTTP_400_BAD_REQUEST)
 
         # save the object to the database
         serializer.save()

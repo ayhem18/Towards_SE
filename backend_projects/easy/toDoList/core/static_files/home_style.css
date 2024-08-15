@@ -1,0 +1,22 @@
+body {
+    margin:0;
+    height:100vh;
+}
+
+nav {
+    background-color: lightblue;
+
+    height: max(1vh, 2em); /*leav eenough */
+
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    justify-content: left;
+}
+
+
+main {
+    background-color: yellowgreen;
+}
+
+

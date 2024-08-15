@@ -1,5 +1,5 @@
 """
-URL configuration for blog_api project.
+URL configuration for toDoList project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
@@ -20,11 +20,10 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('blog/', include('blog.urls')),
+    path('2dl/', include('core.urls')), 
+    # redirects the '' url pattern to the '2dl' one
 
-    # this means that the '' will redirect the user to the 'blog/' family of urls
-    path('', RedirectView.as_view(url='blog/', permanent=True)),
+    path('', RedirectView.as_view(url='blog/', permanent=True)),    
 ]
