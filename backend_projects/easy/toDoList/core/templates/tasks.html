@@ -1,13 +1,36 @@
-{% extends "base.html" %}
-
-{% block title %}My amazing blog{% endblock %}
+{% extends "generic.html" %}
 
 {% block content %}
 
-    {% for entry in blog_entries %}
+    {% for task_group in task_groups %}
 
-        <h2>{{ entry.title }}</h2>
-        <p>{{ entry.body }}</p>
+        <h2 class="task_group_name">
+            {{task_group.name}}
+        </h2>  
+
+        <!-- {% for t in task_group_tasks %}
+
+            <h3 class="task_name">
+                {{t.name}}
+            </h3>
+
+            <br>
+
+            <span> 
+                {{t.status}}
+            </span>
+            
+            <span>
+                {{t.importance}}
+            </span>
+
+            <br>
+
+            <p class="task_description">
+                {{t.description}}
+            </p>
+
+        {% endfor %} -->
 
     {% endfor %}
 

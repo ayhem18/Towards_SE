@@ -128,11 +128,17 @@ def _get_blog_by_tag(request :HttpRequest) -> JsonResponse:
                                 )                
 
 
-def _blog_post(request :HttpRequest) -> JsonResponse:
+
+# import json
+# request = json.loads(request.body)
+
+def _blog_post(request: HttpRequest) -> JsonResponse:
+
     try:
         req = copy(request.POST)
+
         if 'tags' not in req:
-            return JsonResponse({"error": "true", "message": "The 'tags' field is required", "req_content": request.POST}, status=status.HTTP_400_BAD_REQUEST)                
+            return JsonResponse({"error": "true", "message": "The 'tags' field is required", "req_content": request }, status=status.HTTP_400_BAD_REQUEST)                
 
         # remove the 'tags' field
         req.pop('tags')
