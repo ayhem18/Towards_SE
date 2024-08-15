@@ -46,4 +46,12 @@ class Blog(models.Model):
 
     class Meta: 
         ordering = ['created_at']
+        # # let's enforce having different blog titles
+        # constraints = [
+        #     models.UniqueConstraint(
+        #         Lower("title"), # the expression on which the constraint is enforced 
+        #         name="unique", # the name of the constraint itself
+        #         violation_error_message="The lower case name must be unique." # the message of the error thrown when the constraint is invalidated
+        #     )
+        # ]
 

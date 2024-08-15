@@ -1,38 +1,29 @@
-"""
-In this script, I experiment with the django rest framework api toolkit
-"""
-
 from datetime import datetime as dt
 from typing import List, Tuple
 from copy import copy
 
 from django.db import IntegrityError
-from django.http import JsonResponse, HttpResponse, HttpRequest
+
+from django.shortcuts import render
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from rest_framework import status # used for more readable error codes
-from rest_framework.decorators import api_view 
-
-# request and response classes with more functionalities than the django ones
-from rest_framework.response import Response  
-
-from .serializers import BlogSerializer, TagSerializer
 from .models import Blog, Tag
+from .serializers import BlogSerializer, TagSerializer
 
-
-def home(req):
+def home(req: HttpRequest) -> HttpResponse:
     return HttpResponse("this is the home page")
 
 
-def _get_all_blogs(request:HttpRequest) -> Response:
-    # render the data 
+# let's first build an api that returns JsonResponse, instead of HttpResponse
+def _get_all_blogs(request: HttpRequest) -> JsonResponse:
     _all_blogs = Blog.objects.all()
-    return JsonResponse({"blogs": BlogSerializer(_all_blogs, many=True).data, "req_content": request.GET,
-                         },
-                        status=status.HTTP_200_OK # this status is much better than the usual 200
-                        )
 
-def _get_blog_by_id(request :HttpRequest) -> JsonResponse:
+    return JsonResponse({"blogs": BlogSerializer(_all_blogs, many=True).data,
+                         },
+                        status=200)
+
+def _get_blog_by_id(request: HttpRequest) -> JsonResponse:
     # get the id from the request
     try:
         return JsonResponse({
@@ -42,7 +33,7 @@ def _get_blog_by_id(request :HttpRequest) -> JsonResponse:
                                                     )
                                                 ).data,                            
                             },
-                            status=status.HTTP_200_OK
+                            status=200
                         )
 
     # using the Model.objects.get throws an error:
@@ -50,19 +41,19 @@ def _get_blog_by_id(request :HttpRequest) -> JsonResponse:
         return JsonResponse({"error": f"There is no such an id as: {int(request.GET.get('id'))}"},
                              status=404) 
 
-def _get_blog_by_title(request :HttpRequest) -> JsonResponse:
+def _get_blog_by_title(request: HttpRequest) -> JsonResponse:
     # get the id from the request
     try:
         return JsonResponse({
                             "blog": BlogSerializer(Blog.objects.get(title__exact=request.GET.get('title'))).data,                            
-                            },status=status.HTTP_200_OK
+                            },status=200
                         )
 
     except Blog.DoesNotExist:
         return JsonResponse({"error": f"There is no such a title: {request.GET.get('title')}"},
                              status=404) 
 
-def _get_blog_by_date(request :HttpRequest) -> JsonResponse:
+def _get_blog_by_date(request: HttpRequest) -> JsonResponse:
     # there are two options: 
     date1 = request.GET.get('date1')
     date2 = request.GET.get('date2')
@@ -90,9 +81,8 @@ def _get_blog_by_date(request :HttpRequest) -> JsonResponse:
                                     BlogSerializer(
                                         Blog.objects.filter(created_at__range=[date1, date2]), # the range seems to include at least one end
                                         many=True
-                                    ).data},
-                                status=status.HTTP_200_OK
-                            )
+                                    ).data},status= 200
+                                )
 
         # this line serves as a quick check for the date format. It will throw an error if the format is uncorrect.        
         d1 = dt.strptime(date1, "%Y-%m-%d")
@@ -100,12 +90,12 @@ def _get_blog_by_date(request :HttpRequest) -> JsonResponse:
         return JsonResponse({"blogs": BlogSerializer(
                                         Blog.objects.filter(created_at__exact=date1),
                                         many=True).data},
-                            status=status.HTTP_200_OK
+                            status=200
                             )                
     except ValueError: 
         return JsonResponse({"error": "Make sure dates are of the correct format: yyyy-mm-dd", "date1": date1, "date2": date2}, status= 404)
 
-def _get_blog_by_tag(request :HttpRequest) -> JsonResponse:
+def _get_blog_by_tag(request: HttpRequest) -> JsonResponse:
     # find blogs that are associated with all the passed tags
     tags = request.GET.get('tags')
     if not isinstance(tags, (str, List, Tuple)):
@@ -113,72 +103,22 @@ def _get_blog_by_tag(request :HttpRequest) -> JsonResponse:
                              "error":"Make sure to pass corret tags format a string or a sequence of strings", 
                              "tags": tags, 
                              "tags_type":type(tags)},
-                                status=404
+                                status= 404
                             )
     if isinstance(tags, str):
         tags = [tags]
 
     sol = Blog.objects.all()
     for t in tags:
-        sol = sol.filter(tags__name__exact=t)
+        sol = sol.filter(tags__name__contains=t)
 
     return JsonResponse({"blogs": BlogSerializer(sol,
                                             many=True).data},
-                                status=status.HTTP_200_OK
+                                status= 200
                                 )                
 
-
-from copy import copy
-
-def _blog_post(request :HttpRequest) -> JsonResponse:
-    try:
-        req = copy(request.POST)
-        if 'tags' not in req:
-            return JsonResponse({"error": "true", "message": "The 'tags' field is required", "req_content": request.POST}, status=status.HTTP_400_BAD_REQUEST)                
-
-        # remove the 'tags' field
-        req.pop('tags')
-
-        serializer = BlogSerializer(data=req.dict())
-        if not serializer.is_valid():
-            return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        # save the object to the database
-        serializer.save()
-
-        # this code works if I only pass one tag id
-        tags_request = request.POST.get('tags')
-        
-        if not isinstance(tags_request, (List, Tuple)):
-            tags_request = [tags_request]        
-
-        # make sure each tags passed exists in the database
-        for t in tags_request:
-            try:
-                Tag.objects.get(pk=t)
-            except Tag.DoesNotExist:
-                return JsonResponse(data={"error": "true", 
-                                        "message": f"There is no tag with id: {t}",
-                                        "request_content": request.POST
-                                        }, 
-                                    status=status.HTTP_400_BAD_REQUEST)
-
-        tags_query_set = Tag.objects.filter(pk__in=tags_request)
-
-        serializer.update(serializer.instance, {'tags': tags_query_set})
-        # save the model again 
-        serializer.save()
-
-        return JsonResponse(data={"new_record": serializer.data, "req_content": request.POST}, 
-                            status=201 # status for the correct post operation
-                            )
-   
-    except IntegrityError as e:
-        return JsonResponse(data={"error": "true", "message": str(e)},
-                            status=400)
-
-
-def _blog_get(request :HttpRequest) -> JsonResponse:
+    
+def _blog_get(request: HttpRequest) -> JsonResponse:
     if request.GET.get('id') is not None:
         return _get_blog_by_id(request)
 
@@ -195,48 +135,111 @@ def _blog_get(request :HttpRequest) -> JsonResponse:
     return _get_all_blogs(request)
 
 
+def _blog_delete(request: HttpRequest) -> JsonResponse:
+    pass
+
+def _blog_patch(request: HttpRequest) -> JsonResponse:
+    pass
+
+def _blog_post(request: HttpRequest) -> JsonResponse:
+    try:
+        # ** easier than iterating through the field names myself ...
+        # first fetch the tags we need
+        # tags_objs = 
+
+        # save a copy of the request parameters without the 'tags'
+        req = copy(request.GET.dict())
+        req.pop('tags')
+ 
+        new_obj = Blog(**(req))
+
+        # add the object to the data base
+        new_obj.save()  
+
+        # this code works if I only pass one tag id
+
+        tags_request = request.GET.get('tags')
+
+        tags_query_set = Tag.objects.filter(pk__in=tags_request)
+
+        new_obj.tags.add(*tags_query_set)
+
+        new_obj.save()
+
+
+        return JsonResponse(data={"new_record": BlogSerializer(new_obj, many=False).data, "extra_info": request.GET.dict()}, 
+                            status=201 # status for the correct post operation
+                            )
+    except KeyError:
+        return JsonResponse(data={"error": "true", 
+                                  "messsage": (f"some missing fields. Make sure the parameters {['title', 'author', 'price']}.  are all passed\n"
+                                  f"Found: {request.GET}")
+                                  }, 
+                            status=400)
+
+
+    except Tag.DoesNotExist:
+        return JsonResponse(data={"error": "true", 
+                                  "message": "At least one of the tags passed with the request is not present.",
+                                  "request_content": request.GET.dict()
+                                  }, 
+                            status=400)
+        
+   
+    except IntegrityError:
+        return JsonResponse(data={"error": "true", 
+                                  "messsage": (f"some missing fields. Make sure the parameters {['title', 'author', 'price']}.  are all passed\n"
+                                  f"Found: {request.GET.dict()}")},
+                            status=400)
+
 
 @csrf_exempt
-@api_view(['GET', 'POST']) # this means that this view can only recieve HTTP GET, POST requests
-def blog(request :HttpRequest) -> JsonResponse:
+def blog(request: HttpRequest) -> JsonResponse:
     if request.method == 'GET':
         return _blog_get(request)
+
+    if request.method == "DELETE":
+        return _blog_delete(request) 
+
+    if request.method == "PATCH":
+        return _blog_patch(request) 
 
     if request.method == "POST":
         return _blog_post(request) 
 
 
-def _get_all_tags(request :HttpRequest) -> JsonResponse:
+def _get_all_tags(request: HttpRequest) -> JsonResponse:
     _all_tags = Tag.objects.all()
 
     return JsonResponse({"tags": [TagSerializer(b).data for b in _all_tags], "request_content": request.GET}, 
                         status=200)
 
-def _post_tag(request :HttpRequest) -> JsonResponse:
+def _post_tag(request: HttpRequest) -> JsonResponse:
     try:
-        # create a serializer out of the request data
-        serializer = TagSerializer(**request.GET)
-        
-        if not serializer.is_valid():
-            return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # ** easier than iterating through the field names myself ...
+        new_obj = Tag(**request.GET.dict())        
+        # add the object to the data base
+        new_obj.save()
 
-        # save the object
-        serializer.save()
-
-        return JsonResponse(data={"new_record": serializer.data, "extra_info": request.GET}, 
+        return JsonResponse(data={"new_record": TagSerializer(new_obj, many=False).data, "extra_info": request.GET.dict()}, 
                             status=201 # status for the correct post operation
                             )
+    except KeyError:
+        return JsonResponse(data={"error": "true", 
+                                  "messsage": (f"some missing fields. Make sure the parameters {['title', 'author', 'price']}.  are all passed\n"
+                                  f"Found: {request.GET.dict()}")
+                                  }, 
+                            status=400)
     except IntegrityError as e:
         return JsonResponse(data={"error": "true", 
                                   "message": f"Integrity issues: {str(e)}",
-                                  "request_content": request.GET},
+                                  "request_content": request.GET.dict()},
                             status=400)
 
-
-def tag(request :HttpRequest) -> JsonResponse:
+@csrf_exempt
+def tag(request: HttpRequest) -> JsonResponse:
     if request.method == 'GET':    
         return _get_all_tags(request)
 
     if request.method == 'POST':
         return _post_tag(request)
-
