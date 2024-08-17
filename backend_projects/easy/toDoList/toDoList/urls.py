@@ -23,7 +23,7 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('2dl/', include('core.urls')), 
-    # redirects the '' url pattern to the '2dl' one
 
-    path('', RedirectView.as_view(url='blog/', permanent=True)),    
+    # redirects the '' url pattern to the '2dl' one
+    path('', RedirectView.as_view(url='2dl/', permanent=True)),    
 ]

@@ -4,8 +4,11 @@ from django.contrib.auth.models import User
 
 
 class Group(models.Model):
-    name = models.CharField(verbose_name='group_name', max_length=50, help_text="A set of tasks grouped together")
+    name = models.CharField(max_length=50, help_text="A set of tasks grouped together")
     owner = models.ForeignKey(User, on_delete=models.CASCADE, help_text='the user crating this set of tasks.')
+
+    def __str__(self):
+        return self.name
 
 
 # let's assume that the importance goes from 1 to 5
@@ -17,6 +20,7 @@ _task_status = [("N", "New"), ("I", "In progress"), ("D", "Done")]
 class Task(models.Model):    
     # each task belongs to exactly one group of tasks
     group = models.ForeignKey(Group, on_delete=models.CASCADE, help_text="the id of the group the given task belongs to")
+
     name = models.CharField(max_length=50)
 
     importance = models.IntegerField(choices=_task_importance, help_text='assuming the importance can go from 1 to 5. The larger the number, the more important the task is')

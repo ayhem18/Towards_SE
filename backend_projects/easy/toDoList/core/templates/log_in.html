@@ -1,18 +1,41 @@
-{% extends "generic.html" %}
+{% load static %}
 
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+        
+    <!-- according to: https://www.scaler.com/topics/add-css-file-to-django/-->
+    <link rel="stylesheet" href="{% static 'login_style.css' %}">      
+</head>
 
-<form class="login_form">
-    <label for="password"> username </label>
-    <input type="input" id="username_input" name="username"/>
+<body>
+    <nav>
+        <a href='/2dl/home'> HOME </a>
+        <a href="/2dl/login"> Log In</a>
+    </nav>
 
-    <label for="password"> password </label>
-    <input type="password" id="pwd" name="pwd"/>
+    <main>
+        <article>
+            <form class="login_form">
+                <label for="password"> username </label>
+                <input type="input" id="username_input" name="username"/>
+            
+                <label for="password"> password </label>
+                <input type="password" id="pwd" name="pwd"/>
+            
+                <label submit> </label>
+                <input type="submit" id="submit" name="submission"/>
+            </form>
+            
+        </article>
+    </main>
 
-    <label submit> </label>
-    <input type="submit" id="submit" name="submission"/>
-</form>
 
+    {% load static %}
+    <script src="{% static 'login_script.js' %}"> </script>
 
-
-{% endblock %}
+</body>
+</html>
