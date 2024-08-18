@@ -1,6 +1,11 @@
-from django.shortcuts import render
+from typing import Union
 
-from django.http import HttpResponse, HttpRequest, JsonResponse
+
+from django.http import QueryDict
+from django.shortcuts import render, redirect
+
+from django.http import HttpResponse, HttpRequest, JsonResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -36,8 +41,6 @@ def _get_user(request: HttpRequest) -> dict:
     tasks = Task.objects.filter(group__in=list(g_ids2objs.keys()))
 
     tasks_serialized = TaskSerializer(tasks, many=True).data
-
-    # return tasks_serialized
 
     # tasks_serialized represents a list of dictionaries, each representing a task
     for t in tasks_serialized:
@@ -76,30 +79,52 @@ def account(req: HttpRequest) -> HttpRequest:
     return render(req, 'tasks.html', context=_get_user(req))
 
 
+
+def _redirect_req2_user_account(req: HttpRequest) -> HttpResponseRedirect:
+    # at this point the 'req' object has a url of http::/localhost/2dl/login (+ parameters)
+    # some security concerns might pop up here, but that's secondary for now.
+    # it needs to be redirected to http::/localhost/2dl/account/ with whatever parameters in the initial request
+    # the following guide addresses this issue: https://realpython.com/django-redirects/#advanced-usage
+    # extract the parameters from the initial url
+    base_url = reverse('account_view')
+
+
+    if 'username' not in req.GET:
+        raise KeyError("the request is supposed to contain the parameter 'username'")
+
+    # since req.POST / req.GET are implemented as QueryDict. They are immutable by default
+    # we need a small turnaround to remove the QueryDict
+    new_query_dict = QueryDict(req.GET.urlencode(), mutable=True)
+    new_query_dict.pop('password')
+
+    # I cannot remove the password key (I can make a turnaround this detail but it is secondary for now)
+    # extract the query string from the request according to: https://stackoverflow.com/questions/11280948/best-way-to-get-query-string-from-a-url-in-python    
+    query_string = new_query_dict.urlencode() # extracts a string with the parameters
+    final_url = f'{base_url}?{query_string}' 
+    return redirect(final_url)
+
+
 @csrf_exempt
-def login(req: HttpRequest) -> HttpResponse:
+def login(req: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
     user = req.user.is_authenticated
     print(user)    
-    # if user:     
-    #     print("The user is authenticated !!")
-    #     # if the user is already logged in, redirect them to the get_user page
-    #     # get the user information
-    #     return account(req)
 
+    if user:     
+        return _redirect_req2_user_account(req=req)
+    
     return render(req, 'log_in.html', context={})
 
 
 
 @csrf_exempt
-def authenticate_user(req: HttpRequest) -> HttpRequest:
+def authenticate_user(req: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
     username, password = req.GET['username'], req.GET['password']
 
-    # authenticate
-    try:
-        user = authenticate(username=username, password=password)
-        return account(user.username)
-
-    except ValueError:
+    # set 
+    user = authenticate(username=username, password=password)
+    if user is None:
         print("The user was not authenticated")
         return render(req, 'log_in.html', context={})
-        
+
+    
+    return _redirect_req2_user_account(req=req)

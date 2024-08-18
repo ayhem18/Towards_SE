@@ -26,7 +26,6 @@ class GroupSerializer(ModelSerializer):
     
 
 class TaskSerializer(ModelSerializer):
-    # group = StringRelatedField(many=False, read_only=True)
     group = PrimaryKeyRelatedField(many=False, read_only=True)
     
     class Meta:

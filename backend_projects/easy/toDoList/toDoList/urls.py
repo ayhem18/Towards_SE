@@ -25,5 +25,5 @@ urlpatterns = [
     path('2dl/', include('core.urls')), 
 
     # redirects the '' url pattern to the '2dl' one
-    path('', RedirectView.as_view(url='2dl/', permanent=True)),    
+    path('', RedirectView.as_view(url='2dl/', permanent=False)), # never set 
 ]

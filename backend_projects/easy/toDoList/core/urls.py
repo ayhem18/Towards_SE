@@ -4,8 +4,10 @@ from . import views
 
 
 urlpatterns = [
-    path("home/", views.home, name='home'),
-    path("login/", views.login, name='login'),
-    path("account/", views.get_user, name='user'),
-    path("authenticate/", views.authenticate, name='authenticate_user')
+    # setting the 'name' parameter makes my life much easier afterwards as I can simply use the django.urls.reverse function to find the needed url just by a meaningful human-understandable name
+    path("", views.home, name='home_view'), 
+    path("home/", views.home, name='home_view'),
+    path("login/", views.login, name='login_view'),
+    path("account/", views.get_user, name='account_view'),
+    path("authenticate/", views.authenticate_user, name='authenticate_user_view')
 ]
