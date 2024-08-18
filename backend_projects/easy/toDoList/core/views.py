@@ -15,7 +15,8 @@ from django.contrib.auth.decorators import login_required
 from rest_framework import status
 
 from .models import User, Group, Task
-from .serializers import GroupSerializer, TaskSerializer
+from .serializers import GroupSerializer, TaskSerializer, UserSerializer
+from .forms import RegisterForm
 
 
 def my_render(request:HttpRequest, template_name:str, context:Optional[Dict]=None):
@@ -31,7 +32,7 @@ def home(req: HttpRequest) -> HttpResponse:
 
 
 # let's build an api for getting a user's specific information
-def _get_user(request: HttpRequest) -> dict:
+def _get_user_tasks(request: HttpRequest) -> dict:
     username = request.GET.get('username')
     # get all groups and all tasks
     user_groups = Group.objects.filter(owner__username__exact=username)
@@ -67,11 +68,26 @@ def _get_user(request: HttpRequest) -> dict:
 
     return g_ids2objs
 
+def _get_all_users(request: HttpRequest) -> JsonResponse:
+    # get all users
+    all_users = User.objects.all()
+    print(all_users)
+    return JsonResponse(data={"users": UserSerializer(all_users, many=True).data}, status=status.HTTP_200_OK)
+    
+
 @csrf_exempt
 def account_json(request: HttpRequest) -> JsonResponse:
+    if request.method != 'GET':
+
+        return
+    
+    if 'username' not in request.GET:
+        print("checking all users")
+        return _get_all_users(request=request)
+    
     try:
         # this function will raise User.DoesNotExist if the username in the request is not present in the dataset
-        return JsonResponse(data={"groups": _get_user(request)},
+        return JsonResponse(data={"groups": _get_user_tasks(request)},
                             status=status.HTTP_200_OK, 
                             )
     except User.DoesNotExist:
@@ -81,7 +97,8 @@ def account_json(request: HttpRequest) -> JsonResponse:
 @csrf_exempt
 def account_html(req: HttpRequest) -> HttpRequest:
     # this is basically a version of the get_user function that returns a html page
-    user_info = _get_user(req)
+    user_info = _get_user_tasks(req)
+    print(user_info)
     context = {"groups": [v for _, v in user_info.items()]}
     return my_render(req, 'tasks.html', context=context)
 
@@ -138,4 +155,27 @@ def authenticate_user(req: HttpRequest) -> Union[HttpResponse, HttpResponseRedir
 
 @csrf_exempt
 def register_user(req: HttpRequest) -> HttpRequest:
-    pass
+    if req.method == "POST":
+        filled_form = RegisterForm(req.POST)
+
+        print(filled_form.__dict__)
+
+        # validate the data
+        if filled_form.is_valid():
+            user_data = filled_form.cleaned_data.copy()
+            user_data.pop('repeated_password')
+            # create a new user
+            new_user = User.objects.create(**user_data)
+            # save to the database
+            new_user.save()
+
+        else:
+            print("The filled form is not valid !!!!!")
+
+        form = filled_form
+    else:
+        form = RegisterForm()
+
+    # the context is common between both request methods
+    context = {"form": form, "submit_url": reverse('register_user_view')}
+    return my_render(req, 'register.html', context=context)

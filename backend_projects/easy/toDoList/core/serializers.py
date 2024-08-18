@@ -10,7 +10,7 @@ class UserSerializer(ModelSerializer):
         model = User
         # do not think serializing the password is a good idea
         fields = ['username', 'email', 'first_name', 'last_name']
-        exclude = ['password']
+        # exclude = ['password']
 
 
 class GroupSerializer(ModelSerializer):

@@ -35,6 +35,7 @@ class Task(models.Model):
 
     class meta: 
         ordering = ['importance', 'name']
-            
+
+
 
 

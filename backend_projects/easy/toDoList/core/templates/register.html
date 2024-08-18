@@ -1,0 +1,13 @@
+{% extends "generic.html" %}
+
+
+{% block content %}
+
+    <form action={{submit_url}} method="post"> {%comment%} the action field {%endcomment%}
+        {% csrf_token %} {%comment%} needed to protect the site against csrf attacks {%endcomment%}
+
+        {{form}} {%comment%} passing a django.forms.Form object that will generate the field automatically {% endcomment %}
+        <input type="submit" id="submit" name="submission"/>
+    </form>
+            
+{% endblock %}
