@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Dict, Optional
 
 
 from django.http import QueryDict
@@ -17,11 +17,17 @@ from rest_framework import status
 from .models import User, Group, Task
 from .serializers import GroupSerializer, TaskSerializer
 
+
+def my_render(request:HttpRequest, template_name:str, context:Optional[Dict]=None):
+    # the idea is simply to add the sanme fields to the context for links in the basic html to work properly
+    if context is None:
+        context = {}    
+
+    context.update({"home_link": reverse('home_view'), "login_link": reverse('login_view')})
+    return render(request, template_name=template_name, context=context)
+
 def home(req: HttpRequest) -> HttpResponse:
-    return render(req, 
-                  template_name='generic.html', 
-                  context={"random_text":'yeye whasupp !!'} # empty context for the moment
-                  )  
+    return my_render(req, template_name='generic.html')
 
 
 # let's build an api for getting a user's specific information
@@ -62,7 +68,7 @@ def _get_user(request: HttpRequest) -> dict:
     return g_ids2objs
 
 @csrf_exempt
-def get_user(request: HttpRequest) -> JsonResponse:
+def account_json(request: HttpRequest) -> JsonResponse:
     try:
         # this function will raise User.DoesNotExist if the username in the request is not present in the dataset
         return JsonResponse(data={"groups": _get_user(request)},
@@ -73,14 +79,14 @@ def get_user(request: HttpRequest) -> JsonResponse:
 
 
 @csrf_exempt
-@login_required
-def account(req: HttpRequest) -> HttpRequest:
+def account_html(req: HttpRequest) -> HttpRequest:
     # this is basically a version of the get_user function that returns a html page
-    return render(req, 'tasks.html', context=_get_user(req))
+    user_info = _get_user(req)
+    context = {"groups": [v for _, v in user_info.items()]}
+    return my_render(req, 'tasks.html', context=context)
 
 
-
-def _redirect_req2_user_account(req: HttpRequest) -> HttpResponseRedirect:
+def _redirect_req2_user_account(req: HttpRequest, user: User=None) -> HttpResponseRedirect:
     # at this point the 'req' object has a url of http::/localhost/2dl/login (+ parameters)
     # some security concerns might pop up here, but that's secondary for now.
     # it needs to be redirected to http::/localhost/2dl/account/ with whatever parameters in the initial request
@@ -90,30 +96,31 @@ def _redirect_req2_user_account(req: HttpRequest) -> HttpResponseRedirect:
 
 
     if 'username' not in req.GET:
-        raise KeyError("the request is supposed to contain the parameter 'username'")
+        if user is None:
+            raise KeyError("the request is supposed to contain the parameter 'username'")
 
-    # since req.POST / req.GET are implemented as QueryDict. They are immutable by default
-    # we need a small turnaround to remove the QueryDict
-    new_query_dict = QueryDict(req.GET.urlencode(), mutable=True)
-    new_query_dict.pop('password')
+        new_query_dict = QueryDict(req.GET.urlencode(), mutable=True)
+        new_query_dict['username'] = user.username
+    else:    
+        # since req.POST / req.GET are implemented as QueryDict. They are immutable by default
+        # we need a small turnaround to remove the password information
+        new_query_dict = QueryDict(req.GET.urlencode(), mutable=True)
+        new_query_dict.pop('password')
 
-    # I cannot remove the password key (I can make a turnaround this detail but it is secondary for now)
     # extract the query string from the request according to: https://stackoverflow.com/questions/11280948/best-way-to-get-query-string-from-a-url-in-python    
     query_string = new_query_dict.urlencode() # extracts a string with the parameters
     final_url = f'{base_url}?{query_string}' 
     return redirect(final_url)
 
-
 @csrf_exempt
 def login(req: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
-    user = req.user.is_authenticated
-    print(user)    
+    is_authenticated = req.user.is_authenticated
 
-    if user:     
-        return _redirect_req2_user_account(req=req)
+    if is_authenticated:     
+        return _redirect_req2_user_account(req=req, 
+                                           user=req.user)
     
-    return render(req, 'log_in.html', context={})
-
+    return my_render(req, 'log_in.html')
 
 
 @csrf_exempt
@@ -124,7 +131,11 @@ def authenticate_user(req: HttpRequest) -> Union[HttpResponse, HttpResponseRedir
     user = authenticate(username=username, password=password)
     if user is None:
         print("The user was not authenticated")
-        return render(req, 'log_in.html', context={})
-
+        return my_render(req, 'log_in.html')
     
     return _redirect_req2_user_account(req=req)
+
+
+@csrf_exempt
+def register_user(req: HttpRequest) -> HttpRequest:
+    pass

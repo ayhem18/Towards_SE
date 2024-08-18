@@ -2,38 +2,40 @@
 
 {% block content %}
 
-    {% for task_group in task_groups %}
+    {% for task_group in groups %}
 
+    <div class="task_group">
         <h2 class="task_group_name">
             {{task_group.name}}
         </h2>  
         
-        {% comment %}
-        <!-- {% for t in task_group_tasks %}
+        {% for t in task_group.tasks %}
+            <div class="task">
 
-            <h3 class="task_name">
-                {{t.name}}
-            </h3>
+                <h3 class="task_name">
+                    {{t.name}}
+                </h3>
 
-            <br>
+                <br>
 
-            <span> 
-                {{t.status}}
-            </span>
-            
-            <span>
-                {{t.importance}}
-            </span>
+                <span> 
+                    {{t.status}}
+                </span>
+                
+                <span>
+                    {{t.importance}}
+                </span>
 
-            <br>
+                <br>
 
-            <p class="task_description">
-                {{t.description}}
-            </p>
+                <p class="task_description">
+                    {{t.description}}
+                </p>
+            </div>
+        {% endfor %}
 
-        {% endfor %} -->
-        {%endcomment%}
-        
+    </div>
+
     {% endfor %}
 
 {% endblock %}

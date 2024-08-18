@@ -13,25 +13,20 @@
 
 <body>
     <nav>
-        <a href='/2dl/home'> HOME </a>
-        <a href="/2dl/login"> Log In</a>
-    </nav>
+        <a href={{home_link}}> HOME </a>
+        <a href={{login_link}}> Log In</a>
+    </nav> 
 
     <main>
-        <artcile>
+        <article>
             {% block content %}
             {% endblock %}        
-        </artcile>
-    </main>
-
-
-    <!-- <main>
-        <article>
-            <p>
-                This is the home page of the 2DoList.com site. Here is some randomly generated text: {{random_text}}
-            </p>    
         </article>
-    </main> -->
+    </main>
+    
+    {%block js_script%}
+    
+    {%endblock%}
 
 </body>
 </html>
