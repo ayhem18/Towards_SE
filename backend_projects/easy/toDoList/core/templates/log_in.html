@@ -2,7 +2,7 @@
 
 {% block content %}
 
-            <form class="login_form">
+            {% comment %} <form class="login_form">
                 <label for="password"> username </label>
                 <input type="input" id="username_input" name="username"/>
             
@@ -11,15 +11,36 @@
             
                 <label submit> </label>
                 <input type="submit" id="submit" name="submission"/>
+            </form> {% endcomment %}    
+
+            {%comment %}
+                using the django form class for simplicity
+            {% endcomment %}
+
+            <form action={{submit_url}} method="post"> {%comment%} the action field {%endcomment%}
+                {% csrf_token %} {%comment%} needed to render the page locally {%endcomment%}
+                        
+                {{form}} {%comment%} passing a django.forms.Form object that will generate the field automatically {% endcomment %}
+                <input type="submit" id="submit" name="submission"/>
             </form>
-            
 
 {% endblock %}
 
+
+{%block errors%} 
+    <section class='error_box'>
+        <p>
+            {{error}}
+        </p>            
+    </section>
+    
+{%endblock %} 
+
+
 {% block js_script %}
 
-{% load static %}
-    <script src="{% static 'login_script.js' %}"> </script>
+{% comment %} {% load static %}
+    <script src="{% static 'login_script.js' %}"> </script> {% endcomment %}
 
 {% endblock %}
 

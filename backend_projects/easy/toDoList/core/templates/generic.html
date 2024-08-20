@@ -15,15 +15,26 @@
     <nav>
         <a href={{home_link}}> HOME </a>
         <a href={{login_link}}> Log In</a>
+        <a href={{register_link}}> Register </a>
     </nav> 
 
     <main>
         <article>
             {% block content %}
             {% endblock %}        
+
+            <br>
+
+            {%block errors%} 
+            {% comment %} 
+                a block for errors of any kind
+            {% endcomment %}
+            {%endblock %} 
+            
         </article>
     </main>
     
+
     {%block js_script%}
     
     {%endblock%}

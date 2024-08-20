@@ -2,40 +2,52 @@
 
 {% block content %}
 
-    {% for task_group in groups %}
+    {% if groups %}
 
-    <div class="task_group">
-        <h2 class="task_group_name">
-            {{task_group.name}}
-        </h2>  
-        
-        {% for t in task_group.tasks %}
-            <div class="task">
+        {% for task_group in groups %}
 
-                <h3 class="task_name">
-                    {{t.name}}
-                </h3>
-
-                <br>
-
-                <span> 
-                    {{t.status}}
-                </span>
+            <div class="task_group">
+                <h2 class="task_group_name">
+                    {{task_group.name}}
+                </h2>  
                 
-                <span>
-                    {{t.importance}}
-                </span>
+                {% for t in task_group.tasks %}
+                    <div class="task">
 
-                <br>
+                        <h3 class="task_name">
+                            {{t.name}}
+                        </h3>
 
-                <p class="task_description">
-                    {{t.description}}
-                </p>
+                        <br>
+
+                        <span> 
+                            {{t.status}}
+                        </span>
+                        
+                        <span>
+                            {{t.importance}}
+                        </span>
+
+                        <br>
+
+                        <p class="task_description">
+                            {{t.description}}
+                        </p>
+                    </div>
+                {% endfor %}
+
             </div>
+
         {% endfor %}
 
-    </div>
 
-    {% endfor %}
+    {%else%}
+        <div class="task_group">
+            <p>
+                No tasks yet !!! You must be chilling !!!
+            </p> 
+        </div>
+
+    {%endif%}
 
 {% endblock %}
