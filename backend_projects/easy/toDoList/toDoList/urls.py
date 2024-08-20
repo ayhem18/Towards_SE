@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 from django.views.generic import RedirectView
-
+from django.contrib.auth import urls as auth_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +26,5 @@ urlpatterns = [
 
     # redirects the '' url pattern to the '2dl' one
     path('', include('core.urls')), # never set the permanent argument to true in the redirect functions !!! 
+    path('', include(auth_urls)), # should be listed after the 'core.urls' so that only the log out page is fetched from the django.contrib.urls
 ]

@@ -39,8 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
-    'core.apps.CoreConfig'
+    
+    'core.apps.CoreConfig', 
+    
+    'register.apps.RegisterConfig' # implementing a Register app to use django built-in functionalities
 ]
 
 MIDDLEWARE = [
@@ -58,7 +62,7 @@ ROOT_URLCONF = 'toDoList.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'core', 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'core', 'templates'), os.path.join(BASE_DIR, 'register', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

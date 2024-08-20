@@ -14,15 +14,18 @@
             </form> {% endcomment %}    
 
             {%comment %}
-                using the django form class for simplicity
+                <form action={{submit_url}} method="post"> 
+                {% csrf_token %} 
+                {{form}} 
+                <input type="submit" id="submit" name="submission"/>
+                </form>
             {% endcomment %}
 
-            <form action={{submit_url}} method="post"> {%comment%} the action field {%endcomment%}
-                {% csrf_token %} {%comment%} needed to render the page locally {%endcomment%}
-                        
-                {{form}} {%comment%} passing a django.forms.Form object that will generate the field automatically {% endcomment %}
-                <input type="submit" id="submit" name="submission"/>
-            </form>
+    <form method="post"> 
+        {% csrf_token %} 
+        {{form}} 
+        <input type="submit" id="submit" name="submission"/>
+    </form> 
 
 {% endblock %}
 
