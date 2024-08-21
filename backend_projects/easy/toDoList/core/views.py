@@ -1,18 +1,19 @@
 from typing import Dict, Optional
 import pprint
 
-from django.shortcuts import render, redirect
-from django.template import loader
+from django.shortcuts import render
 
-from django.http import HttpResponse, HttpRequest, JsonResponse, HttpResponseRedirect
-from django.urls import reverse
+from django.http import HttpResponse, HttpRequest, JsonResponse
+from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import status
 
 from .models import User, Group, Task
 from .serializers import GroupSerializer, TaskSerializer
- 
+
+from django.views.generic.base import View, ContextMixin, TemplateResponseMixin, TemplateView, RedirectView
+
 
 def my_render(request:HttpRequest, template_name:str, context:Optional[Dict]=None):
     # the idea is simply to add the sanme fields to the context for links in the basic html to work properly
@@ -103,4 +104,36 @@ def account_html(req: HttpRequest) -> HttpRequest:
     return my_render(req, 'tasks.html', context=context)
 
 
+class MyTemplateView(View, ContextMixin, TemplateResponseMixin):
+    template_name = 'test.html' # this attribute comes from the TemplateReponseMixin
 
+    # try to use the field : extra_content instead of overrinding the get_context_data method
+    extra_context = {"first_name": 'Ayhem', "last_name": "Bouabid"}
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['first_name'] = 'Ayhem'
+    #     context['last_name'] = 'Bouabid'
+    #     return context
+    
+    # if I am not mistaken the TempalteView class (django's) overrides the get function
+    # and uses the context from 'ContextMixin' to populate the template 
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        return render(request, template_name=self.template_name, context=self.get_context_data())
+
+
+class V(TemplateView):
+    template_name = 'test.html' # this attribute comes from the TemplateReponseMixin
+
+    # try to use the field : extra_content instead of overrinding the get_context_data method
+    extra_context = {"first_name": 'Ayhem', "last_name": "Bouabid"}
+
+
+class MyRedirectView(RedirectView):
+    # i need this view to use the parameters to build the final url
+    query_string = True
+    permanent = False
+    url = reverse_lazy('account_json_view')
+
+    # let's see if the view will redirect them correctly
