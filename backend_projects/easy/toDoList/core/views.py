@@ -14,6 +14,7 @@ from .serializers import GroupSerializer, TaskSerializer
 
 from django.views.generic.base import View, ContextMixin, TemplateResponseMixin, TemplateView, RedirectView
 
+from django.views.generic.detail import SingleObjectMixin
 
 def my_render(request:HttpRequest, template_name:str, context:Optional[Dict]=None):
     # the idea is simply to add the sanme fields to the context for links in the basic html to work properly
@@ -119,6 +120,8 @@ class MyTemplateView(View, ContextMixin, TemplateResponseMixin):
     # if I am not mistaken the TempalteView class (django's) overrides the get function
     # and uses the context from 'ContextMixin' to populate the template 
 
+    # using TemplateResponseMixin enables using the render_to_response function (rendering the template)
+    # one way to use it is to have the context from 'ContextMixin' and pass it to the render_to_response 
     def get(self, request: HttpRequest) -> HttpResponse:
         return render(request, template_name=self.template_name, context=self.get_context_data())
 
@@ -137,3 +140,4 @@ class MyRedirectView(RedirectView):
     url = reverse_lazy('account_json_view')
 
     # let's see if the view will redirect them correctly
+

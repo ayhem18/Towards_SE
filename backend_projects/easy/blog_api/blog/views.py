@@ -127,8 +127,6 @@ def _get_blog_by_tag(request :HttpRequest) -> JsonResponse:
                                 status=status.HTTP_200_OK
                                 )                
 
-
-
 # import json
 # request = json.loads(request.body)
 
@@ -211,7 +209,6 @@ def blog(request :HttpRequest) -> JsonResponse:
     if request.method == "POST":
         return _blog_post(request) 
 
-
 def _get_all_tags(request :HttpRequest) -> JsonResponse:
     _all_tags = Tag.objects.all()
 
@@ -238,11 +235,80 @@ def _post_tag(request :HttpRequest) -> JsonResponse:
                                   "request_content": request.GET},
                             status=400)
 
-
 def tag(request :HttpRequest) -> JsonResponse:
     if request.method == 'GET':    
         return _get_all_tags(request)
 
     if request.method == 'POST':
         return _post_tag(request)
+
+
+from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
+
+
+# let's try to understand how to work with django Detail and List views
+# class BlogViewByTitle(View, SingleObjectMixin):
+#     # so basically
+#     model = Blog
+#     slug_field = 'title' 
+#     slug_url_kwarg = 'title'
+
+#     # i suppose this view will return the object with the title in the url...
+#     def get(self, request, *args, **kwargs):
+#         try:
+#             return JsonResponse({
+#                             "blog": BlogSerializer(self.get_object(*args, **kwargs)).data,                            
+#                             },status=status.HTTP_200_OK
+#                         )
+#         except Blog.DoesNotExist:
+#             return JsonResponse({"error": f"Title does not exist"},
+#                                 status=404) 
+            
+class BlogViewByTitle(DetailView):
+    model = Blog
+    slug_field = 'title' 
+    slug_url_kwarg = 'title'
+
+    def get(self, request, *args, **kwargs):
+        try:
+            return JsonResponse({
+                            "blog": BlogSerializer(self.get_object()).data,                            
+                            },status=status.HTTP_200_OK
+                        )
+        except Blog.DoesNotExist:
+            return JsonResponse({"error": f"Title {kwargs['title']} does not exist"},
+                                status=404) 
+        except Exception as e:            
+            return JsonResponse({"error": f"{e}"},
+                                status=404) 
+
+
+
+class BlogView(ListView):
+    # apparently a Listview only supports displaying all values with no filtering...
+    # but it helps with pagination
+    # can be used for filtering purposes when overriding the get_object_list method
+    model = Blog
+    paginate_by = 2
+    ordering = 'id'  # order by id
+
+    def get(self, request, *args, **kwargs):
+        # this code is copied from the get_context_data method  
+        queryset = self.get_queryset()
+        # extract the number of items per page
+        page_size = self.get_paginate_by(queryset)
+        # paginate
+        _, _, data, _ = self.paginate_queryset(
+            queryset, page_size
+        )   
+
+        p = kwargs.get(self.page_kwarg, 1)  
+
+        return JsonResponse(data={f"blogs_page_{p}":BlogSerializer(data, many=True).data}, 
+                            status=status.HTTP_200_OK)
+
+
+def blog_view_paginated(req, *args, **kwargs):
+    return BlogView.as_view(paginate_by=kwargs['paginate_by'])(req, **kwargs)
 
