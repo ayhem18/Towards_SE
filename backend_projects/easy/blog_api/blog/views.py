@@ -9,6 +9,7 @@ from copy import copy
 from django.db import IntegrityError
 from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse_lazy
 
 from rest_framework import status # used for more readable error codes
 from rest_framework.decorators import api_view 
@@ -18,7 +19,7 @@ from rest_framework.response import Response
 
 from .serializers import BlogSerializer, TagSerializer
 from .models import Blog, Tag
-
+from .forms import TagForm
 
 def home(req):
     return HttpResponse("this is the home page")
@@ -199,7 +200,6 @@ def _blog_get(request :HttpRequest) -> JsonResponse:
     return _get_all_blogs(request)
 
 
-
 @csrf_exempt
 @api_view(['GET', 'POST']) # this means that this view can only recieve HTTP GET, POST requests
 def blog(request :HttpRequest) -> JsonResponse:
@@ -245,26 +245,28 @@ def tag(request :HttpRequest) -> JsonResponse:
 
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
+from django.views.generic.edit import FormView, CreateView
+
+class TagViewByName(DetailView):
+    model = Tag
+    slug_field = 'name' 
+    slug_url_kwarg = 'name'
+
+    def get(self, request, *args, **kwargs):
+        try:
+            return JsonResponse({
+                            "tag": TagSerializer(self.get_object()).data,                            
+                            },status=status.HTTP_200_OK
+                        )
+        except Exception as e:            
+            return JsonResponse({"error": f"{e}"},
+                                status=404) 
 
 
-# let's try to understand how to work with django Detail and List views
-# class BlogViewByTitle(View, SingleObjectMixin):
-#     # so basically
-#     model = Blog
-#     slug_field = 'title' 
-#     slug_url_kwarg = 'title'
 
-#     # i suppose this view will return the object with the title in the url...
-#     def get(self, request, *args, **kwargs):
-#         try:
-#             return JsonResponse({
-#                             "blog": BlogSerializer(self.get_object(*args, **kwargs)).data,                            
-#                             },status=status.HTTP_200_OK
-#                         )
-#         except Blog.DoesNotExist:
-#             return JsonResponse({"error": f"Title does not exist"},
-#                                 status=404) 
-            
+
+
+# let's try to understand how to work with django Detail and List views            
 class BlogViewByTitle(DetailView):
     model = Blog
     slug_field = 'title' 
@@ -284,10 +286,9 @@ class BlogViewByTitle(DetailView):
                                 status=404) 
 
 
-
 class BlogView(ListView):
     # apparently a Listview only supports displaying all values with no filtering...
-    # but it helps with pagination
+    # but it takes care of pagination (which is really great ...)
     # can be used for filtering purposes when overriding the get_object_list method
     model = Blog
     paginate_by = 2
@@ -295,7 +296,7 @@ class BlogView(ListView):
 
     def get(self, request, *args, **kwargs):
         # this code is copied from the get_context_data method  
-        queryset = self.get_queryset()
+        queryset = self.get_queryset() # override this function to add filtering
         # extract the number of items per page
         page_size = self.get_paginate_by(queryset)
         # paginate
@@ -312,3 +313,23 @@ class BlogView(ListView):
 def blog_view_paginated(req, *args, **kwargs):
     return BlogView.as_view(paginate_by=kwargs['paginate_by'])(req, **kwargs)
 
+
+# let's create, update and delete some tags
+class CreateTag(CreateView):
+    # the idea here is quite simple
+    template_name = 'tag_form.html'    
+    form_class = TagForm
+    
+    # let's override the get_successful_url()
+    def get_success_url(self) -> str:
+        # since get_successful_url is called only after form.is_valid is correct
+        # the self.object should be present at this point
+        
+        base_url =reverse_lazy('all_tags_view')
+        print("issue at the reverse_lazy level")
+        tag_name = self.object.name
+
+        print("the url is ready!!")
+        url = "{}/{}".format(base_url, tag_name)
+        print(url)
+        return url
