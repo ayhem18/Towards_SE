@@ -1,0 +1,17 @@
+* {box-sizing: border-box}
+
+
+.body {
+    margin:0;
+}
+
+.parent {
+    background-color: blue;
+    width: 100%;
+}
+
+.child {
+    margin: 0 auto;
+    background-color: red;
+    width: 40%;
+}
