@@ -7,6 +7,8 @@ from typing import List, Tuple
 from copy import copy
 
 from django.db import IntegrityError
+from django.db.models.base import Model as Model
+from django.db.models.query import QuerySet
 from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse_lazy
@@ -263,14 +265,16 @@ class TagViewByName(DetailView):
                                 status=404) 
 
 
-
-
-
 # let's try to understand how to work with django Detail and List views            
 class BlogViewByTitle(DetailView):
     model = Blog
+    # using the slug_field enables filtering by non-primary key fields
     slug_field = 'title' 
     slug_url_kwarg = 'title'
+
+    def get_object(self, queryset: QuerySet | None = ...) -> Model:
+        print("overriding the original self.get_object method")
+        return super().get_object(queryset)
 
     def get(self, request, *args, **kwargs):
         try:
@@ -278,9 +282,6 @@ class BlogViewByTitle(DetailView):
                             "blog": BlogSerializer(self.get_object()).data,                            
                             },status=status.HTTP_200_OK
                         )
-        except Blog.DoesNotExist:
-            return JsonResponse({"error": f"Title {kwargs['title']} does not exist"},
-                                status=404) 
         except Exception as e:            
             return JsonResponse({"error": f"{e}"},
                                 status=404) 
@@ -296,6 +297,8 @@ class BlogView(ListView):
 
     def get(self, request, *args, **kwargs):
         # this code is copied from the get_context_data method  
+
+        # can use self.get_query_set() with the keyword arguments to filter
         queryset = self.get_queryset() # override this function to add filtering
         # extract the number of items per page
         page_size = self.get_paginate_by(queryset)
@@ -311,6 +314,8 @@ class BlogView(ListView):
 
 
 def blog_view_paginated(req, *args, **kwargs):
+    # enables setting the number of elements by page
+    # instead of using the default value of 2
     return BlogView.as_view(paginate_by=kwargs['paginate_by'])(req, **kwargs)
 
 
@@ -326,10 +331,9 @@ class CreateTag(CreateView):
         # the self.object should be present at this point
         
         base_url =reverse_lazy('all_tags_view')
-        print("issue at the reverse_lazy level")
+
         tag_name = self.object.name
 
-        print("the url is ready!!")
         url = "{}/{}".format(base_url, tag_name)
         print(url)
         return url

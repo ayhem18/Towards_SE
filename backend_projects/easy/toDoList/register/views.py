@@ -159,17 +159,21 @@ def login(req: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
 ## django provides a class to take care of standard authentication operations
 # customizing it might be tricky
 class MyLoginView(LoginView):
-    # I am setting the fields according to the documentation of LoginView
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # redirect the user to the account view
         self.next_page = reverse_lazy('account_view')
+        # # use my form class
+        # self.form_class = LoginForm
 
-        # use my form class
-        self.form_class = LoginForm
+        # set the redirect_authenticated_user field to True so that that Django redirects 
+        # so that the self.dispatcher method calls the get_successful_url method overridden below
+        self.redirect_authenticated_user=True 
+        
 
     def get_successful_url(self):
         """Return the default redirect URL."""
+        print("calling the overridden 'get_successful_url' method")
         return resolve_url(self.next_page)

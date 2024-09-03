@@ -19,7 +19,9 @@ class RegisterForm(forms.Form):
         return self.cleaned_data['password'] == self.cleaned_data['repeated_password']
 
 
-class LoginForm(forms.Form):
+from django.contrib.auth.forms import AuthenticationForm
+
+class LoginForm(AuthenticationForm):
     username = forms.CharField(label="Your username", max_length=50, required=True)
     password = forms.CharField(label="Your password", min_length=6, required=True, widget=forms.PasswordInput)
 
