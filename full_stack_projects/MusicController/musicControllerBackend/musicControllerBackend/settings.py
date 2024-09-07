@@ -41,7 +41,13 @@ INSTALLED_APPS = [
     # adding the api app
     'api.apps.ApiConfig',
     # the django rest framework
-    "rest_framework"
+    "rest_framework", 
+    
+    # add the register app
+    'register.apps.RegisterConfig',
+
+    # add the token authentication
+    'rest_framework.authtoken' 
 ]
 
 MIDDLEWARE = [
