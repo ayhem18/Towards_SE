@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'register.apps.RegisterConfig',
 
     # add the token authentication
-    'rest_framework.authtoken' 
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
