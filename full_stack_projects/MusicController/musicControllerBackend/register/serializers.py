@@ -13,7 +13,7 @@ class UserReadSerializer(sers.ModelSerializer):
     class Meta:
         model = User
         # choose the field to return in Json Response
-        fields = ['email', 'username', 'first_name', 'last_name', 'password']
+        fields = ['email', 'username', 'first_name', 'last_name']
 
 # serializer to create a new user
 class UserRegisterSerializer(sers.ModelSerializer):

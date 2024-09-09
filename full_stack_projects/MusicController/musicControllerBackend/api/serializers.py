@@ -1,16 +1,18 @@
-from .models import Room
+from .models import MusicRoom
 
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers as sers
+from django.contrib.auth.models import User
 
-class RoomSerializer(ModelSerializer):
+class MusicRoomReadSerializer(sers.ModelSerializer):
     class Meta:
-        model = Room
+        model = MusicRoom
         fields = '__all__'
-        depth = 1
 
 
-class CreateRoomSerializer(ModelSerializer):
+class MusicRoomWriteSerializer(sers.ModelSerializer):
+    host = sers.SlugRelatedField(many=False, slug_field='username', queryset=User.objects.all()) # so basically the host will be identified by their username
+
     class Meta:
-        model=Room
-        fields = ('guest_can_pause', 'votes_to_skip')
-        
+        model = MusicRoom
+        fields = ('host', 'votes_to_skip')
+
