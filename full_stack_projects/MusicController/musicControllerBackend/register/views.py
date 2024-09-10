@@ -1,14 +1,21 @@
 import rest_framework.status as st
-from django.shortcuts import render
+import rest_framework.permissions as prs
+
+from django.urls import reverse
+from django.contrib.auth import login, logout
+from django.contrib.auth.models import User
+from django.shortcuts import redirect
 
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.decorators import api_view
 from rest_framework.authtoken.models import Token
-
-from .serializers import UserReadSerializer, UserRegisterSerializer
 from rest_framework.generics import CreateAPIView
-from django.contrib.auth import authenticate
+from rest_framework.views import APIView
+
+
+from .serializers import UserReadSerializer, UserRegisterSerializer, UserLoginSerializer
+
 
 class SignUpUserView(CreateAPIView):
     serializer_class = UserRegisterSerializer
@@ -28,32 +35,45 @@ class SignUpUserView(CreateAPIView):
                             status=st.HTTP_201_CREATED)
 
         return Response(data={"error_message": ser.errors}, status=st.HTTP_400_BAD_REQUEST)
+   
+
+class LoginView(APIView):
+    # This view should be accessible also for unauthenticated users.
+    permission_classes = [prs.AllowAny]
+
+    def _redirect(self, request:Request|None, user:User|None = None) -> Response:
+        username = request.data.get('username', None)
+
+        if username is None and user is None:
+            raise KeyError("something is wrong. Can find neither the 'user' not the 'username'")
+
+        if not username:
+            username = user.username
+
+        next_url = reverse('user_detail_view', kwargs={"username": username}) #username is used as a keyword argument in the userDetail view
+
+        return redirect(next_url) 
 
 
-@api_view(['POST'])
-def login(request: Request):
-    # get username and pasword
-    data = request.data
+    def post(self, request: Request, format=None):
+        serializer = UserLoginSerializer(data=request.data,
+            context={ 'request': request })
+        
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        login(request, user)
+        return self._redirect(request, user=user)
 
-    username = data.get('username', None)
-    password = data.get('password', None)
 
-    print(username, password, sep="~~")
-
-    user = authenticate(username=username, password=password)
-
-    if user is not None:
-        if user.is_active:
-            login(request, user)
-
-            return Response(data={"message": "user logged in"}, status=st.HTTP_200_OK)
-        else:
-            return Response(data={"message": "user not active"}, status=st.HTTP_404_NOT_FOUND)
-    else:
-        return Response(data={"message": "uncorrect credentials"}, status=st.HTTP_404_NOT_FOUND)    
+class LogoutView(APIView):
+    def get(self, request: Request, format=None):
+        logout(request)
+        return Response(data={"message": "logout successfully"}, status=st.HTTP_200_OK)
 
 
 @api_view(['POST'])
 def test_token(request:Request) -> Response:
     return Response({})
+
+
 

@@ -4,6 +4,7 @@ from rest_framework import serializers as sers
 
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import authenticate
 
 # my code is mostly based on this great tutorial: 
 # https://www.codersarts.com/post/how-to-create-register-and-login-api-using-django-rest-framework-and-token-authentication
@@ -47,5 +48,33 @@ class UserRegisterSerializer(sers.ModelSerializer):
         user.save()
         return user
 
-        
+
+class UserLoginSerializer(sers.Serializer):
+    username = sers.CharField(write_only=True)
+
+    password = sers.CharField(
+        style={'input_type': 'password'},
+        trim_whitespace=False,
+        write_only=True
+    )
+
+    def validate(self, attrs: Dict):
+        username = attrs.get('username')
+        pwd = attrs.get('password')
+
+        if username is not None and pwd is not None:
+            # Try to authenticate the user using Django auth framework.
+            user = authenticate(request=self.context.get('request'),
+                                username=username, password=pwd)
+            
+            if not user:
+                # If we don't have a regular user, raise a ValidationError
+                msg = 'Access denied: wrong username or password.'
+                raise sers.ValidationError(msg, code='authorization')
+        else:
+            msg = 'Both "username" and "password" are required.'
+            raise sers.ValidationError(msg, code='authorization')
+
+        attrs['user'] = user
+        return attrs
     

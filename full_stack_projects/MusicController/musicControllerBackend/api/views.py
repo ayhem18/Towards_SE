@@ -1,14 +1,12 @@
-from django.shortcuts import render
+import rest_framework.permissions as prs
 
-# let's get some views out of the way here
-from django.http import HttpRequest, HttpResponse, JsonResponse 
+from django.http import HttpResponse, JsonResponse
 
-# build a class-based view to create a room
 from rest_framework import generics, status # using status for better response status
 from rest_framework.request import Request # a better Request class that can handle different Request types
 
 from .models import MusicRoom
-from .serializers import MusicRoomWriteSerializer, MusicRoomReadSerializer
+from .serializers import MusicRoomWriteSerializer
 
 
 def main_view(request: Request) -> HttpResponse:
@@ -52,9 +50,15 @@ class UserDetail(generics.mixins.RetrieveModelMixin,
                     generics.mixins.UpdateModelMixin,
                     generics.mixins.DestroyModelMixin,
                     generics.GenericAPIView):
+
+    # only authenticated users can be view user details
+    permission_classes = [prs.IsAuthenticated]
+    
     queryset = User.objects.all()
     serializer_class = UserReadSerializer
     # use the username to lookup users
     lookup_url_kwarg='username'
     lookup_field='username'
 
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
