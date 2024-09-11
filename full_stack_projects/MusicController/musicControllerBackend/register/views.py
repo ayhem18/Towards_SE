@@ -68,7 +68,8 @@ class LoginView(APIView):
 class LogoutView(APIView):
     def get(self, request: Request, format=None):
         logout(request)
-        return Response(data={"message": "logout successfully"}, status=st.HTTP_200_OK)
+        return Response(data={"message": "logged out successfully"}, 
+                        status=st.HTTP_200_OK)
 
 
 @api_view(['POST'])
