@@ -2,7 +2,7 @@ from rest_framework import serializers as sers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import User
 
-from .models import MusicRoom, __ROOM_CODE_LENGTH__, _generate_random_room_code
+from .models import MusicRoom, __ROOM_CODE_LENGTH__, _generate_random_room_code, _generate_room_count
 
 
 class MusicRoomReadSerializer(sers.ModelSerializer):
@@ -11,10 +11,11 @@ class MusicRoomReadSerializer(sers.ModelSerializer):
                                  slug_field='username', 
                                  queryset=User.objects.all()) # so basically the host will be identified by their username
 
+    code = sers.CharField(write_only=True) # the code should not appear during serialization
+
     class Meta:
         model = MusicRoom
         fields = '__all__'
-
 
 
 class MusicRoomWriteSerializer(sers.ModelSerializer):
@@ -29,8 +30,10 @@ class MusicRoomWriteSerializer(sers.ModelSerializer):
                               ]
                           )
 
+    creation_order = sers.IntegerField(default=_generate_room_count)
+    
     class Meta:
         model = MusicRoom
-        fields = ('host', 'votes_to_skip', 'code')
+        fields = ('host', 'votes_to_skip', 'code', 'creation_order')
 
 

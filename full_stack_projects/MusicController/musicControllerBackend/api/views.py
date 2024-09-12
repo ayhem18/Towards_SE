@@ -1,9 +1,11 @@
 from rest_framework import generics as gn, status as st, permissions as prs 
 from rest_framework.request import Request 
+from rest_framework.response import Response 
 
 from django.contrib.auth.models import User
-
 from django.http import HttpResponse, JsonResponse
+from django.db.models import F
+
 from .models import MusicRoom
 from .serializers import MusicRoomWriteSerializer, MusicRoomReadSerializer
 
@@ -16,7 +18,37 @@ def main_view(request: Request) -> HttpResponse:
 
 MAX_ROOMS_PER_USERS = 3
 
+# list all users in the platform
+class ListUserView(gn.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserReadSerializer
+    
 
+# display a user given a detail
+class UserDetail(gn.mixins.RetrieveModelMixin,
+                    gn.mixins.UpdateModelMixin,
+                    gn.mixins.DestroyModelMixin,
+                    gn.GenericAPIView):
+
+    # only authenticated users can be view user details
+    permission_classes = [prs.IsAuthenticated]
+    
+    queryset = User.objects.all()
+    serializer_class = UserReadSerializer
+    # use the username to lookup users
+    lookup_url_kwarg='username'
+    lookup_field='username'
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def delete(self, request: Response, *args, **kwargs):
+        # extract the username from the request
+        # and call the destroy method with the username (extracted from the user request's field.)
+        return self.destroy(request, args=[request.user.username]) 
+
+
+# create a room: the created room will be associated with the request's owner
 class CreateRoomView(gn.CreateAPIView):    
     # only authenticated users can create rooms
     permission_classes = [prs.IsAuthenticated]
@@ -65,24 +97,83 @@ class CreateRoomView(gn.CreateAPIView):
         return JsonResponse(data={"data": MusicRoomReadSerializer(room).data}, status=st.HTTP_201_CREATED)
 
 
-class ListUserView(gn.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserReadSerializer
-    
+# List all the rooms associated with a given user
+class ListRoomsByUserView(gn.ListAPIView):
+    # the main goal of this view is to list all the rooms created by the user with the given username
 
-class UserDetail(gn.mixins.RetrieveModelMixin,
+    # the queryset will simply the set of rooms
+    queryset = MusicRoom.objects.all()
+    
+    # the serializer will be used to present the data: 
+    serializer_class = MusicRoomReadSerializer
+
+    # the slugfield will be the username of the 'host' field in the Room object
+
+    lookup_url_kwarg='host.username'
+    lookup_field='username'
+
+
+class RoomDetailUserCreationOrder(gn.mixins.RetrieveModelMixin,
                     gn.mixins.UpdateModelMixin,
                     gn.mixins.DestroyModelMixin,
                     gn.GenericAPIView):
 
-    # only authenticated users can be view user details
-    permission_classes = [prs.IsAuthenticated]
-    
-    queryset = User.objects.all()
-    serializer_class = UserReadSerializer
-    # use the username to lookup users
-    lookup_url_kwarg='username'
-    lookup_field='username'
+    queryset = MusicRoom.objects.all()
+
+    username_field = 'username'
+    username_keyword = 'username'
+
+    creation_order_field = 'creation_order'
+    creation_order_keyword = 'creation_order'
+
+    read_room_serializer = MusicRoomReadSerializer
+    serializer_class  = MusicRoomReadSerializer
+
+    # update_serializer = RoomUpdateSEri
+
+    # override get_object to filter objects both with username and the creation_order subfield
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        filter_kwargs = {f'host__{self.username_field}': self.kwargs[self.username_keyword], self.creation_order_field: self.kwargs[self.creation_order_keyword]}
+
+        obj = gn.get_object_or_404(queryset, **filter_kwargs)
+
+        # May raise a permission denied
+        self.check_object_permissions(self.request, obj)
+
+        return obj
 
     def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        try:
+            return self.retrieve(request, *args, **kwargs)
+        except KeyError:
+            error_message = f"The view expects the arguments {[self.username_keyword, self.creation_order_keyword]} to be passed in the url"
+            return JsonResponse(data={"error_message": error_message}, status=st.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance_creation_date = instance.created_at
+        # destroy the object
+        self.perform_destroy(instance)
+
+        print("record destroyed")
+
+        # extract all the rooms created by the user after the 'instance_creation_date'
+        next_rooms = MusicRoom.objects.filter(host__username=kwargs[self.username_keyword]).filter(created_at__gt=instance_creation_date)
+        print("records filtered")
+
+        next_rooms.update(creation_order=F('creation_order') - 1)
+        print("records updated")
+        # next_rooms.save()
+
+        return Response(status=st.HTTP_204_NO_CONTENT)
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            return self.destroy(request, *args, **kwargs)
+        except KeyError:
+            error_message = f"The view expects the arguments {[self.username_keyword, self.creation_order_keyword]} to be passed in the url"
+            return JsonResponse(data={"error_message": error_message}, status=st.HTTP_400_BAD_REQUEST)
+
+    
