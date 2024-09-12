@@ -12,15 +12,16 @@ def _generate_random_room_code(length:int=__ROOM_CODE_LENGTH__):
         generated_code = "".join(random.sample(string.ascii_lowercase, length))
     
         try:
-            MusicRoom.objects.get(code__exact=generated_code)
+            MusicRoom.objects.get(code=generated_code)
         except MusicRoom.DoesNotExist:
             # not sure how efficient this approach this though
-            # this means no room with the same already exists
+            # this means no room with the same code already exists
             return generated_code
 
 
 class MusicRoom(models.Model):
-    code = models.CharField(primary_key=True,
+    code = models.CharField(
+                            # primary_key=True, for some reason setting the primary_key to True fucks up a couple of things...
                             max_length=__ROOM_CODE_LENGTH__,  
                             blank=False, 
                             null=False, 

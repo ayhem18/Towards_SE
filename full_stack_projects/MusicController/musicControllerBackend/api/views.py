@@ -27,8 +27,6 @@ class CreateRoomView(gn.CreateAPIView):
     def post(self,
              request: Request):
         _data = request.data.copy()
-        # extract the user's username
-        # _data['username'] = request.user.username        
         _data['host'] = request.user
 
         ser = self.serializer_class(data=_data)
@@ -54,7 +52,7 @@ class CreateRoomView(gn.CreateAPIView):
             # this means the room does not exist yet. 
             # verify if the user has created enough
 
-            rooms_created_by_user = MusicRoom.objects.filter(host__exact=username)
+            rooms_created_by_user = MusicRoom.objects.filter(host__username=username) # host__exact will match the query with the primary key...
             n = len(rooms_created_by_user)
         
             if n == MAX_ROOMS_PER_USERS:
@@ -64,7 +62,7 @@ class CreateRoomView(gn.CreateAPIView):
             # create the room    
             room = ser.create(ser.validated_data)
         
-        return JsonResponse(data={"data": MusicRoomReadSerializer(room)}, status=st.HTTP_201_CREATED)
+        return JsonResponse(data={"data": MusicRoomReadSerializer(room).data}, status=st.HTTP_201_CREATED)
 
 
 class ListUserView(gn.ListAPIView):
