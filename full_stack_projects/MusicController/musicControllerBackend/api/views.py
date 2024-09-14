@@ -8,7 +8,7 @@ from django.db.models import F
 
 from .models import MusicRoom
 from .serializers import MusicRoomWriteSerializer, MusicRoomReadSerializer
-
+from .api_permissions import RoomOwnerPermission
 from register.views import UserReadSerializer
 
 
@@ -30,7 +30,7 @@ class UserDetail(gn.mixins.RetrieveModelMixin,
                     gn.mixins.DestroyModelMixin,
                     gn.GenericAPIView):
 
-    # only authenticated users can be view user details
+    # only authenticated users can view user details
     permission_classes = [prs.IsAuthenticated]
     
     queryset = User.objects.all()
@@ -73,28 +73,27 @@ class CreateRoomView(gn.CreateAPIView):
         username = ser.data['host']
         room_code = ser.data.get('code') # the code 
 
-        print(username, votes2skip, room_code)
-
         try:
             room = MusicRoom.objects.get(code__exact=room_code) 
             # if the 'get' method does not throw an error, then the room for the code already exists
             ser.update(room, validated_data={"votes_to_skip": votes2skip})
 
         except MusicRoom.DoesNotExist:
-            # this means the room does not exist yet. 
-            # verify if the user has created enough
-
+            # this means the room does not exist yet.
             rooms_created_by_user = MusicRoom.objects.filter(host__username=username) # host__exact will match the query with the primary key...
             n = len(rooms_created_by_user)
-        
+
+            # verify if the user has reached the limit of number of rooms created
             if n == MAX_ROOMS_PER_USERS:
-                return JsonResponse(data={"data": {"num_rooms_created_by_user": n}, "error_message": "You reached your free limit of number of rooms created"}, 
+                return JsonResponse(data={"data": {"num_rooms_created_by_user": n}, 
+                                          "error_message": "You reached your free limit of number of rooms created"}, 
                                     status=st.HTTP_412_PRECONDITION_FAILED)
 
             # create the room    
             room = ser.create(ser.validated_data)
         
-        return JsonResponse(data={"data": MusicRoomReadSerializer(room).data}, status=st.HTTP_201_CREATED)
+        return JsonResponse(data={"data": MusicRoomReadSerializer(room).data}, 
+                            status=st.HTTP_201_CREATED)
 
 
 # List all the rooms associated with a given user
@@ -129,17 +128,33 @@ class RoomDetailUserCreationOrder(gn.mixins.RetrieveModelMixin,
     read_room_serializer = MusicRoomReadSerializer
     serializer_class  = MusicRoomReadSerializer
 
-    # update_serializer = RoomUpdateSEri
+    # creating a room is allowed only for authorized users
+    permission_classes = [prs.IsAuthenticated, RoomOwnerPermission]
+
+    def get_permissions(self):
+        # the parent get_permissions simply returns the value of the permissions classes
+        
+        # This view accepts 3 HTTP requests: get, put, delete
+        # get should be accessible to any authenticated user
+        # put and delete should be accessible only for the creators of those specific rooms
+
+        if self.request.method == 'GET':
+            return super().get_permissions()[:1] # return IsAuthenticated 
+
+        return super().get_permissions()[1:] # returns RoomOwnerPermission
 
     # override get_object to filter objects both with username and the creation_order subfield
     def get_object(self):
+        # this line is copied from the super().get_object method
         queryset = self.filter_queryset(self.get_queryset())
 
+        # extend the filtering to consider both username & creation order 
         filter_kwargs = {f'host__{self.username_field}': self.kwargs[self.username_keyword], self.creation_order_field: self.kwargs[self.creation_order_keyword]}
-
+        
+        # this method is tricky because it assumes the query result is at most a single object
         obj = gn.get_object_or_404(queryset, **filter_kwargs)
 
-        # May raise a permission denied
+
         self.check_object_permissions(self.request, obj)
 
         return obj
@@ -152,20 +167,18 @@ class RoomDetailUserCreationOrder(gn.mixins.RetrieveModelMixin,
             return JsonResponse(data={"error_message": error_message}, status=st.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
+        instance:MusicRoom = self.get_object() # the instance is a MusicRoom record, helps with making the code a tiny bit more readable
         instance_creation_date = instance.created_at
         # destroy the object
         self.perform_destroy(instance)
 
-        print("record destroyed")
-
         # extract all the rooms created by the user after the 'instance_creation_date'
         next_rooms = MusicRoom.objects.filter(host__username=kwargs[self.username_keyword]).filter(created_at__gt=instance_creation_date)
-        print("records filtered")
 
-        next_rooms.update(creation_order=F('creation_order') - 1)
-        print("records updated")
-        # next_rooms.save()
+        # the idea here is to decrement the 'creation_order' field of each room created later than the selected instance
+        # the explanation of the use of the magical 'F' function can be found here:
+        # https://docs.djangoproject.com/en/5.1/ref/models/expressions/#django.db.models.F 
+        next_rooms.update(creation_order=F('creation_order') - 1) # "update" automatically saves the new objects to the database (no need for next_rooms.save())
 
         return Response(status=st.HTTP_204_NO_CONTENT)
 

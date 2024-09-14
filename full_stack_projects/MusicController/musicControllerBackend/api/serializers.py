@@ -11,11 +11,12 @@ class MusicRoomReadSerializer(sers.ModelSerializer):
                                  slug_field='username', 
                                  queryset=User.objects.all()) # so basically the host will be identified by their username
 
-    code = sers.CharField(write_only=True) # the code should not appear during serialization
+    code = sers.CharField(write_only=True) # the code should not appear when returning the room information
 
     class Meta:
         model = MusicRoom
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ['id']
 
 
 class MusicRoomWriteSerializer(sers.ModelSerializer):
