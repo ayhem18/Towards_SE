@@ -16,7 +16,7 @@ def main_view(request: Request) -> HttpResponse:
     return HttpResponse(f"this is the main request. recived with query string: {request.data}")
 
 
-MAX_ROOMS_PER_USERS = 3
+MAX_ROOMS_PER_USERS = 5
 
 # list all users in the platform
 class ListUserView(gn.ListAPIView):
@@ -61,13 +61,16 @@ class CreateRoomView(gn.CreateAPIView):
         _data = request.data.copy()
         _data['host'] = request.user
 
-        ser = self.serializer_class(data=_data)
+        ser = self.serializer_class(data=_data, 
+                                    context={"username": request.user.username} # passing an extra context for it to be used with default creation_order generation function
+                                    )
 
         if not ser.is_valid():
             # the data passed by the user is not valid
             return JsonResponse(data={"data": ser.data, "error_message": ser.error_messages},
                                 status=st.HTTP_400_BAD_REQUEST)
-
+        
+        print("is_valid called")
         # at this point, we know the request is valid: extract the values of the fields
         votes2skip = ser.data['votes_to_skip']
         username = ser.data['host']
@@ -108,8 +111,24 @@ class ListRoomsByUserView(gn.ListAPIView):
 
     # the slugfield will be the username of the 'host' field in the Room object
 
-    lookup_url_kwarg='host.username'
-    lookup_field='username'
+    lookup_url_kwarg='username'
+    lookup_field='host__username'
+
+    _context = {} # this will contain the username
+
+    def get_queryset(self):
+        username = self._context[self.lookup_url_kwarg]
+        return self.queryset.filter(**{self.lookup_field:username})
+
+    def get(self, request, *args, **kwargs):
+        # the default methdo calls the list method from the ListViewMixin
+        # the list method does not call the get_object_method which filters the query set using the lookup_url_kwarg
+        # so basically the default implementation returns the 'queryset' field as it is
+
+        # to modify this behavior: override the get_queryset to return users 
+        self._context[self.lookup_url_kwarg] = kwargs[self.lookup_url_kwarg]
+
+        return super().get(request, *args, **kwargs)
 
 
 class RoomDetailUserCreationOrder(gn.mixins.RetrieveModelMixin,
@@ -139,9 +158,9 @@ class RoomDetailUserCreationOrder(gn.mixins.RetrieveModelMixin,
         # put and delete should be accessible only for the creators of those specific rooms
 
         if self.request.method == 'GET':
-            return super().get_permissions()[:1] # return IsAuthenticated 
+            return super().get_permissions()[:1] # return [IsAuthenticated] 
 
-        return super().get_permissions()[1:] # returns RoomOwnerPermission
+        return super().get_permissions()[1:] # returns [RoomOwnerPermission]
 
     # override get_object to filter objects both with username and the creation_order subfield
     def get_object(self):
@@ -156,6 +175,8 @@ class RoomDetailUserCreationOrder(gn.mixins.RetrieveModelMixin,
 
 
         self.check_object_permissions(self.request, obj)
+
+        # print(obj)
 
         return obj
 
@@ -174,6 +195,8 @@ class RoomDetailUserCreationOrder(gn.mixins.RetrieveModelMixin,
 
         # extract all the rooms created by the user after the 'instance_creation_date'
         next_rooms = MusicRoom.objects.filter(host__username=kwargs[self.username_keyword]).filter(created_at__gt=instance_creation_date)
+
+        # print(next_rooms)
 
         # the idea here is to decrement the 'creation_order' field of each room created later than the selected instance
         # the explanation of the use of the magical 'F' function can be found here:
