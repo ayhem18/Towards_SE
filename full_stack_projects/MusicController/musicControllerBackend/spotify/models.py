@@ -20,7 +20,7 @@ class UserSpotifyCredentials(models.Model):
         ordering = ['user__username']
         
     
-class SpotifyAuthorizationAccess(models.Model):
+class SpotifyAuthCode(models.Model):
 
     client_id = models.CharField(max_length=100, null=False, unique=True)
     client_secret = models.CharField(max_length=100, null=False, unique=True)
