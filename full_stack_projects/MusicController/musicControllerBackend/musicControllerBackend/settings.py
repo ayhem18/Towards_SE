@@ -48,6 +48,8 @@ INSTALLED_APPS = [
 
     # add the token authentication
     'rest_framework.authtoken',
+
+    'spotify.apps.SpotifyConfig'
 ]
 
 MIDDLEWARE = [

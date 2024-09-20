@@ -13,7 +13,7 @@ from register.views import UserReadSerializer
 
 
 def main_view(request: Request) -> HttpResponse:
-    return HttpResponse(f"this is the main request. recived with query string: {request.data}")
+    return HttpResponse(f"this is the main request. This is the home page !!")
 
 
 MAX_ROOMS_PER_USERS = 5
@@ -163,7 +163,7 @@ class RoomDetailUserCreationOrder(gn.mixins.RetrieveModelMixin,
         return super().get_permissions()[1:] # returns [RoomOwnerPermission]
 
     # override get_object to filter objects both with username and the creation_order subfield
-    def get_object(self):
+    def get_object(self) -> MusicRoom:
         # this line is copied from the super().get_object method
         queryset = self.filter_queryset(self.get_queryset())
 
@@ -188,7 +188,7 @@ class RoomDetailUserCreationOrder(gn.mixins.RetrieveModelMixin,
             return JsonResponse(data={"error_message": error_message}, status=st.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
-        instance:MusicRoom = self.get_object() # the instance is a MusicRoom record, helps with making the code a tiny bit more readable
+        instance = self.get_object() # the instance is a MusicRoom record, helps with making the code a tiny bit more readable
         instance_creation_date = instance.created_at
         # destroy the object
         self.perform_destroy(instance)
@@ -196,7 +196,6 @@ class RoomDetailUserCreationOrder(gn.mixins.RetrieveModelMixin,
         # extract all the rooms created by the user after the 'instance_creation_date'
         next_rooms = MusicRoom.objects.filter(host__username=kwargs[self.username_keyword]).filter(created_at__gt=instance_creation_date)
 
-        # print(next_rooms)
 
         # the idea here is to decrement the 'creation_order' field of each room created later than the selected instance
         # the explanation of the use of the magical 'F' function can be found here:

@@ -22,18 +22,19 @@ def _generate_random_room_code(length:int=__ROOM_CODE_LENGTH__):
 # I am currently aware of only 2 methods to set a default method: either a function that accepts no argument
 # or something similar to the example given in the serializer_fields api guide: 
 
-# https://www.django-rest-framework.org/api-guide/fields/ (documentation of the 'default' field)
-
-
 class RoomCodeDefaultGenerator:
     """
     May be applied as a `default=...` value on a serializer field.
     returns the current number of rooms created by the user
     """
     requires_context = True
-
+    
+    # according to the guide
+    # https://www.django-rest-framework.org/api-guide/fields/ (documentation of the 'default' field)
+    # the serializer_field argument will include a 'context' field.
     def __call__(self, serializer_field):
-        username = serializer_field.context['username']#.user.username
+        # according to th documentation 
+        username = serializer_field.context['username']
         return MusicRoom.objects.filter(host__username=username).count() + 1
 
 
