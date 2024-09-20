@@ -22,8 +22,8 @@ class UserSpotifyCredentials(models.Model):
     
 class SpotifyAuthCode(models.Model):
 
-    client_id = models.CharField(max_length=100, null=False, unique=True)
-    client_secret = models.CharField(max_length=100, null=False, unique=True)
+    client_id = models.CharField(max_length=100, null=False)
+    client_secret = models.CharField(max_length=100, null=False)
     authorization_code = models.CharField(max_length=100, null=False) 
 
     class Meta:
