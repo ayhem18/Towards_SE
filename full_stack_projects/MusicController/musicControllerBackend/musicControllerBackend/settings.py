@@ -49,7 +49,12 @@ INSTALLED_APPS = [
     # add the token authentication
     'rest_framework.authtoken',
 
-    'spotify.apps.SpotifyConfig'
+    # add the spotify app
+    'spotify.apps.SpotifyConfig',
+
+    # add the ytMusic app
+    'ytMusic.apps.YtmusicConfig',
+    
 ]
 
 MIDDLEWARE = [

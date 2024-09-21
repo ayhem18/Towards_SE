@@ -11,28 +11,23 @@ from rest_framework.request import Request
 from rest_framework import status as st
 from rest_framework import permissions as pers
 
-from .app_credentials import CLIENT_ID, API_SCOPES, USER_AUTH_REDIRECT_URI, CLIENT_SECRET    
-from .serializers import SucReadSerializer, SpotifyAuthCodeSerializer
-from .models import SpotifyAuthCode
+from .app_credentials import OAUTH_USER_AGENT, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, SCOPES
 
-# since we will use the authorization of the user once...
-# then the authorization code flow is the most suitable: 
-# https://developer.spotify.com/documentation/web-api/tutorials/code-flow
+from .serializers import YtAuthCodeSerializer, YucReadSerializer, YucUpdateSerializer
+from .models import YoutubeAuthCode
 
+# Create your views here.
+class YoutubeAppCodeView(CreateAPIView):
 
-# this view serves a single purpose: getting a authorization code that
-# can be exchanged with an access token
-class SpotifyAppCodeView(CreateAPIView):
+    serializer_class = YtAuthCodeSerializer
 
-    serializer_class = SpotifyAuthCodeSerializer
-
-    def _get_authentication(self, request: Request, *args, **kwargs) -> Optional[SpotifyAuthCode]:    
-        """this function will basically query the dataset to determine whether the current app spotify credentials are associated
+    def _get_authentication(self, request: Request, *args, **kwargs) -> Optional[YoutubeAuthCode]:    
+        """this function will basically query the dataset to determine whether the current app Youtube credentials are associated
         with a authorization code
         Args:
             request (Request): a request object: expected to have 'client_id' and 'client_secret' as query parameters
         Returns:
-            Optional[SpotifyAuthCode]: either None of an authorization code
+            Optional[YoutubeAuthCode]: either None of an authorization code
         """
         print("Trying to get the authentication ")
         # extract the authorization code
@@ -46,71 +41,76 @@ class SpotifyAppCodeView(CreateAPIView):
                                 }, 
                                 status=st.HTTP_400_BAD_REQUEST
                             )
-        query_set = SpotifyAuthCode.objects.filter(client_id__exact=client_id).filter(client_secret__exact=client_secret)
+        query_set = YoutubeAuthCode.objects.filter(client_id__exact=client_id).filter(client_secret__exact=client_secret)
         print(query_set)
 
         if query_set.count() == 0:
             print("returning none")
             return None
         
-        # there should be only object since the SpotifyAuthCode has the 'unique_together' meta data with ('client_id' and 'client_secret')
+        # there should be only object since the YoutubeAuthCode has the 'unique_together' meta data with ('client_id' and 'client_secret')
         return query_set[0]
 
     
     def get(self, request: Request, *args, **kwargs) -> Response:
-        # first try to fetch an existing spotify authentication 
-        print("SpotifyAppCodeView: the get method !!!")
+        # first try to fetch an existing Youtube authentication 
+        print("YoutubeAppCodeView: the get method !!!")
 
         auth_code_instance = self._get_authentication(request, *args, **kwargs)
 
         if auth_code_instance is not None:
             # the passed client id and client secrete are associated 
             # with a authorization code
-            return Response(data=SpotifyAuthCodeSerializer(auth_code_instance).data, status=st.HTTP_200_OK)
+            return Response(data=YtAuthCodeSerializer(auth_code_instance).data, status=st.HTTP_200_OK)
 
 
         print("request an authorization code !!", end='\n')
 
+        # now this is the real deal: connecting to google authorization server
+        # build the query parameters
 
-        # create a request to Spotify's authorization server 
-        #  1. build the query parameters: according to https://developer.spotify.com/documentation/web-api/tutorials/code-flow
-        query_parameters = {"client_id": CLIENT_ID, 
-                            "response_type": "code", 
-                            "redirect_uri": USER_AUTH_REDIRECT_URI, 
-                            # "state":, # ignored for the first iteration
-                            "scope": API_SCOPES
+
+        # 1. build the query parameters according to the 'Step1: set authorization parameters' section 
+        # in the following guide: https://developers.google.com/youtube/v3/guides/auth/server-side-web-apps#httprest_1
+
+        query_parameters = {"client_id": CLIENT_ID, # the app id
+                            "redirect_uri": REDIRECT_URI, # set it to the main page for now
+                            "response_page": "code",
+                            "scope":  SCOPES,
+                            "access_type": "offline",
                             }
+        
 
         # 2. send a get request
         try:
-            spotify_response = rq.get(url='https://accounts.spotify.com/authorize?', # the url is copy pasted from the the spotify developper api documentation 
+            yt_response = rq.get(url='https://accounts.google.com/o/oauth2/v2/auth?',  #  copied from "step2: Redirect Google's Oauth server" 
                                 params=query_parameters,
-                                headers={"Content-Type": "application/json"}, # send the request as jsonn                                
+                                headers={"User-Agent": OAUTH_USER_AGENT},
                                 )
 
-            print(f"received spotify response !!! with status code : {spotify_response.status_code}")
+            print(f"received a youtube response !!! with status code : {yt_response.status_code}")
         except Exception as e:
             print("Exception raise somewheree")
-            return Response(data={"error_message": "something broke while authorizing with spotify", "python_error": str(e)}, 
+            return Response(data={"error_message": "something broke while authorizing with Youtube", "python_error": str(e)}, 
                             status=st.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        if not spotify_response.ok:
-            print("spotify_response not ok !!!")
+        if not yt_response.ok:
+            print("Youtube_response not ok !!!")
             # the fields are chosen according to the following link: 
             # https://www.w3schools.com/python/ref_requests_response.asp
-            return Response(data={"error_message": "spotify authorization failed"},
-                                #   "spotify_error": spotify_response.reason}, 
+            return Response(data={"error_message": "Youtube authorization failed",
+                                  "Youtube_error": yt_response.reason}, 
                             status=st.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # using the authentication code
-        # at this point, spotify provided an authorization code that can be used to extract an access and refresh token
-        print("converting the spotify respone to json !!")
+        # at this point, Youtube provided an authorization code that can be used to extract an access and refresh token
+        print("converting the Youtube respone to json !!")
         try:
-            print(spotify_response.text, end='\n')
-            code = spotify_response.json()['code']
+            # print(yt_response.text, end='\n')
+            code = yt_response.json()['code']
 
         except Exception as e:
-            return Response(data={"error_message": "error while decoding spotify_response to json", "error_python": str(e)})
+            return Response(data={"error_message": "error while decoding Youtube_response to json", "error_python": str(e)})
             
         # since the query_params field of the request object in immutable, its need to first be copied
         data = request.query_params.copy() # there is a copy method in the QueryDict object (I checked the source code...)
@@ -120,14 +120,14 @@ class SpotifyAppCodeView(CreateAPIView):
         # create a record linking the authorization code to the current set of app credentials 
         res = self.post(request)
         
-        print("\n response from spotify !!!")
+        print("\n response from Youtube !!!")
         print(res.data,end='\n')
 
         return Response(data=res.data, status=st.HTTP_200_OK)
 
 
     def post(self, request: Request, *args, **kwargs):
-        print("print SpotifyAuthCode the post method")
+        print("print YoutubeAuthCode the post method")
         # this block of code is pretty much copied from the self.create method of the CreateAPIView
         # however with a tiny change: using request.query_params instead of query.data
         serializer = self.get_serializer(data=request.query_params)
@@ -137,25 +137,26 @@ class SpotifyAppCodeView(CreateAPIView):
         return Response(serializer.data, status=st.HTTP_201_CREATED, headers=headers)
 
 
-    def get_serializer(self, *args, **kwargs) -> SpotifyAuthCodeSerializer:
+    def get_serializer(self, *args, **kwargs) -> YtAuthCodeSerializer:
         # override the method just to add a type hint an make everything abit more readable...
         return super().get_serializer(*args, **kwargs)
 
 
-class SpotifyUserTokenView(CreateAPIView):    
+class YoutubeUserTokenView(CreateAPIView):    
     permission_classes = [pers.IsAuthenticated]
 
-    serializer_class = SucReadSerializer
+    serializer_class = YucReadSerializer
 
     def post(self, request: Request, *args, **kwargs):
         # send a get request to the code 
-        base_url = reverse('spotify_app_code_view')
+        base_url = reverse('youtube_app_code_view') # make sure to set the correct endpoint name
+
         params_as_dict = {"client_id": CLIENT_ID, 'client_secret': CLIENT_SECRET}
         
         # this is definitely a patched solution and needs to be improved !!!
         final_url = f'http://127.0.0.1:8000/{base_url}'
 
-        res: Response = rq.get(url=final_url, 
+        res: rq.Response = rq.get(url=final_url, 
                params=params_as_dict,
                # save the client id and client secret for the very initial iteration               
                headers={"content-type": "application/json"},
@@ -164,17 +165,18 @@ class SpotifyUserTokenView(CreateAPIView):
         if res.status_code >= 400:
             return Response(data={"error_message": res}, status=res.status_code)
 
-        print(f"sent the request to Spotify. Got the following response: {res.status_code, res}")
+        print(f"sent the request to Youtube. Got the following response: {res.status_code, res}")
 
         # extract the code
-        code = res.data['code']
 
-        print(f"The authentication code is: {code}")
+        # print(f"The authentication code is: {code}")
+
+        return Response(data={"res": res.json()})
 
         # send an authorization from the user
         user_auth_query_params = {
             "code": code,
-            "redirect_uri": USER_AUTH_REDIRECT_URI,
+            "redirect_uri": REDIRECT_URI,
             "grant_type": "authorization_code"  
         }
 
@@ -207,10 +209,10 @@ class SpotifyUserTokenView(CreateAPIView):
         if s.is_valid():
             obj = s.create(s.validated_data)
             s.save()
-            return Response(data=SucReadSerializer(obj).data, status=st.HTTP_201_CREATED)
+            return Response(data=YucReadSerializer(obj).data, status=st.HTTP_201_CREATED)
 
         return Response(data={"error_message": s.error_messages}, status=st.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-    def get_serializer(self, *args, **kwargs) -> SucReadSerializer:
+    def get_serializer(self, *args, **kwargs) -> YucReadSerializer:
         return super().get_serializer(*args, **kwargs)

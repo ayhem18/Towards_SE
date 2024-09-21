@@ -23,4 +23,5 @@ urlpatterns = [
     path('', include('api.urls')), 
     path('auth/', include('register.urls')), 
     path("spotify/", include('spotify.urls')),
+    path("youtube/", include('ytMusic .urls')),
 ]
