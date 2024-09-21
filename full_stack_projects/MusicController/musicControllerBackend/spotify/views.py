@@ -1,15 +1,11 @@
 # we will use the requests package to send requests to the spotify authentication server
 
-from django.http import QueryDict
-from django.http import HttpResponseRedirect
-
 import requests as rq
 
 from typing import Optional
 from django.urls import reverse
-from django.shortcuts import redirect
 
-from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status as st
@@ -81,7 +77,7 @@ class SpotifyAppCodeView(CreateAPIView):
         query_parameters = {"client_id": CLIENT_ID, 
                             "response_type": "code", 
                             "redirect_uri": USER_AUTH_REDIRECT_URI, 
-                            # "state":, 
+                            # "state":, # ignored for the first iteration
                             "scope": API_SCOPES
                             }
 
@@ -89,27 +85,37 @@ class SpotifyAppCodeView(CreateAPIView):
         try:
             spotify_response = rq.get(url='https://accounts.spotify.com/authorize?', # the url is copy pasted from the the spotify developper api documentation 
                                 params=query_parameters,
-                                headers={"content-type": "application/json"}, # send the request as jsonn                                
+                                headers={"Content-Type": "application/json"}, # send the request as jsonn                                
                                 )
 
             print(f"received spotify response !!! with status code : {spotify_response.status_code}")
-        except:
-            return Response(data={"error_message": "something broke while authorizing with spotify"}, 
+        except Exception as e:
+            print("Exception raise somewheree")
+            return Response(data={"error_message": "something broke while authorizing with spotify", "python_error": str(e)}, 
                             status=st.HTTP_500_INTERNAL_SERVER_ERROR)
 
         if not spotify_response.ok:
+            print("spotify_response not ok !!!")
             # the fields are chosen according to the following link: 
             # https://www.w3schools.com/python/ref_requests_response.asp
             return Response(data={"error_message": "spotify authorization failed"},
                                 #   "spotify_error": spotify_response.reason}, 
                             status=st.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
         # using the authentication code
         # at this point, spotify provided an authorization code that can be used to extract an access and refresh token
-        code = spotify_response.json()['code']
-        
-        # add the code to the request query parameters
-        request.query_params['code'] = code
+        print("converting the spotify respone to json !!")
+        try:
+            print(spotify_response.text, end='\n')
+            code = spotify_response.json()['code']
+
+        except Exception as e:
+            return Response(data={"error_message": "error while decoding spotify_response to json", "error_python": str(e)})
+            
+        # since the query_params field of the request object in immutable, its need to first be copied
+        data = request.query_params.copy() # there is a copy method in the QueryDict object (I checked the source code...)
+
+        data['code'] = code                
 
         # create a record linking the authorization code to the current set of app credentials 
         res = self.post(request)
@@ -146,26 +152,8 @@ class SpotifyUserTokenView(CreateAPIView):
         base_url = reverse('spotify_app_code_view')
         params_as_dict = {"client_id": CLIENT_ID, 'client_secret': CLIENT_SECRET}
         
-        # build the url using the request library
-        # final_url = rq.Request('GET', 
-        #            base_url, 
-        #            params={"client_id": CLIENT_ID, 'client_secret': CLIENT_SECRET},).prepare().url
-
-        # temp_query_dict = QueryDict(request.query_params.urlencode(), 
-        #                             mutable=True)
-        # temp_query_dict.clear()
-        # temp_query_dict.update(params_as_dict)
-        # final_url = f'http://127.0.0.1:8000/{base_url}?{temp_query_dict.urlencode()}'
+        # this is definitely a patched solution and needs to be improved !!!
         final_url = f'http://127.0.0.1:8000/{base_url}'
-    
-
-        # url = Request('GET', 'https://accounts.spotify.com/authorize', params={
-        #     'scope': scopes,
-        #     'response_type': 'code',
-        #     'redirect_uri': REDIRECT_URI,
-        #     'client_id': CLIENT_ID
-        # }).prepare().url
-
 
         res: Response = rq.get(url=final_url, 
                params=params_as_dict,
