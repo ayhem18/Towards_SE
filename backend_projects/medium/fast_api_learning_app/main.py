@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from typing import Annotated
+
+from fastapi import FastAPI, Query, Body
 
 app = FastAPI()
 
@@ -55,7 +57,7 @@ async def endpoint_func(path_param1: str, query_param1: str, query_param2: int):
 
 
 
-# to work with the request body, the request body are expected to represents the parameters of some data model
+# to work with the request body, the request body is expected to represent the parameters of some data model
 from pydantic import BaseModel
 
 
@@ -72,10 +74,36 @@ async def item_endpoint(item: MyDataModel):
     return item
 
 
-# we can add more validation logic through the Query class
-from fastapi import Query
-from typing import Annotated
 
 @ app.get('/ex_endpoint')
 async def endpoint(q: Annotated[str | None, Query(min_length=2, max_length=20)]): # this is required since the I did not set a default value. We can set a default value as '...' to let fastAPI know it is required 
     return {"re"}
+
+
+# so basically when it comes to request bodies, fastapi use pydantic the same way 'Django' uses serializers
+
+from datetime import date
+
+
+class DateModelBase(BaseModel):
+    first_name: str
+    last_name: str
+
+
+class DataModelIn(DateModelBase):
+    birth_date: date
+
+
+# we are considerate of the user' private data so we don't return the date of birth
+class DataModelOut(DateModelBase):
+    pass
+
+
+@app.post("/data_model") 
+def endpoint(data_obj: Annotated[DataModelIn, Body()], show_date: Annotated[bool, Query()]=False):
+    if show_date:
+        return {"message": "object received successfully", 
+            "output_obj": DataModelIn(**data_obj.model_dump())}
+
+    return {"message": "object received successfully", 
+        "output_obj": DataModelOut(**data_obj.model_dump())}
