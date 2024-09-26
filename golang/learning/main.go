@@ -1,29 +1,12 @@
 package main
-import "fmt"
 
-
-// variable declaration (finally back to strongly typed languages)
-
-// var num1 = 20
-// var num2  int = 20
-
-
-// var pizzaTime bool = true;
-
-// var c string = "ssss";
-
-// const (
-//     Up = 1
-//     Down = 2
-//     Left = 3
-//     Bottom = 4
-// )
-
+import (
+	// "errors"
+	"fmt"
+)
 
 // finally something a little bit more interesting...
 // fucking pointers
-
-
 func pointer_main() {
     // var x string = "Ayhem"
     
@@ -89,19 +72,44 @@ func slices_main() {
     fmt.Println("length", len(s2), ",capacity", cap(s2)) // should print 10, 10
     s2 = append(s2, 10)
     fmt.Println("length", len(s2), ",capacity", cap(s2)) // print 11, 20 ???
+}
+
+
+func slices_main_2() {
+	var num1, num2, num3 int
+	fmt.Scanln(&num1, &num2, &num3)
+	intSlice := []int{num1, num2, num3}
+
+    // slice is the Golanguage implementation of ArrayList
+
+    for _, v:= range(intSlice) { // range is basically the same as enumerate in python 
+        fmt.Println(v * 2)
+    }
 
 }
+
+
+// create a struct type
+type Pokemon struct {
+	Name   string
+	Number int
+    Level  int
+}
+
+
+type Country struct {
+    Name string
+    Capital string
+    Currency string
+}
+
+
+func updateRapper(fName *string, lName* string) string{
+    *fName = "Mac"    // do not change the name!
+	*lName = "Miller" // do not change the last name!
+    return *fName + " " + *lName;
+}
+
 
 func main() {
-    slices_main()
 }
-
-// func main() {
-//     // DO NOT delete or modify the code block below:
-//     var length, capacity int
-// 	fmt.Scanln(&length, &capacity)
-// 	numbers := make([]int, length, capacity)
-
-//     // Write the code below to print the `numbers` slice len(), cap(), and its elements:
-// 	fmt.Printf("len=%d cap=%d elements=%v", len(numbers), cap(numbers), numbers)
-// }
