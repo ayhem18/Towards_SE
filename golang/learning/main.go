@@ -1,4 +1,4 @@
-package main
+package main // the executable package must be named name and it must have a main function: the program entry point
 
 import (
 	// "errors"
@@ -111,5 +111,5 @@ func updateRapper(fName *string, lName* string) string{
 }
 
 
-func main() {
-}
+// func main() {
+// }
