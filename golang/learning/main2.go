@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
-	"strconv"
+	"os"
 	"sort"
+	"strconv"
 )
 
 
@@ -14,19 +16,14 @@ func func_calls_anonymous_func(num int,
 }
 
 
-// func main() {
-// 	func(msg string) {
-// 		fmt.Println(msg)
-// 	}("Hello, World!")
-// }
-
 
 type Team struct {
 	Name   string
 	Points int
 }
 
-func main() {
+func sort_teams() {
+
 	teams := []Team{
 		{"Borussia Dortmund", 64},
 		{"Bayern Munich", 78},
@@ -41,4 +38,20 @@ func main() {
 
     // Do not delete the output line!
 	fmt.Println(teams)
+}
+
+
+func work_with_bufio_scanner() {
+	var scanner = bufio.NewScanner(os.Stdin)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		fmt.Println(line) // we can stop the loop with the C^Z
+	}
+}	
+
+
+
+func main() {
+work_with_bufio_scanner()
 }
