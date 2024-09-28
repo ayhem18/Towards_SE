@@ -3,9 +3,13 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"sort"
 	"strconv"
+
+	// "log"
+	// "path/filepath"
 )
 
 
@@ -14,8 +18,6 @@ func func_calls_anonymous_func(num int,
 		// basically this function accepts an int "num" and a function 'fn' that accepts a string 'x' and returns a string. The oustide function returns a string...
 	return fn(strconv.Itoa(num))
 }
-
-
 
 type Team struct {
 	Name   string
@@ -52,6 +54,39 @@ func work_with_bufio_scanner() {
 
 
 
+func read_file(file_path string) {	
+	// read a file
+	file, err := os.Open(file_path)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// create a scanner
+	scanner := bufio.NewScanner(file)
+
+	scanner.Split(bufio.ScanLines)
+
+	for scanner.Scan() {
+		fmt.Println(scanner.Text())
+	}
+}
+
+
+
+
 func main() {
-work_with_bufio_scanner()
+	logger := log.New(os.Stdout, "", log.Lmsgprefix)
+	var array = []int64{6, 8, 11}
+	for _, num := range array {
+		logger.Printf("Factorial of a number %d is %d\n", num, factorial(num))
+	}
+}
+
+func factorial(num int64) int64 {
+	res := int64(1)
+	for i := int64(1); i <= num; i++ {
+		res *= i
+	}
+	return res
 }
