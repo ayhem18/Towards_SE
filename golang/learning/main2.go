@@ -74,15 +74,6 @@ func read_file(file_path string) {
 
 
 
-
-func main() {
-	logger := log.New(os.Stdout, "", log.Lmsgprefix)
-	var array = []int64{6, 8, 11}
-	for _, num := range array {
-		logger.Printf("Factorial of a number %d is %d\n", num, factorial(num))
-	}
-}
-
 func factorial(num int64) int64 {
 	res := int64(1)
 	for i := int64(1); i <= num; i++ {
@@ -90,3 +81,10 @@ func factorial(num int64) int64 {
 	}
 	return res
 }
+
+
+func main() {
+	var t = make([]int, 5)
+	fmt.Println(len(t), cap(t))
+}
+
