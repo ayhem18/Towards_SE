@@ -9,24 +9,39 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	// "slices"
+	"math"
 )
 
-// the project is too simple to say the least...
+
+func avg_slice(num_slice []int) float64 {
+	var total float64 = 0.0
+	for _, val := range(num_slice) {
+		total += float64(val)
+	}
+
+	return total / float64(len(num_slice))
+}
 
 type Student struct {
 	first_name string;
 	last_name string;
-	gpa float64;
+	// gpa float64;
 
+	// exam results
+	exam_scores map[string][]int;
+	entrance_score int;
 	priorities []string;
-
 }
 
-func student_full_name(s Student) string {
+
+func (s Student) full_name() string{
 	return s.first_name + " " + s.last_name
 }
 
+func (s Student) student_best_score(dep string) float64 {
+	avg_finals := avg_slice(s.exam_scores[dep])
+	return math.Max(float64(s.entrance_score), avg_finals)
+}
 
 
 func get_students(app_list_path string) map[int]Student {
@@ -37,23 +52,64 @@ func get_students(app_list_path string) map[int]Student {
 		log.Fatal(err)
 	}
 
+	// close the file at the end of the function 
+	defer file.Close()
+
 	scanner := bufio.NewScanner(file)
 	
 	var index2app = make(map[int]Student)
 
 	var counter = 0
 
+	// just to remember: 0 -> Physics, 1: chemistry, 2 math, 3 computer science
+	
+	// departments and subjects
+
+	// physics: physics and math
+	// math: math 
+	// chemistry: chemistry
+	// engineering: cs and math
+	// biotech: chemistry and physics
+
+	// by subject: 0, physics affects physics and biotech
+	// chemistry 1 affects chemistry and biotech
+	// math affects math, physics and engineering
+	// cs: affects engineering
+
+	exam_index_2_dep := map[int][]string {0: {"Physics", "Biotech"}, 1: {"Biotech", "Chemistry"}, 2 : {"Mathematics", "Physics", "Engineering"}, 3: {"Engineering"}}
+
 	for scanner.Scan() {
 		// read the input
 		app_info_str := scanner.Text()
 		app_info := strings.Split(strings.TrimSpace(app_info_str), " ")
+
+		// extract the exam results
+		exam_scores := make(map[string][]int)
+		// exam_scores := make([]int, 4)
+
+		for i, score := range(app_info[2:6]) {
+			// convert each score to an integer
+			score_int, err := strconv.Atoi(score)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, dep := range(exam_index_2_dep[i]) {
+				if _, ok := exam_scores[dep]; ! ok {
+					exam_scores[dep] = make([]int, 0)
+				}
+				exam_scores[dep] = append(exam_scores[dep], score_int)
+			}
+		}
+
 		// convert the gpa string to a float value
-		gpa_float, _ := strconv.ParseFloat(app_info[2], 32)
+		entrance_score, _ := strconv.Atoi(app_info[6])
+
 		// create a list to save the values	
 		app_priorities := make([]string, 3)
-		copy(app_priorities, app_info[3:])
+		copy(app_priorities, app_info[7:])
+
 		// create a Student object to add it to the list
-		index2app[counter] = Student{app_info[0], app_info[1], gpa_float, app_priorities}
+		index2app[counter] = Student{app_info[0], app_info[1], exam_scores, entrance_score, app_priorities}
 
 		counter += 1
 	}
@@ -91,14 +147,17 @@ func enroll_per_round(
 		func (i int , j int) bool{
 			student_i , student_j := (*current_round_applicants)[round_admissions[dep_name][i]], (*current_round_applicants)[round_admissions[dep_name][j]]
 
-			if student_i.gpa == student_j.gpa {
-				i_full_name := student_full_name(student_i)
-				j_full_name := student_full_name(student_j)
+			student_i_avg_score := student_i.student_best_score(dep_name) 
+			student_j_avg_score := student_j.student_best_score(dep_name)  
+
+			if student_i_avg_score == student_j_avg_score {
+				i_full_name := student_i.full_name()
+				j_full_name := student_j.full_name()
 				
 				return i_full_name <= j_full_name
 			}
 
-			return student_i.gpa > student_j.gpa
+			return student_i_avg_score > student_j_avg_score
 		})
 	}
 
@@ -123,12 +182,6 @@ func enroll_per_round(
 
 		// add the list of this round students to the final admission list
 		(*final_admissions)[dep_name] = append((*final_admissions)[dep_name], accepted_students...)
-
-		// for _, student := range(accepted_students) {
-		// 	(*final_admissions)[dep_name] = append((*final_admissions)[dep_name], student)
-		// }
-
-		//  = slices.Concat((*final_admissions)[dep_name], accepted_students) 	
 	}
 }
 
@@ -161,15 +214,17 @@ func enroll_students(app_list_path string) map[string][]Student{
 		sort.Slice(final_admissions[d], 		
 			func (i int , j int) bool{
 			student_i, student_j := final_admissions[d][i], final_admissions[d][j]
+			
+			student_i_avg_score, student_j_avg_score := student_i.student_best_score(d), student_j.student_best_score(d)
 
-			if student_i.gpa == student_j.gpa {
-				i_full_name := student_full_name(student_i)
-				j_full_name := student_full_name(student_j)
+			if student_i_avg_score == student_j_avg_score {
+				i_full_name := student_i.full_name()
+				j_full_name := student_j.full_name()
 				
 				return i_full_name <= j_full_name
 			}
 
-			return student_i.gpa > student_j.gpa
+			return student_i_avg_score > student_j_avg_score
 		}) 
 	}
 
@@ -180,24 +235,39 @@ func enroll_students(app_list_path string) map[string][]Student{
 
 func main() {
 	// first read the file
-	// app_list_path := path.Join("main", "test_case2.txt")
+	// app_list_path := path.Join("main", "test_case1.txt")
 	current_dir, _ := os.Getwd()
 	app_list_path := path.Join(current_dir, "applicants.txt")
+
 	// fmt.Println(index2app)
 	final_admissions := enroll_students(app_list_path)	
 
 	deps := []string{"Biotech", "Chemistry", "Engineering", "Mathematics", "Physics"}
 
 	for dep_index, d := range deps {
-		fmt.Println(d)
+		dep_file_name := strings.ToLower(d) + ".txt"
+		dep_file_path := path.Join(current_dir, dep_file_name)
+		
+		file, err := os.Create(dep_file_path)
+		
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// don't forget this function
+		defer file.Close()
+
+		// fmt.Println(d)
 		department_students := final_admissions[d]
+
 		for _, s := range(department_students) {
-			fmt.Printf("%s %s %.2f\n", s.first_name, s.last_name, s.gpa)
+			fmt.Printf("%s %s %.1f\n", s.first_name, s.last_name, s.student_best_score(d))
+			fmt.Fprintf(file, "%s %s %.1f\n", s.first_name, s.last_name, s.student_best_score(d))
 		}
 
 		// leave a space between consecutive departments: (except the last one...) 
 		if dep_index != 4 {
 			fmt.Println()
-		}
+		}		
 	}
 }
