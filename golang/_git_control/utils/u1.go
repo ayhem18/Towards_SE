@@ -18,3 +18,9 @@ func LongestString(slice []string) string {
 	}
 	return longest_str
 }
+
+
+type S struct { // this accessible because the struct name is Capitalized...
+	AccF1 string; // this will be accessible from anywhere in the main.go file
+	AccF2 string; // this won't be accessible; even for declaration
+}

@@ -7,7 +7,8 @@ import (
 	"os"
 	"sort"
 	"strconv"
-
+	"flag"
+	// "time"
 	// "log"
 	// "path/filepath"
 )
@@ -83,8 +84,28 @@ func factorial(num int64) int64 {
 }
 
 
-func main() {
-	var t = make([]int, 5)
-	fmt.Println(len(t), cap(t))
+type Quotes []string
+
+// 'DisplayQuotes()' method will print all the quotes within the 'Quotes' slice
+func (q Quotes) DisplayQuotes() {
+    for _, quote := range q {
+        fmt.Println(quote)
+    }
 }
 
+
+type s struct {
+	v1 string;
+}
+
+
+func main_cl_args() {
+	user := flag.String("user", "root", "Specify username")
+	flag.Parse()
+	fmt.Println(user)
+}
+
+func main() {
+	v := s{"1"};
+	fmt.Println(v)	
+}

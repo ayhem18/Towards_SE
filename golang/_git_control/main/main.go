@@ -77,4 +77,5 @@ func main() {
 		command = strings.ReplaceAll(args[1], "-", "",)			
 	}
 	fmt.Println(help_message(command))
+	
 }
