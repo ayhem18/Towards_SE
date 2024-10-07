@@ -1,7 +1,6 @@
-package main
+// package main
 
 // import (
-// 	"_git_control/utils"
 // 	"bufio"
 // 	"fmt"
 // 	"log"
@@ -9,6 +8,27 @@ package main
 // 	"path"
 // 	"strings"
 // )
+
+
+// func LongestString(slice []string) string {
+// 	var longest_str string = "";
+// 	var length int = -1;
+
+// 	for _, s := range(slice) {
+// 		if length == -1 {
+// 			longest_str = s 
+// 			length  = len(s)
+// 		}
+
+// 		if len(s) > length {
+// 			longest_str = s
+// 			length = len(s)
+// 		}
+
+// 	}
+// 	return longest_str
+// }
+
 
 // type Controler struct{
 // 	vsc_dir string;
@@ -35,9 +55,9 @@ package main
 // }
 
 
-// func help_message() string {
+// func help_message(command string) string {
 // 	cs := []string {"help", "config", "add", "log", "commit", "checkout"}
-// 	length := len(utils.LongestString(cs))
+// 	length := len(LongestString(cs))
 
 // 	command_help_str := map[string]string{
 // 		"help": "These are SVCS commands:",
@@ -48,18 +68,27 @@ package main
 // 		"checkout": "Restore a file.",
 // 	}
 
-// 	var result string = ""
-// 	for i := range cs {
-// 		var k string;
-// 		if i == 0 {
-// 			k = ""
-// 		} else {
-// 			k = cs[i] + strings.Repeat(" ", length - len(cs[i])) + "  "
-// 		}
-
-// 		result += (k + command_help_str[cs[i]] + "\n") 
+// 	// first check if the command is in the dictionary
+// 	if _, ok := command_help_str[command]; ! ok {
+// 		return "'" + command + "'"+ " is not a SVCS command."
 // 	}
-// 	return result
+
+// 	if command == "help" {
+// 		var result string = ""
+// 		for i := range cs {
+// 			var k string;
+// 			if i == 0 {
+// 				k = ""
+// 			} else {
+// 				k = cs[i] + strings.Repeat(" ", length - len(cs[i])) + "  "
+//             }
+
+// 			result += (k + command_help_str[cs[i]] + "\n") 
+// 		}
+// 		return result
+// 	}
+
+// 	return command_help_str[command]
 // }
 
 
@@ -104,7 +133,7 @@ package main
 // 		return fmt.Sprintf("Can't find '%s'.", *argument)
 // 	}
 	
-// 	file, _ := os.OpenFile(ctr_obj.index_file_path, os.O_APPEND, os.ModePerm)
+// 	file, _ := os.OpenFile(ctr_obj.index_file_path, os.O_APPEND|os.O_RDWR, os.ModePerm)
 // 	defer file.Close()
 
 // 	fmt.Fprintln(file, *argument)
@@ -141,6 +170,7 @@ package main
 // 	}
 // 	// overwrite the user
 // 	file, _ := os.Create(ctr_obj.config_file_path)
+// 	defer file.Close()
 // 	fmt.Fprintln(file, *argument)
 // 	return fmt.Sprintf("The username is %s.", *argument)
 // }
@@ -148,7 +178,7 @@ package main
 
 // func main() {
 // 	current_dir, _ := os.Getwd()
-// 	vcs_dir := path.Join(current_dir, "vsc_dir")
+// 	vcs_dir := path.Join(current_dir, "vcs")
 // 	// build the
 // 	config_path := path.Join(vcs_dir, "config.txt")
 // 	index_path := path.Join(vcs_dir, "index.txt")
@@ -168,8 +198,6 @@ package main
 // 	}
 
 // 	switch command {
-// 	case "help":
-// 		fmt.Println(help_message())
 // 	case "add":
 // 		if len(args) < 3 {
 // 			fmt.Println(ctr_obj.add_message(nil))
@@ -182,6 +210,8 @@ package main
 // 			} else {
 // 			fmt.Println(ctr_obj.config_message(&args[2]))
 // 		}
+// 	default:
+// 		fmt.Println(help_message(command))
 // 	}
-
+	
 // }
