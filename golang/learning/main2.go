@@ -105,7 +105,3 @@ func main_cl_args() {
 	fmt.Println(user)
 }
 
-func main() {
-	v := s{"1"};
-	fmt.Println(v)	
-}
