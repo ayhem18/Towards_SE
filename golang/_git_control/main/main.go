@@ -10,7 +10,6 @@ import (
 	"os"
 	"path"
 	"strings"
-    "slices"
     "hash"
 )
 
@@ -39,24 +38,21 @@ type Controler struct{
 
 
 func (controller_obj Controler) set_up() {
-	// create the .vsc directory as well as the files
-    files := []string{controller_obj.config_file_path, controller_obj.index_file_path, controller_obj.log_file_path, controller_obj.commits_dir_path}
+	// create the .vsc directory 
+	os.Mkdir(controller_obj.vsc_dir, os.ModePerm)
+	// make the commits directory
+	os.MkdirAll(controller_obj.commits_dir_path, os.ModePerm)
 
-    for _, f := range(files) {
-        os.MkdirAll(f, os.ModePerm)
-    }
+	// create the files
+    files := []string{controller_obj.config_file_path, controller_obj.index_file_path, controller_obj.log_file_path}
 
-	// index_file_path := controller_obj.index_file_path
-	// config_file_path := controller_obj.config_file_path
-	
-	// // to my understanding, I need to check if the file already exists all the time
-	// if _, err := os.Stat(index_file_path); err != nil {
-	// 	os.Create(index_file_path)
-	// }
-
-	// if _, err := os.Stat(config_file_path); err != nil {
-	// 	os.Create(config_file_path)
-	// }
+	for _, f := range files {
+		// call the os.Create() function only if the file is yet to be created. Otherwise, it will be truncated..
+		if _, err := os.Stat(f); err != nil {
+			file, _ := os.Create(f)
+			file.Close()
+		}
+	}
 
 }
 
@@ -143,6 +139,7 @@ func (ctr_obj Controler) add_message(argument* string) string {
 		return ctr_obj.add_message_display_files()
 	}
 
+	// check if the file exists
 	if _, err := os.Stat(*argument); err != nil {	
 		return fmt.Sprintf("Can't find '%s'.", *argument)
 	}
@@ -156,8 +153,7 @@ func (ctr_obj Controler) add_message(argument* string) string {
 }
 
 
-
-func (ctr_obj Controler) config_message_display_user() string {
+func (ctr_obj Controler) config_message_display_user(full_msg bool) string {
 	// read the 'index.txt' file
 	file, err := os.Open(ctr_obj.config_file_path)
 	
@@ -170,9 +166,12 @@ func (ctr_obj Controler) config_message_display_user() string {
 	scanner := bufio.NewScanner(file)
 
 	// supposedly there is only one user
-
+	
 	if scanner.Scan() {
-		return fmt.Sprintf("The username is %s.", scanner.Text())
+		if full_msg {
+			return fmt.Sprintf("The username is %s.", scanner.Text())
+		}
+		return scanner.Text()
 	}
 
 	return _NO_CURRENT_USER
@@ -181,7 +180,7 @@ func (ctr_obj Controler) config_message_display_user() string {
 
 func (ctr_obj Controler) config_message(argument* string) string {
 	if argument == nil {
-		return ctr_obj.config_message_display_user()
+		return ctr_obj.config_message_display_user(true)
 	}
 	// overwrite the user
 	file, _ := os.Create(ctr_obj.config_file_path)
@@ -189,7 +188,15 @@ func (ctr_obj Controler) config_message(argument* string) string {
 	return fmt.Sprintf("The username is %s.", *argument)
 }
 
-func (ctr_obj Controler) fetch_last_commit_version() map[string]string{
+func get_hash(s string) string {
+	enc_obj := sha256.New()	
+    // at this point create the hash for the commit_msg 
+    enc_obj.Write([]byte(s))
+    return  fmt.Sprintf("%x", enc_obj.Sum(nil))
+}
+
+
+func (ctr_obj Controler) get_last_commit_id() string{
     // open the log text    
     file, err := os.Open(ctr_obj.log_file_path)
 
@@ -202,23 +209,30 @@ func (ctr_obj Controler) fetch_last_commit_version() map[string]string{
     scanner := bufio.NewScanner(file)
 
     last_commit_id := ""
-    for scanner.Scan() {
+
+	for scanner.Scan() {
         last_commit_id = scanner.Text()  
     }
 
-    last_commit_dir := path.Join(ctr_obj.commits_dir_path, last_commit_id)
+	return last_commit_id
+}
+
+
+func (ctr_obj Controler) fetch_last_commit_version(commit_id string) map[string]string{
+    commit_dir := path.Join(ctr_obj.commits_dir_path, commit_id)
 
     // iterate through the last commit dir
     file2hash := make(map[string]string);
 
-    committed_files, _ := os.ReadDir(last_commit_dir)
+    committed_files, _ := os.ReadDir(commit_dir)
 
     // create an encryption object
     enc_obj := sha256.New()
 
     for _, file_entry := range(committed_files) {
-        copy_file_to_hash(&enc_obj, file_entry.Name())
-        file2hash[file_entry.Name()] = fmt.Sprintf("%x", enc_obj.Sum(nil)) 
+		file_base_name := file_entry.Name()
+        copy_file_to_hash(&enc_obj, path.Join(commit_dir, file_base_name))
+        file2hash[file_base_name] = fmt.Sprintf("%x", enc_obj.Sum(nil)) 
         // reset the encoder 
         enc_obj.Reset()
     } 
@@ -227,64 +241,159 @@ func (ctr_obj Controler) fetch_last_commit_version() map[string]string{
 }
 
 
+func (ctr_obj Controler) check_changes() bool {
+	last_commit_id := ctr_obj.get_last_commit_id()
 
-func (ctr_obj Controler) create_commit(commit_msg string) string{  
-    // get the tracked files
+	// if no commit has been made so far
+	if last_commit_id == "" {
+		return false
+	}
+
+	// get the tracked files
     tracked_files := ctr_obj.get_tracked_files()
 
     // get the hashed version of the repository from last commit
-    last_commit_hash := ctr_obj.fetch_last_commit_version()
+	// a map with files tracked from the last commit with their hashes
+	last_commit_hash := ctr_obj.fetch_last_commit_version(last_commit_id)
 
+	// createa an encoding object
     enc_obj := sha256.New()
 
     var no_change bool = true;
 
-    for file, old_hash := range last_commit_hash {
-        if slices.Contains(tracked_files, file) {
-            copy_file_to_hash(&enc_obj, file)
-            new_hash := fmt.Sprintf("%x", enc_obj.Sum(nil))
-            enc_obj.Reset()
+	// iterate through the tracked files
+	for _, t_file := range tracked_files {
+		t_file_basename := utils.GetPathBasename(t_file)
+		// check if the basename is not present in the hashing
+		if _, ok := last_commit_hash[t_file_basename]; ! ok {
+			return false
+		}
+		// at this point check if the hashing is the same
+		// get the old hash from the map
+		old_hash := last_commit_hash[t_file_basename]
 
-            if new_hash != old_hash {
-                no_change = false
-                break
-            } 
-        }     
-    }
+		// calculate the new has
+		copy_file_to_hash(&enc_obj, t_file)
+		new_hash := fmt.Sprintf("%x", enc_obj.Sum(nil))
+		enc_obj.Reset()
 
-    if no_change {
-        return "Nothing to commit."
-    }
+		if new_hash != old_hash {
+			no_change = false
+			break
+		} 
+	}
+
+	return no_change
+}
 
 
-
+func (ctr_obj Controler) build_commit_dir(commit_msg string) string {
+	tracked_files := ctr_obj.get_tracked_files()
+    enc_obj := sha256.New()
 
     // at this point create the hash for the commit_msg 
     enc_obj.Write([]byte(commit_msg))
     commit_msg_hash := fmt.Sprintf("%x", enc_obj.Sum(nil))
-    enc_obj.Reset()
 
-    // create the repository
+	// create the directory to save the local copy of the directory
     new_commit_dir := path.Join(ctr_obj.commits_dir_path, commit_msg_hash)
     os.MkdirAll(new_commit_dir, os.ModePerm)
 
     // copy all files
     for _, t_file := range tracked_files {
         // open the original file
-        source_file, _ := os.Open(t_file)
+        source_file, e1 := os.Open(t_file)		
+		if e1 != nil {
+			log.Fatal(e1)
+		}
         defer source_file.Close()
+		
+		// the Base function does not work for Windowns ))
+		// replace `backslashes` with `forward slashes`
+		t_file = strings.ReplaceAll(t_file, "\\", "//")
+        des_file, e2 := os.Create(path.Join(new_commit_dir, utils.GetPathBasename(t_file)))
 
-        des_file, _ := os.Create(path.Join(ctr_obj.commits_dir_path, t_file))
-        defer des_file.Close()
+		if e2 != nil {
+			log.Fatal(e2)
+		}
+		defer des_file.Close()
 
-        io.Copy(source_file, des_file)
+        _, err := io.Copy(des_file, source_file)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	return new_commit_dir
+}
+
+
+func (ctr_obj Controler) create_commit(commit_msg string) string{  
+	no_change := ctr_obj.check_changes()
+
+	if no_change {
+        return "Nothing to commit."
     }
 
-    // create an extra file
-    commit_info_txt_file, _ := os.Create(path.Join(new_commit_dir, "commit_info.txt"))
+	new_commit_dir := ctr_obj.build_commit_dir(commit_msg)
 
-    io.Copy()
+    // create an extra file inside the commit directory to save the commit information
+    commit_info_txt_file, _ := os.Create(path.Join(new_commit_dir, "__commit_info.txt"))	
+	defer commit_info_txt_file.Close()
 
+	// append the commit_id to the log file
+	log_file, _ := os.OpenFile(ctr_obj.log_file_path, os.O_APPEND|os.O_RDWR, os.ModePerm)
+	defer log_file.Close()
+
+	// add the commit hash to the log file
+	commit_hash := get_hash(commit_msg)
+	fmt.Fprintln(log_file, commit_hash)
+
+	// build the commit log in a slice to copy it to the file
+	commit_info_str := fmt.Sprintf("Author: %s\n%s", ctr_obj.config_message_display_user(false), commit_msg)
+	fmt.Fprint(commit_info_txt_file, commit_info_str)
+
+	return "Changes are committed." 
+}
+
+
+func (ctr_obj Controler) build_commit_log(commit_id string) string {
+	// find the commit dir
+	commit_dir := path.Join(ctr_obj.commits_dir_path, commit_id)
+	// read the commit info
+    commit_info_txt_file := path.Join(commit_dir, "__commit_info.txt")
+
+	commit_info_bytes, err := os.ReadFile(commit_info_txt_file)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	commit_info := string(commit_info_bytes)
+	
+	return fmt.Sprintf("commit %s\n%s", commit_id, commit_info)
+}
+
+func (ctr_obj Controler) log_command() {
+	commit_ids := make([]string, 0)
+	// read the log text file
+	file, _ := os.Open(ctr_obj.log_file_path)
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		commit_ids = append(commit_ids, scanner.Text())
+	}
+
+	// reverse the slice
+	if len(commit_ids) == 0 {
+		fmt.Println("No commits yet.")
+		// make sure to exit the function
+		return 
+	}
+
+	for _, c := range(commit_ids) {
+		fmt.Println(ctr_obj.build_commit_log(c))
+	}
 }
 
 
@@ -319,21 +428,33 @@ func main() {
 	}
 
 	switch command {
+
 	case "add":
 		if len(args) < 3 {
 			fmt.Println(ctr_obj.add_message(nil))
 		} else {
 			fmt.Println(ctr_obj.add_message(&args[2]))
 		}
+
 	case "config":
 		if len(args) < 3 {
 			fmt.Println(ctr_obj.config_message(nil))
 			} else {
 			fmt.Println(ctr_obj.config_message(&args[2]))
 		}
+
+	case "commit": 
+		
+		if len(args) < 3 {
+			fmt.Println("Pass a commit")
+		}
+		fmt.Println(ctr_obj.create_commit(args[2]))
+
+	case "log":
+		ctr_obj.log_command()
+
 	default:
 		fmt.Println(help_message(command))
 	}
-	
 
 }

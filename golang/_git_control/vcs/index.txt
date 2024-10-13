@@ -1,0 +1,2 @@
+.\main\t1.txt
+.\main\t2.txt
