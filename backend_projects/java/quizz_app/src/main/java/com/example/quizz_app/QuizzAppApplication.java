@@ -1,15 +1,83 @@
 package com.example.quizz_app;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import java.util.concurrent.ConcurrentHashMap;
+
+
+// a class that is created in startup time
+@Configuration
+class BeanClass {
+	@Bean(name = "ad1")
+	public String getAddress(){
+		return "ad1";
+	}
+
+	@Bean(name = "ad2")
+	public String getAnotherAddress() {
+		return "Well this object was created in boot time";
+	}
+}
+
+@Component
+class ComponentClass  {
+	@Bean
+	public String call(@Qualifier("ad1") String address) {
+		return address;
+	}
+}
+
+@Component
+class ComponentWrapper implements CommandLineRunner {
+	// this mean that the Component class will be created an
+	private ComponentClass c;
+
+	public ComponentWrapper(@Autowired ComponentClass instance) {
+		this.c = instance;
+	}
+
+	@Bean
+	public String getCallCountSquared(@Qualifier("ad1") String ad) {
+		String s = this.c.call(ad);
+		return s + " " + s;
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		System.out.println("\n\nSetting the first call for the Component Class field");
+	}
+}
+
+
+@Component
+class AnotherComponent {
+	private final int CompanyID = 1000221993;
+	private final String CompanyLogo = "CompanyLogo";
+
+	public String companyKey() {
+		return this.CompanyLogo + "__" + this.CompanyID;
+	}
+
+	public String getLogoSubstring(int index) {
+		index = index % this.CompanyLogo.length();
+		return this.CompanyLogo.substring(0, index);
+	}
+}
+
 
 @SpringBootApplication
 @RestController
@@ -31,7 +99,6 @@ public class QuizzAppApplication {
 //		 return "Car added successfully";
 //	 }
 
-
 	@PostMapping("/car")
 	public String carPostEndpointBody(@RequestBody Car car) {
 		if (this.carMap.containsKey(car.getCar_id())) {
@@ -40,7 +107,6 @@ public class QuizzAppApplication {
 		this.carMap.put(car.getCar_id(), car);
 		return "The car is added successfully";
 	}
-
 
 	@GetMapping("/car/{car_id}/")
 	public String carGetEndpointPath(@PathVariable int car_id) {
@@ -67,5 +133,27 @@ public class QuizzAppApplication {
 		return new ArrayList<>(this.carMap.values());
 	}
 
+	@Bean // have to add "Bean" to work with Bean objects; use annotations to communicate / pass the objects
+	@GetMapping("bean")
+	public String BeanEndpoint(@Qualifier("ad1") String add) {
+		// basically returning an object that was created when the application boots up
+		return add;
+	}
+
+	@Bean
+	@GetMapping("bean2")
+	// have to add "Bean" to work with Bean objects; use annotations to communicate / pass the objects
+	public String BeanEndpoint2(@Qualifier("ad2") String add) {
+		// basically returning an object that was created when the application boots up
+		return add;
+	}
+
+	@Bean
+	@GetMapping("call")
+	public String ComponentPoint(
+			@RequestParam(name = "index") int index,
+			@Autowired AnotherComponent ac) {
+		return ac.getLogoSubstring(index);
+	}
 
 }

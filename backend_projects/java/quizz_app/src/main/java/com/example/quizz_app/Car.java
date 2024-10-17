@@ -31,15 +31,15 @@ public class Car {
 
 
 
-class Main {
-    public static void main(String[] args) {
-        Car c = new Car("car_name", 10);
-        ObjectMapper obj = new ObjectMapper();
-        try {
-            System.out.println(obj.writeValueAsString(c));
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
+class Main {    public static void main(String[] args) {
+    Car c = new Car("car_name", 10);
+    ObjectMapper obj = new ObjectMapper();
+    try {
+        System.out.println(obj.writeValueAsString(c));
+    }
+    catch (Exception e) {
+        System.out.println(e);
     }
 }
+}
+
