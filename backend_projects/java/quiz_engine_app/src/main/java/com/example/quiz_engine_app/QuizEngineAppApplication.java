@@ -16,12 +16,16 @@ import java.util.List;
 @JsonPropertyOrder({"title", "title", "options"}) // setting the order of serialization
 @JsonIgnoreProperties({"answer_index"}) // ignoring the answer index
 class Question {
+	private static int QUIZ_COUNT = 0;
+	private final int id;
 	private final String title;
 	private final  String text;
 	private final  List<String> options;
 	private final  int answer_index;
 
 	public Question(String title, String text, List<String> options, int answer_index) {
+		thisQUIZ_COUNT += 1;
+		this.id = this
 		this.title = title;
 		this.text = text;
 		this.options = options;
@@ -71,6 +75,9 @@ class ServerResponse {
 @SpringBootApplication
 @RestController // this is necessary for the app to intercept the api requests...
 public class QuizEngineAppApplication {
+	// updating the controller
+
+
 
 	private static final List<Question> questions = List.of(
 			new Question("The Java Logo",

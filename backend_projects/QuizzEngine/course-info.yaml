@@ -12,4 +12,6 @@ summary: "<p>In the Internet, you can often find sites where you need to answer 
   >https://hyperskill.org/projects/91</a>"
 programming_language: Java
 programming_language_version: 11
+content:
+  - Web Quiz Engine with Java
 mode: Study

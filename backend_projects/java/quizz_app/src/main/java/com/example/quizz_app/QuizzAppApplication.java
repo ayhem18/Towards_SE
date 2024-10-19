@@ -1,5 +1,7 @@
 package com.example.quizz_app;
 
+import java.util.Random;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -9,12 +11,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
+
+import java.util.*;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -44,7 +46,7 @@ class ComponentClass  {
 @Component
 class ComponentWrapper implements CommandLineRunner {
 	// this mean that the Component class will be created an
-	private ComponentClass c;
+	private final ComponentClass c;
 
 	public ComponentWrapper(@Autowired ComponentClass instance) {
 		this.c = instance;
@@ -58,7 +60,7 @@ class ComponentWrapper implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		System.out.println("\n\nSetting the first call for the Component Class field");
+		System.out.println("\n\nSetting the first call for the Component Class field\n\n");
 	}
 }
 
@@ -79,6 +81,44 @@ class AnotherComponent {
 }
 
 
+@Component
+@Scope(value="prototype")
+class CompClass {
+	private final List<String> objsList;
+	private final Random randObject;
+
+	public CompClass() {
+		this.objsList = List.of("an even bigger shit", "Shit", "another shit", "Hello", "oh shit", "damn shit", "fuck shit");
+		this.randObject = new Random();
+	}
+
+	public String getObject() {
+		int val = this.randObject.nextInt(this.objsList.size());
+		return this.objsList.get(val);
+	}
+}
+
+@Component
+class YetAnotherComp {
+	private final CompClass c1;
+	private final CompClass c2;
+	private final boolean same;
+
+
+	public YetAnotherComp(@Autowired CompClass c1, @Autowired CompClass c2) {
+		this.c1 = c1;
+		this.c2 = c2;
+		this.same = (this.c1 == this.c2);
+
+	}
+
+	public String function() {
+		return c1.getObject() + "_" + c2.getObject() + "_" + this.same;
+	}
+}
+
+
+
 @SpringBootApplication
 @RestController
 public class QuizzAppApplication {
@@ -90,14 +130,6 @@ public class QuizzAppApplication {
 		SpringApplication.run(QuizzAppApplication.class, args);
 	}
 
-
-//	 @PostMapping("/car")
-//	 public String carPostEndpoint(@RequestParam(value = "name") String name,
-//							   @RequestParam(value = "year") int year) {
-//		 Car c = new Car(name, year);
-//		 this.carMap.put(c.getCar_id(), c);
-//		 return "Car added successfully";
-//	 }
 
 	@PostMapping("/car")
 	public String carPostEndpointBody(@RequestBody Car car) {
@@ -150,10 +182,14 @@ public class QuizzAppApplication {
 
 	@Bean
 	@GetMapping("call")
-	public String ComponentPoint(
-			@RequestParam(name = "index") int index,
-			@Autowired AnotherComponent ac) {
-		return ac.getLogoSubstring(index);
+	public String ComponentPoint(@Autowired CompClass c){
+		return c.getObject();
+	}
+
+	@Bean
+	@GetMapping("call2")
+	public String ComponentPoint2(@Autowired YetAnotherComp c){
+		return c.function();
 	}
 
 }
