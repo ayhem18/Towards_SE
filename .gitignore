@@ -27,3 +27,15 @@ full_stack_projects/MusicController/musicControllerBackend/google_api_credential
 golang/delve
 
 golang/_git_control/vcs/commits
+
+backend_projects/QuizzEngine/Web Quiz Engine with Java/*
+!backend_projects/QuizzEngine/Web Quiz Engine with Java/task
+
+backend_projects/QuizzEngine/Web Quiz Engine with Java/task/*
+!backend_projects/QuizzEngine/Web Quiz Engine with Java/task/src
+
+backend_projects/QuizzEngine/util
+
+backend_projects/QuizzEngine/.gradle
+
+*.yaml

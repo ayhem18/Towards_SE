@@ -47,21 +47,6 @@ class NoExistingIdException extends RuntimeException {
 @ControllerAdvice
 public class Exceptionist {
 
-    // using this method leads to return the 500 status code all the time
-
-//    @ExceptionHandler(NoExistingIdException.class)
-//    public ResponseEntity<CustomErrorMessage> handleNotFoundExceptions(
-//            NoExistingIdException e, WebRequest request) {
-//
-//        CustomErrorMessage body = new CustomErrorMessage(
-//                HttpStatus.NOT_FOUND.value(),
-//                LocalDateTime.now(),
-//                e.getMessage(),
-//                request.getDescription(false));
-//
-//        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-//    }
-
     // let's add a control Device
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<CustomErrorMessage> handleBadRequestExceptions(
@@ -78,4 +63,3 @@ public class Exceptionist {
 
 
 }
-

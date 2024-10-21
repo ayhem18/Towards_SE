@@ -11,15 +11,19 @@ import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-// let's start with something very simple
+// I don't understand why Jackson works with the constructor of the Question class
+// while it doesn't with the AnswerResponseObject class
+
 @JsonPropertyOrder({"id", "title", "text", "options"}) // setting the order of serialization
 class Question {
     private static int QUIZ_COUNT = 0;
@@ -30,7 +34,7 @@ class Question {
     @NotBlank
     private final  String text;
 
-    @NotNull
+    @NotNull // setting the notNull requirement is indeed helpful...
     @Size(min=2) // at least 2 options
     private final  List<String> options;
 
@@ -38,17 +42,24 @@ class Question {
     // https://stackoverflow.com/questions/12505141/only-using-jsonignore-during-serialization-but-not-deserialization
     // this means the property will be ignored during serialization (to Json), but considered during deserialization
     // to the original format
-//    @JsonProperty(access=JsonProperty.Access.WRITE_ONLY)
-    private final List<Integer> answers;
+
+    //    @NotNull
+    @JsonProperty(access=JsonProperty.Access.WRITE_ONLY)
+    private final List<Integer> answer;
 
     public Question(String title,
                     String text,
                     List<String> options,
-                    List<Integer> answers) {
+                    List<Integer> answer) {
         this.title = title;
         this.text = text;
         this.options = options;
-        this.answers = answers;
+
+        if (answer == null) {
+            answer = new ArrayList<>();
+        }
+        this.answer = answer;
+
         QUIZ_COUNT += 1;
         this.id = QUIZ_COUNT;
     }
@@ -69,8 +80,8 @@ class Question {
         return options;
     }
 
-    public List<Integer> getAnswers() {
-        return this.answers;
+    public List<Integer> getAnswer() {
+        return this.answer;
     }
 }
 
@@ -131,7 +142,7 @@ public class WebQuizEngine {
             throw new NoExistingIdException(id);
         }
 
-        boolean success = userAnswer.correctAnswers(QUESTIONS_MAP.get(id).getAnswers());
+        boolean success = userAnswer.correctAnswers(QUESTIONS_MAP.get(id).getAnswer());
         ServerResponse res = new ServerResponse(success,
                 success ? WebQuizEngine.correctStringFeedback: WebQuizEngine.wrongStringFeedback);
 
@@ -150,8 +161,8 @@ public class WebQuizEngine {
             throw new NoExistingIdException(id);
         }
 
-        List<Integer> answer = QUESTIONS_MAP.get(id).getAnswers();
-        System.out.println(answer);
+        List<Integer> answer = QUESTIONS_MAP.get(id).getAnswer();
+//        System.out.println(answer);
         return answer;
     }
 
