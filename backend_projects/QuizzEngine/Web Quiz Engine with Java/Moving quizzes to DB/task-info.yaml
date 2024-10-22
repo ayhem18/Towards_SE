@@ -12,6 +12,12 @@ files:
   - name: test/tests/WebQuizEngineTest.java
     visible: false
     learner_created: false
-feedback_link: https://hyperskill.org/projects/91/stages/507/implement#comment
+  - name: src/engine/Exceptionist.java
+    visible: true
+    learner_created: true
+  - name: src/engine/ResReqObjects.java
+    visible: true
+    learner_created: true
+feedback_link: https://hyperskill.org/learn/step/8255#comment
 status: Unchecked
 record: -1

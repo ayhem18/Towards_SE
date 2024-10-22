@@ -1,0 +1,41 @@
+2024-10-22 22:02:59.315456+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TEST" already exists; SQL statement:
+CREATE TABLE TEST(ID INT PRIMARY KEY,
+   NAME VARCHAR(255)) [42101-232]
+2024-10-22 22:03:02.810934+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TEST" already exists; SQL statement:
+CREATE TABLE TEST(ID INT PRIMARY KEY,
+   NAME VARCHAR(255)) [42101-232]
+2024-10-22 22:03:03.554549+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TEST" already exists; SQL statement:
+CREATE TABLE TEST(ID INT PRIMARY KEY,
+   NAME VARCHAR(255)) [42101-232]
+2024-10-22 22:04:25.907942+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT [*]VALUES INTO CAR ( 10, ""shit"")"; expected "INTO"; SQL statement:
+INSERT VALUES INTO CAR ( 10, "shit") [42001-232]
+2024-10-22 22:05:34.773600+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TABLE_NAME" not found; SQL statement:
+INSERT INTO table_name (id, name)
+VALUES (1, 'shitty_car') [42102-232]
+2024-10-22 22:05:34.773600+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT [*]VALUES INTO CAR ( 10, ""shit"")"; expected "INTO"; SQL statement:
+INSERT VALUES INTO CAR ( 10, "shit") [42001-232]
+2024-10-22 22:05:57.099349+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]# DROP TABLE IF EXISTS TEST"; SQL statement:
+# DROP TABLE IF EXISTS TEST [42000-232]
+2024-10-22 22:05:57.101647+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TABLE_NAME" not found; SQL statement:
+INSERT INTO table_name (id, name)
+VALUES (1, 'shitty_car') [42102-232]
+2024-10-22 22:06:14.979704+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CAR" already exists; SQL statement:
+-- DROP TABLE IF EXISTS TEST;
+-- DROP TABLE IF EXISTS CAR; [42101-232]
+2024-10-22 22:06:14.980760+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TABLE_NAME" not found; SQL statement:
+INSERT INTO table_name (id, name)
+VALUES (1, 'shitty_car') [42102-232]
+2024-10-22 22:06:28.323479+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CAR" already exists; SQL statement:
+-- DROP TABLE IF EXISTS TEST;
+-- DROP TABLE IF EXISTS CAR; [42101-232]

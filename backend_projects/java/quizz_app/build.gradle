@@ -19,9 +19,22 @@ repositories {
 
 dependencies {
 	// added to use the Jackson pacakge: useful to convert java objects to Json and vice versa
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.3', 'org.springframework.boot:spring-boot-starter-web'
+	implementation ('com.fasterxml.jackson.core:jackson-databind:2.15.3') 
+	implementation ('org.springframework.boot:spring-boot-starter-web') // for spring web
 
+	// for JPD: access to the database
+	implementation ('org.springframework.boot:spring-boot-starter-data-jpa')
 
+//	runtimeOnly 'com.h2database:h2'
+
+//	implementation 'mysql-connector-j'
+
+	runtimeOnly 'org.postgresql:postgresql'
+
+	// a dependency to connect to the Mysql database
+//	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.15'
+
+//	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

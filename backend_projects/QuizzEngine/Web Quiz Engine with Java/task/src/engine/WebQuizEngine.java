@@ -16,14 +16,12 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 // I don't understand why Jackson works with the constructor of the Question class
 // while it doesn't with the AnswerResponseObject class
-
 @JsonPropertyOrder({"id", "title", "text", "options"}) // setting the order of serialization
 class Question {
     private static int QUIZ_COUNT = 0;
