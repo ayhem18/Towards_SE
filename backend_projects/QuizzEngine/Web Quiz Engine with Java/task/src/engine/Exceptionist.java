@@ -43,6 +43,17 @@ class NoExistingIdException extends RuntimeException {
     }
 }
 
+@ResponseStatus
+class IdAlreadyExists extends RuntimeException {
+    private static String defaultErrorMessageFormatter(int id) {
+        return "There is already a quiz with the id " + id;
+    }
+
+    public IdAlreadyExists(int id) {
+        super(IdAlreadyExists.defaultErrorMessageFormatter(id));
+    }
+}
+
 
 @ControllerAdvice
 public class Exceptionist {

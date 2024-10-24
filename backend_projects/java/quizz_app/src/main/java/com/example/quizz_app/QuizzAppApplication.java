@@ -1,12 +1,12 @@
 package com.example.quizz_app;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,8 +64,30 @@ public class QuizzAppApplication {
 
 		@Override
 		public void run(ApplicationArguments args) throws Exception {
+			// find the very first car added to the database...
+			try {
+				Car car = this.repo.findById(1).orElseThrow(NoSuchFieldError::new);
+				System.out.println("The first car in the database " + car.toString());
+				// delete all elements
+				this.repo.deleteAll();
+
+			}
+
+			catch (NoSuchElementException e){
+				System.out.println("SEEMS THAT The database is empty");
+			}
+
 			long count = repo.count();
-			System.out.println("\n\nThe number of records in the database is " + count + "\n\n");
+			System.out.println("\nThe number of records in the database is " + count + "\n");
+			
+			Car c = new Car(
+					((Long) count).intValue(), 
+					"shitty_car", 
+					2001);
+			
+			this.repo.save(c);
+			System.out.println("\nThe number of records in the database is " + repo.count() + "\n");
+
 		}
 	}
 
