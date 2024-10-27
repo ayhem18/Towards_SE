@@ -25,16 +25,15 @@ dependencies {
 	// for JPD: access to the database
 	implementation ('org.springframework.boot:spring-boot-starter-data-jpa')
 
-//	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'com.h2database:h2'
 
-//	implementation 'mysql-connector-j'
+//	runtimeOnly 'org.postgresql:postgresql'
 
-	runtimeOnly 'org.postgresql:postgresql'
+	// added for json validation
+	implementation "org.springframework.boot:spring-boot-starter-validation"
+	// for security: encryption and hashing
+//	implementation 'org.springframework.boot:spring-boot-starter-security:2.7.2'
 
-	// a dependency to connect to the Mysql database
-//	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.15'
-
-//	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

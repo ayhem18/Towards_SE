@@ -1,94 +1,95 @@
 package com.example.quizz_app;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
+import jakarta.validation.Valid;
 import org.springframework.boot.SpringApplication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @SpringBootApplication
 @RestController
+@Validated
 public class QuizzAppApplication {
-
-	// using a thread safe collection such as ConcurrentHashMap
-	private final ConcurrentHashMap<Integer, Car> carMap = new ConcurrentHashMap<>();
 
 	public static void main(String[] args) {
 		SpringApplication.run(QuizzAppApplication.class, args);
 	}
 
-
-	@PostMapping("/car")
-	public String carPostEndpointBody(@RequestBody Car car) {
-		if (this.carMap.containsKey(car.getId())) {
-			return "There is already a car with id " + car.getId();
-		}
-		this.carMap.put(car.getId(), car);
-		return "The car is added successfully";
+	// let's remember how to work with databases
+	// 1. define a private field in the class
+	private final CarRepository<Integer, Car> repo;
+	// 2. define a constructor that would receive the repo interface
+	@Autowired
+	// basically Spring boot will pass the object created during startup time to the constructor
+	public QuizzAppApplication(CarRepository<Integer, Car> repo) {
+		this.repo = repo;
 	}
 
-	@GetMapping("/car/{car_id}/")
-	public String carGetEndpointPath(@PathVariable int car_id) {
-		ObjectMapper obj = new ObjectMapper();
+	@PostMapping("/api/car/")
+	public String carPost(@Valid @RequestBody Car car) throws JsonProcessingException {
 		try {
-			Car c = this.carMap.get(car_id);
-			if (c == null) {
-				throw new NoSuchElementException();
-			}
-			return obj.writerWithDefaultPrettyPrinter().writeValueAsString(this.carMap.get(car_id));
-		}
-		catch (NoSuchElementException e) {
-			return "there is no car with id " + car_id + " saved in the database";
-		}
-
-		catch (Exception e) {
-			return "Some error happened";
+			this.repo.save(car);
+			return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(car);
+		} catch (RuntimeException e ){
+			throw new IdAlreadyExists(car.getId());
 		}
 	}
 
-	@Component
-	class Runner implements ApplicationRunner {
-		private final CarRepository repo;
-
-		@Autowired
-		Runner(CarRepository carRepo) {
-			this.repo = carRepo;
-		}
-
-		@Override
-		public void run(ApplicationArguments args) throws Exception {
-			// find the very first car added to the database...
-			try {
-				Car car = this.repo.findById(1).orElseThrow(NoSuchFieldError::new);
-				System.out.println("The first car in the database " + car.toString());
-				// delete all elements
-				this.repo.deleteAll();
-
-			}
-
-			catch (NoSuchElementException e){
-				System.out.println("SEEMS THAT The database is empty");
-			}
-
-			long count = repo.count();
-			System.out.println("\nThe number of records in the database is " + count + "\n");
-			
-			Car c = new Car(
-					((Long) count).intValue(), 
-					"shitty_car", 
-					2001);
-			
-			this.repo.save(c);
-			System.out.println("\nThe number of records in the database is " + repo.count() + "\n");
-
-		}
+	@GetMapping("/api/car/{car_id}/")
+	public String carGet(@PathVariable int car_id) throws JsonProcessingException{
+		Car car = this.repo.findById(car_id).orElseThrow(() -> new NoExistingIdException(car_id));
+		return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(car);
 	}
+
+	@GetMapping("/api/car/")
+	public String getAllCars() throws JsonProcessingException {
+		return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this.repo.findAll());
+	}
+
+ 	@GetMapping("/api/car/clear/")
+	public String carClear() {
+		this.repo.deleteAll();
+		long count = this.repo.count();
+		return "the number of records in the database is " + ((Long) count).intValue();
+	}
+
+//	@Component
+//	class Runner implements ApplicationRunner {
+//		private final CarRepository repo;
+//
+//		@Autowired
+//		Runner(CarRepository carRepo) {
+//			this.repo = carRepo;
+//		}
+//
+//		@Override
+//		public void run(ApplicationArguments args) throws Exception {
+//			// find the very first car added to the database...
+//			try {
+//				Car car = this.repo.findById(1).orElseThrow(() -> new NoExistingIdException(1));
+//				System.out.println("The first car in the database " + car.toString());
+//				// delete all elements
+//				this.repo.deleteAll();
+//			} catch (NoExistingIdException e){
+//				System.out.println("SEEMS THAT The database is empty");
+//			}
+//
+//			long count = repo.count();
+//			System.out.println("\nThe number of records in the database is " + count + "\n");
+//
+//			Car c = new Car(
+//					((Long) count).intValue(),
+//					"shitty_car",
+//					2001);
+//
+//			this.repo.save(c);
+//			System.out.println("\nThe number of records in the database is " + repo.count() + "\n");
+//
+//		}
+//	}
 
 }

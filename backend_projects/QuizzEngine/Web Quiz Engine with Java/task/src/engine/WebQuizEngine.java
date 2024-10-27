@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.validation.Valid;
-import java.util.NoSuchElementException;
 
 
 @SpringBootApplication
@@ -42,7 +41,8 @@ public class WebQuizEngine {
     }
 
     @PostMapping("api/quizzes")
-    public String addQuiz(@Valid @RequestBody Quiz quiz) { // add the @Valid annotation to validate the request body
+    public String addQuiz(@Valid @RequestBody Quiz quiz) // add the @Valid annotation to validate the request body
+    throws JsonProcessingException {
         // save the new quiz
         try {
             this.repo.save(quiz);
@@ -50,41 +50,32 @@ public class WebQuizEngine {
 
         }catch (RuntimeException e) {
             throw new IdAlreadyExists(quiz.getId());
-        } catch (JsonProcessingException e) {
-            return e.toString();
         }
     }
 
     @GetMapping("api/quizzes/{id}")
     public String getQuizById(@PathVariable(value="id") int id) {
         try {
-            Quiz q = this.repo.findById(id).orElseThrow();
+            Quiz q = this.repo.findById(id).orElseThrow(() -> new NoExistingIdException(id));
             return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(q);
-        } catch (NoSuchElementException e) {
-            throw new NoExistingIdException(id); // in case the id does not exist
-        } catch (JsonProcessingException e) {
+        }
+        catch (JsonProcessingException e) {
             return e.toString(); // in case something is wrong with Json Processing
         }
     }
 
     @PostMapping("api/quizzes/{id}/solve")
-    public String answerQuiz(@PathVariable(value = "id") int id, @RequestBody QuizAnswerRequest userAnswer) {
+    public String answerQuiz(@PathVariable(value = "id") int id,
+                             @RequestBody QuizAnswerRequest userAnswer) throws JsonProcessingException {
+        // the exception will be thrown
+        Quiz q = this.repo.findById(id).orElseThrow(() -> new NoExistingIdException(id));
+        // determine whether the answer is correct
+        boolean success = userAnswer.correctAnswers(q.getAnswer());
+        // prepare the object
+        ServerResponse res = new ServerResponse(success,
+                success ? WebQuizEngine.correctStringFeedback: WebQuizEngine.wrongStringFeedback);
 
-        try {
-            Quiz q = this.repo.findById(id).orElseThrow();
-            // determine whether the answer is correct
-            boolean success = userAnswer.correctAnswers(q.getAnswer());
-            // prepare the object
-            ServerResponse res = new ServerResponse(success,
-                    success ? WebQuizEngine.correctStringFeedback: WebQuizEngine.wrongStringFeedback);
-
-            return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(res);
-
-        } catch (NoSuchElementException e) {
-            throw new NoExistingIdException(id); // in case the id does not exist
-        } catch (JsonProcessingException e) {
-            return e.toString();
-        }
+        return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(res);
     }
 
 
