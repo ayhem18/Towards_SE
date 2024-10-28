@@ -3,10 +3,14 @@ package com.example.quizz_app;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,40 +60,6 @@ public class QuizzAppApplication {
 		long count = this.repo.count();
 		return "the number of records in the database is " + ((Long) count).intValue();
 	}
-
-//	@Component
-//	class Runner implements ApplicationRunner {
-//		private final CarRepository repo;
-//
-//		@Autowired
-//		Runner(CarRepository carRepo) {
-//			this.repo = carRepo;
-//		}
-//
-//		@Override
-//		public void run(ApplicationArguments args) throws Exception {
-//			// find the very first car added to the database...
-//			try {
-//				Car car = this.repo.findById(1).orElseThrow(() -> new NoExistingIdException(1));
-//				System.out.println("The first car in the database " + car.toString());
-//				// delete all elements
-//				this.repo.deleteAll();
-//			} catch (NoExistingIdException e){
-//				System.out.println("SEEMS THAT The database is empty");
-//			}
-//
-//			long count = repo.count();
-//			System.out.println("\nThe number of records in the database is " + count + "\n");
-//
-//			Car c = new Car(
-//					((Long) count).intValue(),
-//					"shitty_car",
-//					2001);
-//
-//			this.repo.save(c);
-//			System.out.println("\nThe number of records in the database is " + repo.count() + "\n");
-//
-//		}
-//	}
-
 }
+
+

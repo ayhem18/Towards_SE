@@ -31,8 +31,10 @@ dependencies {
 
 	// added for json validation
 	implementation "org.springframework.boot:spring-boot-starter-validation"
+
 	// for security: encryption and hashing
-//	implementation 'org.springframework.boot:spring-boot-starter-security:2.7.2'
+	// it generates some security mechanisms for api endpoitns: Keep this in mind.
+	implementation 'org.springframework.boot:spring-boot-starter-security:2.7.2'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

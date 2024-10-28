@@ -36,26 +36,26 @@ class ComponentClass  {
     }
 }
 
-@Component
-class ComponentWrapper implements CommandLineRunner {
-    // this mean that the Component class will be created an
-    private final ComponentClass c;
-
-    public ComponentWrapper(@Autowired ComponentClass instance) {
-        this.c = instance;
-    }
-
-    @Bean
-    public String getCallCountSquared(@Qualifier("ad1") String ad) {
-        String s = this.c.call(ad);
-        return s + " " + s;
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        System.out.println("\n\nSetting the first call for the Component Class field\n\n");
-    }
-}
+//@Component
+//class ComponentWrapper implements CommandLineRunner {
+//    // this mean that the Component class will be created an
+//    private final ComponentClass c;
+//
+//    public ComponentWrapper(@Autowired ComponentClass instance) {
+//        this.c = instance;
+//    }
+//
+//    @Bean
+//    public String getCallCountSquared(@Qualifier("ad1") String ad) {
+//        String s = this.c.call(ad);
+//        return s + " " + s;
+//    }
+//
+//    @Override
+//    public void run(String... args) throws Exception {
+//        System.out.println("\n\nSetting the first call for the Component Class field\n\n");
+//    }
+//}
 
 
 @Component

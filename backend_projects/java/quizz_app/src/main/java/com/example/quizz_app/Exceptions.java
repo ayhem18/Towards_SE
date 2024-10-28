@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 class NoExistingIdException extends RuntimeException {
     private static String defaultErrorMessageFormatter(int id) {
-        return "There is no quiz with the id " + id;
+        return "There is no car with the id " + id;
     }
 
     public NoExistingIdException(int id) {
@@ -26,7 +26,7 @@ class NoExistingIdException extends RuntimeException {
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 class IdAlreadyExists extends RuntimeException {
     private static String defaultErrorMessageFormatter(int id) {
-        return "There is already a quiz with the id " + id;
+        return "There is already a car with the id " + id;
     }
 
     public IdAlreadyExists(int id) {
@@ -53,7 +53,6 @@ class CustomErrorMessage {
         this.message = message;
         this.description = description;
     }
-
 }
 
 // a controllerAdvice intercepts errors raised by all controllers in the app
