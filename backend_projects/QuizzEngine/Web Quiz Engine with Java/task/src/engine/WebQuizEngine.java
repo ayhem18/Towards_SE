@@ -1,6 +1,8 @@
 package engine;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import engine.exceptions.ExistingIdException;
+import engine.exceptions.NoSuchIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,7 +18,7 @@ import javax.validation.Valid;
 @RestController // this is necessary for the app to intercept the api requests...
 @Validated // the input data can be validated using annotations: https://hyperskill.org/learn/step/9355
 public class WebQuizEngine {
-    private QuizRepository repo;
+    private final QuizRepository repo;
 
     private static final String correctStringFeedback = "Congratulations, you're right!";
     private static final String wrongStringFeedback = "Wrong answer! Please, try again.";
@@ -32,12 +34,8 @@ public class WebQuizEngine {
     }
 
     @GetMapping("api/quizzes")
-    public String GetAllQuizzes() {
-        try {
-            return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(this.repo.findAll());
-        } catch (JsonProcessingException e) {
-            return e.toString();
-        }
+    public String GetAllQuizzes() throws JsonProcessingException {
+        return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(this.repo.findAll());
     }
 
     @PostMapping("api/quizzes")
@@ -49,26 +47,22 @@ public class WebQuizEngine {
             return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(quiz);
 
         }catch (RuntimeException e) {
-            throw new IdAlreadyExists(quiz.getId());
+            throw new ExistingIdException("There is already a quiz with the id " + quiz.getId());
         }
     }
 
     @GetMapping("api/quizzes/{id}")
-    public String getQuizById(@PathVariable(value="id") int id) {
-        try {
-            Quiz q = this.repo.findById(id).orElseThrow(() -> new NoExistingIdException(id));
-            return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(q);
-        }
-        catch (JsonProcessingException e) {
-            return e.toString(); // in case something is wrong with Json Processing
-        }
+    public String getQuizById(@PathVariable(value="id") int id) throws JsonProcessingException{
+        Quiz q = this.repo.findById(id).orElseThrow(() -> new NoSuchIdException("There is no quiz with the id" + id));
+        return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(q);
+
     }
 
     @PostMapping("api/quizzes/{id}/solve")
     public String answerQuiz(@PathVariable(value = "id") int id,
                              @RequestBody QuizAnswerRequest userAnswer) throws JsonProcessingException {
         // the exception will be thrown
-        Quiz q = this.repo.findById(id).orElseThrow(() -> new NoExistingIdException(id));
+        Quiz q = this.repo.findById(id).orElseThrow(() -> new NoSuchIdException("There is no quiz with the id" + id));
         // determine whether the answer is correct
         boolean success = userAnswer.correctAnswers(q.getAnswer());
         // prepare the object
@@ -85,6 +79,7 @@ public class WebQuizEngine {
         int count = ((Long) this.repo.count()).intValue();
         return "the number of quizzes in the database " + count;
     }
+
 
 //    @GetMapping("api/quizzes/{id}/__get")
 //    public List<Integer> getQuizAnswer(@PathVariable(value = "id") int id) {

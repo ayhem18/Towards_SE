@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
@@ -30,29 +29,6 @@ class CustomErrorMessage {
 
 }
 
-
-// a custom exception for non-existing ids
-@ResponseStatus(HttpStatus.NOT_FOUND)
-class NoExistingIdException extends RuntimeException {
-    private static String defaultErrorMessageFormatter(int id) {
-        return "There is no quiz with the id " + id;
-    }
-
-    public NoExistingIdException(int id) {
-        super(NoExistingIdException.defaultErrorMessageFormatter(id));
-    }
-}
-
-@ResponseStatus
-class IdAlreadyExists extends RuntimeException {
-    private static String defaultErrorMessageFormatter(int id) {
-        return "There is already a quiz with the id " + id;
-    }
-
-    public IdAlreadyExists(int id) {
-        super(IdAlreadyExists.defaultErrorMessageFormatter(id));
-    }
-}
 
 
 @ControllerAdvice

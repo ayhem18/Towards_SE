@@ -21,6 +21,18 @@ files:
   - name: src/engine/ResReqObjects.java
     visible: true
     learner_created: true
+  - name: src/engine/auth/User.java
+    visible: true
+    learner_created: true
+  - name: src/engine/auth/authorization.java
+    visible: true
+    learner_created: true
+  - name: src/engine/exceptions/ExistingIdException.java
+    visible: true
+    learner_created: true
+  - name: src/engine/exceptions/NoSuchIdException.java
+    visible: true
+    learner_created: true
 feedback_link: https://hyperskill.org/learn/step/8256#comment
 status: Unchecked
 record: -1
