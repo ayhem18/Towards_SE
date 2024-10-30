@@ -3,12 +3,18 @@ package com.example.quizz_app;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
 @RestController
@@ -55,6 +61,20 @@ public class QuizzAppApplication {
 		this.repo.deleteAll();
 		long count = this.repo.count();
 		return "the number of records in the database is " + ((Long) count).intValue();
+	}
+
+	@GetMapping("api/user")
+	// The @Qualifier annotation might require a bit more typing, but it might save a lot of headache
+	// trying to figure out whether the correct bean is called or not
+	public String getUsers(@Qualifier("userDetailsProvider") UserDetailsService userDetailsService)
+			throws JsonProcessingException{
+		List<String> usernames = List.of("user1", "user2", "user3");
+
+		// map each user to their user details
+		List<UserDetails> users = usernames.stream().map(
+                userDetailsService::loadUserByUsername).collect(Collectors.toList());
+
+		return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(users);
 	}
 }
 

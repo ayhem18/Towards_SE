@@ -18,24 +18,25 @@ repositories {
 }
 
 dependencies {
-	// added to use the Jackson pacakge: useful to convert java objects to Json and vice versa
-	implementation ('com.fasterxml.jackson.core:jackson-databind:2.15.3') 
-	implementation ('org.springframework.boot:spring-boot-starter-web') // for spring web
-
-	// for JPD: access to the database
-	implementation ('org.springframework.boot:spring-boot-starter-data-jpa')
-
+	// for the h2 database
 	runtimeOnly 'com.h2database:h2'
-
+	// for postgres
 //	runtimeOnly 'org.postgresql:postgresql'
 
-	// added for json validation
+	// for JPA
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// for security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// for the jackson package
+	implementation ('com.fasterxml.jackson.core:jackson-databind:2.15.3')
+	// for data validation
 	implementation "org.springframework.boot:spring-boot-starter-validation"
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	// for security: encryption and hashing
-	// it generates some security mechanisms for api endpoitns: Keep this in mind.
-	implementation 'org.springframework.boot:spring-boot-starter-security:2.7.2'
 
+	// per default (no testing so far)
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

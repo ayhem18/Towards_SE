@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -35,35 +34,42 @@ class SecurityConfig {
         this.pe = passwordEncoder;
     }
 
-    @Bean
+    @Bean(name="userDetailsProvider")
     public UserDetailsService userDetailsService() {
         // saving the users in memory
         UserDetails user1 = User.withUsername("user1")
-                .password(this.pe.encode("pass1"))
-                .roles()
+                .password("pass1") // store the raw password to see if the issue is with the encoding
+                .roles("role1")
                 .build();
 
         UserDetails user2 = User
 //                .withDefaultPasswordEncoder() // deprecated
                 .withUsername("user2")
-                .password(this.pe.encode("pass2"))
-                .roles()
+                .password("pass2") // store the raw password to see if the issue is with the encoding
+                .roles("role2")
                 .build();
 
-        return new InMemoryUserDetailsManager(user1, user2);
+        UserDetails user3 = User
+                .withUsername("user3")
+                .password(this.pe.encode("pass3"))
+                .roles() // has no roles, so he should not be authenticated
+                .build();
+
+        return new InMemoryUserDetailsManager(user1, user2, user3);
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // the requestMatchers should be called from specific pattern to general ones
-        HttpSecurity h = http.authorizeHttpRequests(
-                mr -> mr.requestMatchers("/**").hasAnyRole("rol1", "rol2", "no Role") // this mean
-                        .anyRequest().denyAll() // deny any request to any internal endpoint for example
-        );
+        // the requestMatchers should be called from specific to general patterns
 
-        return h.httpBasic(Customizer.withDefaults()) // enable the default http settings
-                .csrf(AbstractHttpConfigurer::disable) // disable the csrf thingy for now
-                .build();
+        return
+                http.httpBasic(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(
+//                        auth -> auth.anyRequest().permitAll()
+                        auth -> auth.requestMatchers("/api/car/clear").authenticated().
+                                anyRequest().permitAll()
+                ).build();
     }
 }
 
