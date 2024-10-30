@@ -21,10 +21,10 @@ files:
   - name: src/engine/ResReqObjects.java
     visible: true
     learner_created: true
-  - name: src/engine/auth/User.java
+  - name: src/engine/User.java
     visible: true
     learner_created: true
-  - name: src/engine/auth/authorization.java
+  - name: src/engine/authorization.java
     visible: true
     learner_created: true
   - name: src/engine/exceptions/ExistingIdException.java

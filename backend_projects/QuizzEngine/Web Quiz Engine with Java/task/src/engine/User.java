@@ -1,7 +1,9 @@
-package engine.auth;
+package engine;
 
 // in this file I will implement the necessary mechanisms to add users
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import engine.exceptions.ExistingIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -171,35 +174,15 @@ class UserDetailServiceImp implements UserDetailsService {
 
 
 // let's add a controller for the users
-@RestController
-@Validated
-class UserController {
-    private final UserRepo repo;
-
-    @Autowired
-    public UserController(UserRepo repo){
-        this.repo = repo;
-    }
-
-    @PostMapping("/api/register")
-    public String userRegisterEndpoint(@Valid @RequestBody UserRegisterRequest req) {
-        // I did not find a way to throw an exception with the if Present method of the Optional class
-
-        try {
-            this.repo.findUserByEmail(req.getEmail()).get();
-        } catch (NoSuchElementException e ) {
-            // create the user
-            User user = new User(req.getEmail(), this.passwordEncoder().encode(req.getPassword()));
-            this.repo.save(user);
-            int count = ((Long) this.repo.count()).intValue();
-            return "user with email " + user.getEmail() + " was added successfully. Total number of users: " + count;
-        }
-        throw new ExistingIdException("There is already a user with the email " + req.getEmail());
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-}
+//@RestController
+//@Validated
+//class UserController {
+//    private final UserRepo repo;
+//
+//    @Autowired
+//    public UserController(UserRepo repo){
+//        this.repo = repo;
+//    }
+//
+//}
 
