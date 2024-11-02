@@ -17,6 +17,10 @@ repositories {
 	mavenCentral()
 }
 
+// according to the following lesson:
+// https://hyperskill.org/learn/step/6339
+// dependencies that end with `starter` are actually group of basic dependencies
+
 dependencies {
 	// for the h2 database
 	runtimeOnly 'com.h2database:h2'
@@ -29,10 +33,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	// for the jackson package
 	implementation ('com.fasterxml.jackson.core:jackson-databind:2.15.3')
+
 	// for data validation
 	implementation "org.springframework.boot:spring-boot-starter-validation"
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	// started-web is basically a group of dependencies under the same name
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 

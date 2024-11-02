@@ -3,6 +3,8 @@ package com.example.quizz_app;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -38,14 +40,14 @@ class SecurityConfig {
     public UserDetailsService userDetailsService() {
         // saving the users in memory
         UserDetails user1 = User.withUsername("user1")
-                .password("pass1") // store the raw password to see if the issue is with the encoding
+                .password(this.pe.encode("pass1")) // store the raw password to see if the issue is with the encoding
                 .roles("role1")
                 .build();
 
         UserDetails user2 = User
 //                .withDefaultPasswordEncoder() // deprecated
                 .withUsername("user2")
-                .password("pass2") // store the raw password to see if the issue is with the encoding
+                .password(this.pe.encode("pass2")) // store the raw password to see if the issue is with the encoding
                 .roles("role2")
                 .build();
 
@@ -55,7 +57,14 @@ class SecurityConfig {
                 .roles() // has no roles, so he should not be authenticated
                 .build();
 
-        return new InMemoryUserDetailsManager(user1, user2, user3);
+        UserDetails admin = User
+                .withUsername("admin")
+                .password(this.pe.encode("pass3"))
+                .roles("ADMIN") // has no roles, so he should not be authenticated
+                .build();
+
+
+        return new InMemoryUserDetailsManager(user1, user2, user3, admin);
     }
 
     @Bean
@@ -66,12 +75,35 @@ class SecurityConfig {
                 http.httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-//                        auth -> auth.anyRequest().permitAll()
-                        auth -> auth.requestMatchers("/api/car/clear").authenticated().
-                                anyRequest().permitAll()
+                        auth -> auth
+                                // only admins can clear cars and inspect users
+                                .requestMatchers("/api/car/clear").hasRole("ADMIN")
+                                .requestMatchers("/api/user").hasRole("ADMIN")
+                                // let everyone view the car collection
+                                .requestMatchers(HttpMethod.GET, "/api/car/").permitAll()
+                                // adding a car would require either the "role1" or "role2" roles
+                                .requestMatchers("api/car/*").hasAnyRole("role1", "role2")
+                                // the rest should require authentication with no special authorities
+                                .anyRequest().authenticated()
                 ).build();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //@Configuration
 //class SecurityConfig {
