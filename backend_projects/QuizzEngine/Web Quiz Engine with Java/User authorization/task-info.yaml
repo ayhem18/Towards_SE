@@ -33,6 +33,44 @@ files:
   - name: src/engine/exceptions/NoSuchIdException.java
     visible: true
     learner_created: true
+  - name: bin/default/src/engine/QuizRepository.class
+    visible: true
+    is_binary: true
+    learner_created: true
+  - name: bin/default/src/engine/UserDetailServiceImp.class
+    visible: true
+    is_binary: true
+    learner_created: true
+  - name: bin/default/src/engine/Quiz.class
+    visible: true
+    is_binary: true
+    learner_created: true
+  - name: bin/default/src/engine/UserRepo.class
+    visible: true
+    is_binary: true
+    learner_created: true
+  - name: bin/default/src/engine/UserRegisterRequest.class
+    visible: true
+    is_binary: true
+    learner_created: true
+  - name: bin/default/src/engine/User.class
+    visible: true
+    is_binary: true
+    learner_created: true
+  - name: bin/default/src/engine/UserDetailsImp.class
+    visible: true
+    is_binary: true
+    learner_created: true
+  - name: bin/default/src/engine/HttpSecurityConfig.class
+    visible: true
+    is_binary: true
+    learner_created: true
+  - name: logfile.log
+    visible: true
+    learner_created: true
+  - name: src/resources/logback.xml
+    visible: true
+    learner_created: true
 feedback_link: https://hyperskill.org/learn/step/8256#comment
 status: Unchecked
 record: -1

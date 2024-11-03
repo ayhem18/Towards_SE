@@ -88,22 +88,19 @@ public class WebQuizEngine {
         return "the number of quizzes in the database " + count;
     }
 
-
-
-    @PostMapping("/api/user")
+    @PostMapping("/api/register")
     public String userRegisterEndpoint(@Valid @RequestBody UserRegisterRequest req) {
         // I did not find a way to throw an exception with the "ifPresent" method of the Optional class
-
         try {
             this.userRepo.findUserByEmail(req.getEmail()).get();
         } catch (NoSuchElementException e ) {
             // create the user
             User user = new User(req.getEmail(), this.passwordEncoder().encode(req.getPassword()));
             this.userRepo.save(user);
-            int count = ((Long) this.quizRepo.count()).intValue();
+            int count = ((Long) this.userRepo.count()).intValue();
             return "user with email " + user.getEmail() + " was added successfully. Total number of users: " + count;
         }
-        throw new ExistingIdException("There is already a user with the email " + req.getEmail());
+        throw new ExistingIdException("There is already a user with the email `" + req.getEmail() + "`");
     }
 
     @GetMapping("/api/hidden/users")
@@ -127,5 +124,4 @@ public class WebQuizEngine {
 ////        System.out.println(answer);
 //        return answer;
 //    }
-
 }

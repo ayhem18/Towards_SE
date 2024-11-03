@@ -2,6 +2,7 @@ package engine;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,9 +19,11 @@ class HttpSecurityConfig {
             // https://hyperskill.org/learn/step/3243
             .csrf(AbstractHttpConfigurer::disable)//.headers(cfg -> cfg.frameOptions().disable())
             .authorizeHttpRequests(
-                    auth -> auth.anyRequest().permitAll()
-                    //                  auth -> auth.regexMatchers(HttpMethod.POST, "//api//register").permitAll()
-//                          .regexMatchers(HttpMethod.POST, "//actuator//shutdown").permitAll() // leaving this method without authentication
+                                      auth -> auth
+                                              .regexMatchers(HttpMethod.POST, "/api/register").permitAll()
+                                              .regexMatchers(HttpMethod.POST, "/actuator/shutdown").permitAll() // leaving this method without authentication
+                                              .anyRequest().authenticated()
+
 //                          .anyRequest().authenticated() // any request going forward would require authentication
                 );
 

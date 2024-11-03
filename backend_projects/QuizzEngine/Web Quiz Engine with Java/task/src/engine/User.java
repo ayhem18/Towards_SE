@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,7 @@ import java.util.Optional;
 
 
 // create a wrapper around the request sent by the user
+// need to if Jackson works with Record classes
 class UserRegisterRequest {
     @NotNull
     @Email // verify whether the user is passing an email-like string
@@ -53,7 +55,7 @@ class UserRegisterRequest {
 
     }
 
-    // getters for the Jackson...
+    // getters for the Jackson package...
     public @NotNull @Email String getEmail() {
         return email;
     }
@@ -66,7 +68,7 @@ class UserRegisterRequest {
 @Entity
 @Table(name="User")
 public class User {
-    @Id // signals to JPA that the "email" field is the class ID
+    @Id // signals to JPA that the "email" field is the class primary key
     private String email;
     private String passwordEncoded;
 
@@ -103,7 +105,6 @@ interface UserRepo extends CrudRepository<User, String> {
 }
 
 
-
 // the UserDetailsService class returns an implementation of the UserDetails interface
 // userDetails basically is a mechanism to control access to the user's information
 class UserDetailsImp implements UserDetails {
@@ -128,19 +129,22 @@ class UserDetailsImp implements UserDetails {
         return user.getEmail();
     }
 
+    // if this function returns False, the corresponding user will not be authorized !!!!
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
+    // if this function returns False, the corresponding user will not be authorized !!!!
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
+    // if this function returns False, the corresponding user will not be authorized !!!!
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
@@ -152,11 +156,11 @@ class UserDetailsImp implements UserDetails {
 
 // in order to use SpringSecurity built-in authentication mechanisms
 // need to have a UserDetailService Bean object
-@Service
+@Component
 class UserDetailServiceImp implements UserDetailsService {
     private final UserRepo repo;
 
-    @Autowired // at this point, I am not even sure this annotation is needed
+    @Autowired // the autowired can be omitted, but why would I do such a thing ??
     public UserDetailServiceImp(UserRepo repo) {
         this.repo = repo;
     }
@@ -164,8 +168,12 @@ class UserDetailServiceImp implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userIdentifier) throws UsernameNotFoundException {
         // the idea here is simple
+        System.out.println("\nTHE loadUserByUsername is called with the argument: " + userIdentifier + "\n");
+
         User user = repo.findUserByEmail(userIdentifier).
                 orElseThrow(() -> new UsernameNotFoundException("There is no user with the email " + userIdentifier));
+
+
 
         // wrap the user in a userDetails object
         return new UserDetailsImp(user);
@@ -177,11 +185,39 @@ class UserDetailServiceImp implements UserDetailsService {
 //@RestController
 //@Validated
 //class UserController {
-//    private final UserRepo repo;
+//    // one crucial remark is that Interface fields can cause issues if not injected by
+//    // constructor or field DI
+//    private final UserRepo userRepo;
 //
 //    @Autowired
 //    public UserController(UserRepo repo){
-//        this.repo = repo;
+//        this.userRepo = repo;
+//    }
+//
+//    @PostMapping("/api/register")
+//    public String userRegisterEndpoint(@Valid @RequestBody UserRegisterRequest req) {
+//        // I did not find a way to throw an exception with the "ifPresent" method of the Optional class
+//
+//        try {
+//            this.userRepo.findUserByEmail(req.getEmail()).get();
+//        } catch (NoSuchElementException e ) {
+//            // create the user
+//            User user = new User(req.getEmail(), this.passwordEncoder().encode(req.getPassword()));
+//            this.userRepo.save(user);
+//            int count = ((Long) this.userRepo.count()).intValue();
+//            return "user with email " + user.getEmail() + " was added successfully. Total number of users: " + count;
+//        }
+//        throw new ExistingIdException("There is already a user with the email " + req.getEmail());
+//    }
+//
+//    @GetMapping("/api/hidden/users")
+//    public String getAllUsers() throws JsonProcessingException {
+//        return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this.userRepo.findAll());
+//    }
+//
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
 //    }
 //
 //}
