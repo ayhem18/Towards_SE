@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import engine.exceptions.ExistingIdException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,20 +26,16 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.util.Collection;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-
+import java.util.*;
 
 
 // create a wrapper around the request sent by the user
 // need to if Jackson works with Record classes
 class UserRegisterRequest {
     @NotNull
-    @Email // verify whether the user is passing an email-like string
+    @Pattern(regexp = ".+@.+\\..+")
     private String email;
 
     @NotNull
@@ -66,11 +62,20 @@ class UserRegisterRequest {
 
 
 @Entity
-@Table(name="User")
+@Table(name="user")
 public class User {
     @Id // signals to JPA that the "email" field is the class primary key
     private String email;
     private String passwordEncoded;
+
+
+    // the name here can be anything (make sure it is not present in any of the two tables...
+    // https://codingnomads.com/spring-data-jpa-joincolumn-configuration
+    @OneToMany
+    @JoinColumn(name="user_quiz")
+
+    private List<Quiz> quizzes = new ArrayList<>();
+
 
     public User(String email, String passwordEncoded) {
         this.email = email;
@@ -96,6 +101,15 @@ public class User {
     public void setPasswordEncoded(String passwordEncoded) {
         this.passwordEncoded = passwordEncoded;
     }
+
+    public void addQuiz(Quiz q) {
+        this.quizzes.add(q);
+    }
+
+    public boolean createdQuiz(Quiz q) {
+        return this.quizzes.contains(q);
+    }
+
 }
 
 // create a user CRUD repository

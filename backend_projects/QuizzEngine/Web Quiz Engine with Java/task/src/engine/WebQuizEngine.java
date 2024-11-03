@@ -3,11 +3,16 @@ package engine;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import engine.exceptions.ExistingIdException;
 import engine.exceptions.NoSuchIdException;
+import engine.exceptions.NonUserQuizException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -44,13 +49,19 @@ public class WebQuizEngine {
     }
 
     @PostMapping("api/quizzes")
-    public String addQuiz(@Valid @RequestBody Quiz quiz) // add the @Valid annotation to validate the request body
+    public String addQuiz(@AuthenticationPrincipal UserDetails details,
+                          @Valid @RequestBody Quiz quiz) // add the @Valid annotation to validate the request body
     throws JsonProcessingException {
-        // save the new quiz
         try {
             this.quizRepo.save(quiz);
-            return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(quiz);
+            // extract the user (the user has already been authenticated, so it exists...)
+            User user = this.userRepo.findUserByEmail(details.getUsername()).get();
+            user.addQuiz(quiz);
 
+            // make sure to save the update on the database level
+            this.userRepo.save(user);
+
+            return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(quiz);
         }catch (RuntimeException e) {
             throw new ExistingIdException("There is already a quiz with the id " + quiz.getId());
         }
@@ -87,6 +98,29 @@ public class WebQuizEngine {
         int count = ((Long) this.quizRepo.count()).intValue();
         return "the number of quizzes in the database " + count;
     }
+
+
+    @DeleteMapping("api/quizzes/{id}")
+    public ResponseEntity<String> deleteQuizById(
+            @AuthenticationPrincipal UserDetails details,
+            @PathVariable(value="id") int id)
+            throws JsonProcessingException
+    {
+        Quiz q = this.quizRepo.findById(id).orElseThrow(
+                () -> new NoSuchIdException("There is no quiz with the id " + id));
+
+        User user = this.userRepo.findUserByEmail(details.getUsername()).get();
+
+        if (! user.createdQuiz(q)) {
+            throw new NonUserQuizException("The user " + user.getEmail() + " did not create the quiz " + q.getId() + " and hence cannot delete it");
+        }
+        String return_string = "Quiz " + q.getId() + " successfully deleted";
+
+        this.quizRepo.deleteById(q.getId());
+
+        return new ResponseEntity<>(return_string, HttpStatus.NO_CONTENT);
+    }
+
 
     @PostMapping("/api/register")
     public String userRegisterEndpoint(@Valid @RequestBody UserRegisterRequest req) {

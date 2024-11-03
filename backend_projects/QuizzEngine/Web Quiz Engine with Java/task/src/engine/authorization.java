@@ -23,13 +23,7 @@ class HttpSecurityConfig {
                                               .regexMatchers(HttpMethod.POST, "/api/register").permitAll()
                                               .regexMatchers(HttpMethod.POST, "/actuator/shutdown").permitAll() // leaving this method without authentication
                                               .anyRequest().authenticated()
-
-//                          .anyRequest().authenticated() // any request going forward would require authentication
-                );
-
-//                    auth -> auth.regexMatchers(HttpMethod.POST, "/*").permitAll()
-//                    .regexMatchers(HttpMethod.GET, "/*").permitAll()
-
+             );
 
         return http.build();
     }

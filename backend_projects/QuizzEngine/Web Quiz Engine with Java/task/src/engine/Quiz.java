@@ -24,6 +24,7 @@ import java.util.List;
 public class Quiz {
     @Id // make sure to set the id for the Quiz table
     @GeneratedValue(strategy = GenerationType.IDENTITY) // auto increment ids...
+    @Column(name="quiz_id") // setting the name in the database
     private  int id;
 
     @NotBlank // this means the string can neither be null not empty (with only white spaces...)
@@ -78,6 +79,14 @@ public class Quiz {
 
     public List<Integer> getAnswer() {
         return this.answer;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (! (obj instanceof Quiz)) {
+            return false;
+        }
+        return ((Quiz) obj).getId() == this.id;
     }
 }
 
