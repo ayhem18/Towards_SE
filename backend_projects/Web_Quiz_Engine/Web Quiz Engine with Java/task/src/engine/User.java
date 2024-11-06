@@ -54,14 +54,11 @@ public class User {
     private String email;
     private String passwordEncoded;
 
-
     // the name here can be anything (make sure it is not present in any of the two tables...)
     // https://codingnomads.com/spring-data-jpa-joincolumn-configuration
-    @OneToMany
+    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true) // basically remove every quiz whose creator was removed...
     @JoinColumn(name="user_quiz")
-
     private List<Quiz> quizzes = new ArrayList<>();
-
 
     public User(String email, String passwordEncoded) {
         this.email = email;
@@ -96,6 +93,12 @@ public class User {
         return this.quizzes.contains(q);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return this.email.equals(user.getEmail());
+    }
 }
 
 // create a user CRUD repository
@@ -157,7 +160,7 @@ class UserDetailsImp implements UserDetails {
 // in order to use SpringSecurity built-in authentication mechanisms
 // need to have a UserDetailService Bean object
 @Component
-class UserDetailServiceImp implements UserDetailsService {
+class UserDetailServiceImp implements UserDetailsService  {
     private final UserRepo repo;
 
     @Autowired // the autowired can be omitted, but why would I do such a thing ??

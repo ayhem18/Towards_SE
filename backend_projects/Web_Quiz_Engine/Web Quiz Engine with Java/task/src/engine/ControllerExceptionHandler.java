@@ -93,28 +93,32 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, s);
     }
 
+
+    // make sure the Class in the @exceptionHandler annotation is the same as in the signature
     @ExceptionHandler(ExistingIdException.class)
-    protected ResponseEntity<CustomErrorMessage> handleExistingIdException(
+    public ResponseEntity<CustomErrorMessage> handleExistingIdException(
             ExistingIdException e, WebRequest request) {
         return handle(e, request, HttpStatus.BAD_REQUEST);
     }
 
+
     @ExceptionHandler(NonUserQuizException.class)
-    protected ResponseEntity<CustomErrorMessage> handleNonUserQuizException(
-            ExistingIdException e, WebRequest request) {
+    public ResponseEntity<CustomErrorMessage> handleNonUserQuizException(
+            NonUserQuizException e, WebRequest request) {
         return handle(e, request, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(NoSuchIdException.class)
-    protected ResponseEntity<CustomErrorMessage> handleNoSuchIdFoundException(
-            ExistingIdException e, WebRequest request) {
+    public ResponseEntity<CustomErrorMessage> handleNoSuchIdFoundException(
+            NoSuchIdException e, WebRequest request) {
 
         return handle(e, request, HttpStatus.NOT_FOUND);
     }
 
+    // custom exception handlers must be public to be accessed
     @ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity<CustomErrorMessage> handleConstraintViolationException(
-            ExistingIdException e, WebRequest request) {
+    public ResponseEntity<CustomErrorMessage> handleConstraintViolationException(
+            ConstraintViolationException e, WebRequest request) {
         return handle(e, request, HttpStatus.BAD_REQUEST);
     }
 

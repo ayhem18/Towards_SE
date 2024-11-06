@@ -37,5 +37,10 @@ backend_projects/QuizzEngine/Web Quiz Engine with Java/task/*
 backend_projects/QuizzEngine/util
 
 backend_projects/QuizzEngine/.gradle/*
+backend_projects/Web_Quiz_Engine/"Web Quiz Engine with Java"/task/build/*
 
 *.yaml
+
+backend_projects/Web_Quiz_Engine/util/build
+
+backend_projects/Web_Quiz_Engine/Web Quiz Engine with Java/task/build/*

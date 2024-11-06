@@ -2,12 +2,15 @@ package engine;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
+import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,11 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.*;
-
-
 
 @SpringBootApplication
 @RestController // this is necessary for the app to intercept the api requests...
@@ -29,6 +30,7 @@ import java.util.*;
 public class WebQuizEngine {
     private final QuizRepository quizRepo;
     private final UserRepo userRepo;
+    private final QuizCompletionRepo qcRepo;
     private final int quizPerPage;
 
 
@@ -37,9 +39,11 @@ public class WebQuizEngine {
 
     @Autowired // funny enough the "QuizRepository" is only an interface.
     // however using the repo object created at startup time I can use it without explicit initialization...
-    public WebQuizEngine(QuizRepository repo, UserRepo userRepo) {
+    public WebQuizEngine(QuizRepository repo, UserRepo userRepo, QuizCompletionRepo qcRepo) {
         this.quizRepo = repo;
         this.userRepo = userRepo;
+        this.qcRepo = qcRepo;
+
         this.quizPerPage = 10; // according to the last stage requirements...
     }
 
@@ -53,12 +57,12 @@ public class WebQuizEngine {
     }
 
     @GetMapping("/api/quizzes")
-    public String getQuizzesPaginated(@RequestParam int pageNumber) throws JsonProcessingException {
+    public String getQuizzesPaginated(@RequestParam int page) throws JsonProcessingException {
         // create the PageRequest object to set the page number
         return (new ObjectMapper()).
                 writerWithDefaultPrettyPrinter().
                 writeValueAsString(
-                        this.quizRepo.findAll(PageRequest.of(pageNumber, this.quizPerPage))
+                        this.quizRepo.findAll(PageRequest.of(page, this.quizPerPage))
                 );
     }
 
@@ -91,8 +95,11 @@ public class WebQuizEngine {
     }
 
     @PostMapping("api/quizzes/{id}/solve")
-    public String answerQuiz(@PathVariable(value = "id") int id,
-                             @RequestBody QuizAnswerRequest userAnswer) throws JsonProcessingException {
+    public String answerQuiz(
+                            @AuthenticationPrincipal UserDetails details,
+                            @PathVariable(value = "id") int id,
+                            @RequestBody QuizAnswerRequest userAnswer)
+            throws JsonProcessingException {
         // the exception will be thrown
         Quiz q = this.quizRepo.findById(id).orElseThrow(() ->
                 new NoSuchIdException("There is no quiz with the id " + id));
@@ -103,7 +110,40 @@ public class WebQuizEngine {
         ServerResponse res = new ServerResponse(success,
                 success ? WebQuizEngine.correctStringFeedback: WebQuizEngine.wrongStringFeedback);
 
-        return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(res);
+        String return_string = (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(res);
+
+        // if the user answered correctly
+        if (! success) {
+            return return_string;
+        }
+
+        // the next step is to add a QuizCompletion Object to the database:
+        QuizCompletion qc = new QuizCompletion(q,
+                this.userRepo.findUserByEmail(details.getUsername()).get());
+
+        this.qcRepo.save(qc);
+        return return_string;
+    }
+
+
+    @GetMapping("api/quizzes/completed")
+    public String getQuizCompleted(
+            @AuthenticationPrincipal UserDetails details,
+            @RequestParam int page
+    )
+            throws JsonProcessingException{
+
+        User currentUser = this.userRepo.findUserByEmail(details.getUsername()).get();
+
+        // create the pageRequest to fetch a certain page while having them sorted in descending order
+        PageRequest pg = PageRequest.of(page, this.quizPerPage, Sort.by("completedAt").descending());
+        Page<QuizCompletion> quizzes_completed = this.qcRepo.findByUser(currentUser, pg);
+
+        // once again check: https://www.geeksforgeeks.org/deserialize-java-8-localdatetime-with-jacksonmapper/
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(quizzes_completed);
     }
 
 
@@ -119,8 +159,7 @@ public class WebQuizEngine {
     public ResponseEntity<String> deleteQuizById(
             @AuthenticationPrincipal UserDetails details,
             @PathVariable(value="id") int id)
-            throws JsonProcessingException
-    {
+            throws JsonProcessingException {
         Quiz q = this.quizRepo.findById(id).orElseThrow(
                 () -> new NoSuchIdException("There is no quiz with the id " + id));
 
@@ -131,6 +170,10 @@ public class WebQuizEngine {
         }
         String return_string = "Quiz " + q.getId() + " successfully deleted";
 
+        // two steps
+        // step1: remove any QuizCompletion object involving the given quiz
+        this.qcRepo.deleteByQuiz(q);
+        // step2: remove the quiz itself (it should remove it from the User.quizzes field)
         this.quizRepo.deleteById(q.getId());
 
         return new ResponseEntity<>(return_string, HttpStatus.NO_CONTENT);
@@ -162,15 +205,4 @@ public class WebQuizEngine {
         return new BCryptPasswordEncoder();
     }
 
-//    @GetMapping("api/quizzes/{id}/__get")
-//    public List<Integer> getQuizAnswer(@PathVariable(value = "id") int id) {
-//
-//        if (! QuizS_MAP.containsKey(id)) {
-//            throw new NoExistingIdException(id);
-//        }
-//
-//        List<Integer> answer = QuizS_MAP.get(id).getAnswer();
-////        System.out.println(answer);
-//        return answer;
-//    }
 }
