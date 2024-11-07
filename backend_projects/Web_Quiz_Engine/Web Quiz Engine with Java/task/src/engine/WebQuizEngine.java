@@ -1,6 +1,10 @@
 package engine;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.transaction.TransactionScoped;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,7 @@ public class WebQuizEngine {
     private final QuizRepository quizRepo;
     private final UserRepo userRepo;
     private final QuizCompletionRepo qcRepo;
+    private final EntityManager entityManager;
     private final int quizPerPage;
 
 
@@ -39,10 +44,15 @@ public class WebQuizEngine {
 
     @Autowired // funny enough the "QuizRepository" is only an interface.
     // however using the repo object created at startup time I can use it without explicit initialization...
-    public WebQuizEngine(QuizRepository repo, UserRepo userRepo, QuizCompletionRepo qcRepo) {
+    public WebQuizEngine(QuizRepository repo,
+                         UserRepo userRepo,
+                         QuizCompletionRepo qcRepo,
+                         EntityManagerFactory entityManagerFactory) {
         this.quizRepo = repo;
         this.userRepo = userRepo;
         this.qcRepo = qcRepo;
+
+        this.entityManager = entityManagerFactory.createEntityManager();
 
         this.quizPerPage = 10; // according to the last stage requirements...
     }
@@ -68,10 +78,14 @@ public class WebQuizEngine {
 
 
     @PostMapping("api/quizzes")
+    @Transactional
     public String addQuiz(@AuthenticationPrincipal UserDetails details,
                           @RequestBody @Valid Quiz quiz) // add the @Valid annotation to validate the request body
     throws JsonProcessingException {
         try {
+            // start a transaction
+            entityManager.getTransaction().begin();
+
             this.quizRepo.save(quiz);
             // extract the user (the user has already been authenticated, so it exists...)
             User user = this.userRepo.findUserByEmail(details.getUsername()).get();
@@ -79,6 +93,9 @@ public class WebQuizEngine {
 
             // make sure to save the update on the database level
             this.userRepo.save(user);
+            System.out.println("\n\n" + user.getQuizzesCreated() + "\n\n");
+
+            entityManager.getTransaction().commit();
 
             return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(quiz);
         }catch (RuntimeException e) {
@@ -117,11 +134,16 @@ public class WebQuizEngine {
             return return_string;
         }
 
-        // the next step is to add a QuizCompletion Object to the database:
+//        this.entityManager.getTransaction().begin();
+
+        // create a QuizCompletion object
         QuizCompletion qc = new QuizCompletion(q,
                 this.userRepo.findUserByEmail(details.getUsername()).get());
-
+        // persist it
         this.qcRepo.save(qc);
+
+//        this.entityManager.getTransaction().commit();
+
         return return_string;
     }
 
@@ -156,6 +178,7 @@ public class WebQuizEngine {
 
 
     @DeleteMapping("api/quizzes/{id}")
+    @Transactional
     public ResponseEntity<String> deleteQuizById(
             @AuthenticationPrincipal UserDetails details,
             @PathVariable(value="id") int id)
@@ -165,16 +188,24 @@ public class WebQuizEngine {
 
         User user = this.userRepo.findUserByEmail(details.getUsername()).get();
 
+        System.out.println("\n\n" + user.getQuizzesCreated() + "\n\n");
+
         if (! user.createdQuiz(q)) {
             throw new NonUserQuizException("The user " + user.getEmail() + " did not create the quiz " + q.getId() + " and hence cannot delete it");
         }
         String return_string = "Quiz " + q.getId() + " successfully deleted";
 
+
+//        this.entityManager.getTransaction().begin();
         // two steps
         // step1: remove any QuizCompletion object involving the given quiz
         this.qcRepo.deleteByQuiz(q);
+        // remove the quiz from the user list field
+        user.removeQuiz(q);
         // step2: remove the quiz itself (it should remove it from the User.quizzes field)
-        this.quizRepo.deleteById(q.getId());
+        this.quizRepo.deleteById(id);
+        System.out.println("\n\n" + (user.getQuizzesCreated()) + "\n\n");
+//        this.entityManager.getTransaction().commit();
 
         return new ResponseEntity<>(return_string, HttpStatus.NO_CONTENT);
     }

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -37,6 +36,7 @@ public class Quiz {
 
     @NotBlank // this means the string can neither be null not empty (with only white spaces...)
     private  String title;
+
     @NotBlank
     private   String text;
 
@@ -100,9 +100,7 @@ public class Quiz {
 
 // CrudRepository provides the basic Crud Operations while PagingAndSortingRepository
 // offers the sorting and pagination functionalities
-interface QuizRepository extends CrudRepository<Quiz, Integer>, PagingAndSortingRepository<Quiz, Integer> {
-
-};
+interface QuizRepository extends CrudRepository<Quiz, Integer>, PagingAndSortingRepository<Quiz, Integer> { };
 
 
 @Embeddable
@@ -149,25 +147,24 @@ class QuizCompletion {
     @EmbeddedId
     private QuizCompletionKey key;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @MapsId("id")
-    // the quiz field will be named "id"
+    // the quiz field will be named "id" in the JSON representation
     @JsonProperty("id")
+    //database annotations
+    @ManyToOne()
+    @MapsId("id")
     private Quiz quiz;
 
     // annotations for JSON serialization
     @JsonProperty(access=JsonProperty.Access.WRITE_ONLY)  // the completion object not should contain user information
-
     // annotations for the database
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @MapsId("email")
     private User user;
 
     // https://www.geeksforgeeks.org/deserialize-java-8-localdatetime-with-jacksonmapper/
-    // the default Jackson Package does not serialize POJOs of type LocaDateTime
+    // the default Jackson Package does not serialize POJOs of type LocalDateTime
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     // the Sort class uses the table column and hence it helps to set the name to make sure the mapping is done correctly
-
     @Column(name="completedAt")
     private LocalDateTime completedAt;
 
@@ -203,7 +200,7 @@ class QuizCompletion {
     // one solution is to have a method that returns only the part needed out of the quiz: in this case the id
     // in general, this function can return a hashmap with different properties... (this idea needs to be tested)
     // check: https://www.baeldung.com/jackson-annotations#bd-jackson-serialization-annotations
-    @JsonGetter("id") // I am not sure how combining the JsonProperty and JsonGetter works
+    @JsonGetter("id")
     public int getQuizId() {
         return this.quiz.getId();
     }
@@ -211,7 +208,6 @@ class QuizCompletion {
 }
 
 //create a CRUD repository for quiz completions
-
 interface QuizCompletionRepo extends CrudRepository<QuizCompletion, QuizCompletionKey>,
         PagingAndSortingRepository<QuizCompletion, QuizCompletionKey> {
 
@@ -222,5 +218,3 @@ interface QuizCompletionRepo extends CrudRepository<QuizCompletion, QuizCompleti
     // find all the quizCompletion instances involving a given quiz
     void deleteByQuiz(Quiz q);
 };
-
-

@@ -56,17 +56,17 @@ public class User {
 
     // the name here can be anything (make sure it is not present in any of the two tables...)
     // https://codingnomads.com/spring-data-jpa-joincolumn-configuration
+    @JoinColumn()
     @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true) // basically remove every quiz whose creator was removed...
-    @JoinColumn(name="user_quiz")
-    private List<Quiz> quizzes = new ArrayList<>();
+    private List<Quiz> quizzesCreated = new ArrayList<>();
+
 
     public User(String email, String passwordEncoded) {
         this.email = email;
         this.passwordEncoded = passwordEncoded;
     }
 
-    public User() {
-    }
+    public User() {}
 
     // getters and setters
     public String getEmail() {
@@ -86,11 +86,19 @@ public class User {
     }
 
     public void addQuiz(Quiz q) {
-        this.quizzes.add(q);
+        this.quizzesCreated.add(q);
     }
 
     public boolean createdQuiz(Quiz q) {
-        return this.quizzes.contains(q);
+        return this.quizzesCreated.contains(q);
+    }
+
+    public List<Quiz> getQuizzesCreated() {
+        return this.quizzesCreated;
+    }
+
+    public void removeQuiz(Quiz q) {
+        this.quizzesCreated.remove(q);
     }
 
     @Override
@@ -175,8 +183,6 @@ class UserDetailServiceImp implements UserDetailsService  {
 
         User user = repo.findUserByEmail(userIdentifier).
                 orElseThrow(() -> new UsernameNotFoundException("There is no user with the email " + userIdentifier));
-
-
 
         // wrap the user in a userDetails object
         return new UserDetailsImp(user);
