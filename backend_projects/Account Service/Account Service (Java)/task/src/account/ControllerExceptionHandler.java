@@ -36,16 +36,12 @@ class NoSuchIdException extends RuntimeException{
 @JsonPropertyOrder({"statusCode", "timestamp", "message", "description"})
 class CustomErrorMessage {
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private int statusCode;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private LocalDateTime timestamp;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String message;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String description;
 
     public CustomErrorMessage(

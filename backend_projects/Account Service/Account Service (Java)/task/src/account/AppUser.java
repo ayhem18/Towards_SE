@@ -7,15 +7,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,6 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,7 +53,7 @@ class AppUserRegistryRequest {
     public AppUserRegistryRequest(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
+        this.email = email.toLowerCase();
         this.password = password;
     }
 
@@ -68,7 +71,7 @@ class AppUserRegistryRequest {
     }
 
     public String getEmail() {
-        return email;
+        return email.toLowerCase();
     }
 
     public String getPassword() {
@@ -83,6 +86,13 @@ class AppUserRegistryRequest {
 // EACH entity must have at least one field with the @Id annotation
 @Entity
 public class AppUser {
+    // thanks to
+    // https://stackoverflow.com/questions/277630/hibernate-jpa-sequence-non-id
+//    @Generated(event = EventType.INSERT)
+    private static long NUM_USERS = 0;
+
+    private long id;
+
     // possibly using the embeddable thingy
     // to work with first and last names as a single entity...
     @JsonProperty("name")
@@ -101,8 +111,10 @@ public class AppUser {
     public AppUser(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
+        this.email = email.toLowerCase();
         this.password = password;
+        this.id = NUM_USERS;
+        NUM_USERS += 1;
     }
 
     // add a no arg constructor just in case
@@ -125,6 +137,11 @@ public class AppUser {
     public String getPassword() {
         return password;
     }
+
+    public long getId() {
+        return id;
+    }
+
 }
 
 class UserDetailsImp implements UserDetails {
@@ -173,7 +190,8 @@ class UserDetailsImp implements UserDetails {
 
 // need a CrudRepository to extract users
 interface UserRepository extends CrudRepository<AppUser, String> {
-    public Optional<AppUser> findByEmail(String email);
+    Optional<AppUser> findByEmail(String email);
+
 }
 
 
@@ -222,10 +240,12 @@ class UserController {
 
     @PostMapping("api/auth/signup")
     public String signUpUser(@Valid @RequestBody AppUserRegistryRequest request) throws JsonProcessingException {
-        // make sure the email does not already exist
-//        if (this.userRepo.findByEmail(request.getEmail()).isPresent()) {
-//            throw new ExistingIdException("There is already a user with the email " + request.getEmail());
-//        }
+
+        // if I want to impose the case-insensitivity, one way is to process only lowercase versions
+        // but that's very error-prone...
+        if (this.userRepo.findByEmail(request.getEmail()).isPresent()) {
+            throw new ExistingIdException("There is already a user with the email " + request.getEmail());
+        }
 
         // initialize the user object
         AppUser appUser = new AppUser(request.getFirstName(),
@@ -234,12 +254,20 @@ class UserController {
                 this.byteEncoder().encode(request.getPassword())
         );
 
-//        // save the user to the database
-//        this.userRepo.save(appUser);
+        // save the user to the database
+        this.userRepo.save(appUser);
 
         // return the user representation
         return this.userJsonWriter().writeValueAsString(appUser);
 
+    }
+
+    @GetMapping("/api/empl/payment")
+    public String getUserId(@AuthenticationPrincipal UserDetails details) throws JsonProcessingException {
+        // no need to worry about the get method since the user is guaranteed to exist
+        // otherwise it would not be authenticated...
+        AppUser currentUser = this.userRepo.findByEmail(details.getUsername()).get();
+        return this.userJsonWriter().writeValueAsString(currentUser);
     }
 }
 
