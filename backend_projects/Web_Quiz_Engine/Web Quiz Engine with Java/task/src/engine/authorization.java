@@ -15,9 +15,7 @@ class HttpSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.httpBasic(Customizer.withDefaults())
-            // added this line of code from the following lesson:
-            // https://hyperskill.org/learn/step/3243
-            .csrf(AbstractHttpConfigurer::disable)//.headers(cfg -> cfg.frameOptions().disable())
+            .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(
                                       auth -> auth
                                               .requestMatchers(HttpMethod.POST, "/api/register").permitAll()

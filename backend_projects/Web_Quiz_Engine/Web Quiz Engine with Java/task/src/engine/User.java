@@ -101,6 +101,8 @@ public class User {
         this.quizzesCreated.remove(q);
     }
 
+
+    // is it necessary to implement the equals method ???
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
