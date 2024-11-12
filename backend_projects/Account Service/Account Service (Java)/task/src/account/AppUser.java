@@ -7,14 +7,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -80,17 +79,15 @@ class AppUserRegistryRequest {
 }
 
 
-// IMPORTANT: MAKE SURE TO PASS THE @Entity annotation so that JPA knows
-// it represents a table
-
-// EACH entity must have at least one field with the @Id annotation
+// IMPORTANT: MAKE SURE TO PASS THE @Entity annotation so that JPA recognizes it as a database TABLE
 @Entity
 public class AppUser {
-    // thanks to
-    // https://stackoverflow.com/questions/277630/hibernate-jpa-sequence-non-id
-//    @Generated(event = EventType.INSERT)
+
     private static long NUM_USERS = 0;
 
+    // https://stackoverflow.com/questions/277630/hibernate-jpa-sequence-non-id
+    //  @Generated(event = EventType.INSERT)
+    // it did not work as expected ...
     private long id;
 
     // possibly using the embeddable thingy
@@ -100,6 +97,7 @@ public class AppUser {
     @JsonProperty("lastname")
     private String lastName;
 
+    // EACH entity must have at least one field with the @Id annotation
     @Id
     private String email;
 
@@ -209,65 +207,8 @@ class AppUserDetailService implements UserDetailsService  {
         AppUser user = userRepo.findByEmail(email).orElseThrow(
                 () -> new UsernameNotFoundException("There is no user with the email: " + email)
         );
-
         return new UserDetailsImp(user);
     }
 }
 
-
-// let's add the User Controller
-@RestController
-@Validated // used to verify Request Bodies
-class UserController {
-
-    private final UserRepository userRepo;
-
-    @Autowired
-    public UserController(UserRepository userRepo) {
-        this.userRepo = userRepo;
-    }
-
-    @Bean(name="passwordEncoder") // will be used for any user related encryption / decryption processes
-    public PasswordEncoder byteEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean(name="userObjectMapper")
-    public ObjectWriter userJsonWriter() {
-        return new ObjectMapper().writerWithDefaultPrettyPrinter();
-    }
-
-
-    @PostMapping("api/auth/signup")
-    public String signUpUser(@Valid @RequestBody AppUserRegistryRequest request) throws JsonProcessingException {
-
-        // if I want to impose the case-insensitivity, one way is to process only lowercase versions
-        // but that's very error-prone...
-        if (this.userRepo.findByEmail(request.getEmail()).isPresent()) {
-            throw new ExistingIdException("There is already a user with the email " + request.getEmail());
-        }
-
-        // initialize the user object
-        AppUser appUser = new AppUser(request.getFirstName(),
-                request.getLastName(),
-                request.getEmail(),
-                this.byteEncoder().encode(request.getPassword())
-        );
-
-        // save the user to the database
-        this.userRepo.save(appUser);
-
-        // return the user representation
-        return this.userJsonWriter().writeValueAsString(appUser);
-
-    }
-
-    @GetMapping("/api/empl/payment")
-    public String getUserId(@AuthenticationPrincipal UserDetails details) throws JsonProcessingException {
-        // no need to worry about the get method since the user is guaranteed to exist
-        // otherwise it would not be authenticated...
-        AppUser currentUser = this.userRepo.findByEmail(details.getUsername()).get();
-        return this.userJsonWriter().writeValueAsString(currentUser);
-    }
-}
 
