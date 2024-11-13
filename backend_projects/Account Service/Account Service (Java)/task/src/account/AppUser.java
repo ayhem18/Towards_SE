@@ -1,82 +1,20 @@
 package account;
 
-
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-
-
-class AppUserRegistryRequest {
-    @NotBlank
-    @JsonProperty("name")
-    private String firstName;
-    @JsonProperty("lastname")
-    @NotBlank
-    private String lastName;
-
-    @NotBlank
-    @Pattern(regexp = ".+@acme\\.com$", message="The username should correspond to an email: <username>@<domain>.<org>")
-    private String email;
-
-    @NotBlank
-    private String password;
-
-    public AppUserRegistryRequest(String firstName, String lastName, String email, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email.toLowerCase();
-        this.password = password;
-    }
-
-    // add a no arg constructor just in case
-    public AppUserRegistryRequest() {}
-
-    @JsonGetter("name")
-    public String getFirstName() {
-        return firstName;
-    }
-
-    @JsonGetter("lastname")
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getEmail() {
-        return email.toLowerCase();
-    }
-
-    public String getPassword() {
-        return password;
-    }
-}
 
 
 // IMPORTANT: MAKE SURE TO PASS THE @Entity annotation so that JPA recognizes it as a database TABLE
@@ -189,7 +127,6 @@ class UserDetailsImp implements UserDetails {
 // need a CrudRepository to extract users
 interface UserRepository extends CrudRepository<AppUser, String> {
     Optional<AppUser> findByEmail(String email);
-
 }
 
 

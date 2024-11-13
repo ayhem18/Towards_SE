@@ -3,6 +3,7 @@ package account;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.ConstraintViolationException;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -26,6 +27,25 @@ class ExistingIdException extends RuntimeException{
 class NoSuchIdException extends RuntimeException{
     public NoSuchIdException(String message) {
         super(message);
+    }
+}
+
+
+class BreachedPasswordException extends RuntimeException {
+    public BreachedPasswordException() {
+        super("The password is in the hacker's database!");
+    }
+}
+
+class InvalidPasswordException extends RuntimeException {
+    public InvalidPasswordException(String message) {
+        super(message);
+    }
+}
+
+class OldNewPasswordsMatch extends RuntimeException {
+    public OldNewPasswordsMatch() {
+        super("The passwords must be different!");
     }
 }
 
@@ -107,6 +127,24 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<CustomErrorMessage> handleConstraintViolationException(
             ConstraintViolationException e, WebRequest request) {
+        return handle(e, request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BreachedPasswordException.class)
+    public ResponseEntity<CustomErrorMessage> handleBreachedPasswordException(
+            BreachedPasswordException e, WebRequest request) {
+        return handle(e, request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<CustomErrorMessage> handleInvalidPasswordException(
+            InvalidPasswordException e, WebRequest request) {
+        return handle(e, request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(OldNewPasswordsMatch.class)
+    public ResponseEntity<CustomErrorMessage> handleOldNewPasswordsMatch(
+            OldNewPasswordsMatch e, WebRequest request) {
         return handle(e, request, HttpStatus.BAD_REQUEST);
     }
 
