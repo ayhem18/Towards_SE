@@ -51,4 +51,5 @@ backend_projects/Account Service/.gradle/*
 
 *.db
 
+backend_projects/Account Service (Java)/Account Service (Java)/task/build/*
 
