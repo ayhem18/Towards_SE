@@ -17,9 +17,7 @@ import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 // annotations for JPA
@@ -218,3 +216,196 @@ interface QuizCompletionRepo extends CrudRepository<QuizCompletion, QuizCompleti
     // find all the quizCompletion instances involving a given quiz
     void deleteByQuiz(Quiz q);
 };
+
+
+/**
+ * Observable interface
+ **/
+interface Observable {
+
+    void addObserver(Observer observer);
+
+    void removeObserver(Observer observer);
+
+    void notifyObservers();
+}
+
+/**
+ * Concrete Observable - Rockstar Games
+ **/
+//class RockstarGames implements Observable {
+//
+//    public String releaseGame;
+//    private List<Observer> observers = new ArrayList<>();
+//
+//    public void release(String releaseGame) {
+//        this.releaseGame = releaseGame;
+//        notifyObservers();
+//    }
+//
+//    @Override
+//    public void addObserver(Observer observer) {
+//            this.observers.add(observer);
+//    }
+//
+//    @Override
+//    public void removeObserver(Observer observer) {
+//        this.observers.remove(observer);
+//    }
+//
+//    @Override
+//    public void notifyObservers() {
+//        for (Observer observer : observers) {
+//            System.out.println("Notification for gamer : " + observer);
+//            observer.update(releaseGame);
+//        }
+//    }
+//}
+
+/**
+ * Observer interface
+ **/
+interface Observer {
+
+    public void update(String domain);
+}
+
+/**
+ * Concrete observer - Gamer
+ **/
+//class Gamer implements Observer {
+//
+//    private String name;
+//    private Set<String> games = new HashSet<>();
+//
+//    public Gamer(String name) {
+//        this.name = name;
+//    }
+//
+//    @Override
+//    public void update(String game) {
+//        buyGame(game);
+//    }
+//
+//    public void buyGame(String game) {
+//        System.out.println(name + " says : \"Oh, Rockstar releases new game " + game + " !\"");
+//        games.add(game);
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return this.name;
+//    }
+//}
+//
+//class Main {
+//    public static void main(String[] args) {
+//        final Scanner scanner = new Scanner(System.in);
+//
+//        String game = null;
+//
+//        RockstarGames rockstarGames = new RockstarGames();
+//
+//        Gamer garry = new Gamer("Garry Rose");
+//        Gamer peter = new Gamer("Peter Johnston");
+//        Gamer helen = new Gamer("Helen Jack");
+//
+//        rockstarGames.addObserver(garry);
+//        rockstarGames.addObserver(peter);
+//        rockstarGames.addObserver(helen);
+//
+//        game = scanner.nextLine();
+//        rockstarGames.release(game);
+//
+//        scanner.close();
+//    }
+//}
+
+
+class RockstarGames implements Observable {
+
+    public String releaseGame;
+    private List<Observer> observers = new ArrayList<>();
+
+    public void release(String releaseGame) {
+        this.releaseGame = releaseGame;
+        notifyObservers();
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        this.observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        this.observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            System.out.println("Inform message to : " + observer);
+            observer.update(releaseGame);
+        }
+    }
+}
+
+/** Observer */
+
+/** Concrete Observer */
+class Gamer implements Observer{
+
+    private String name;
+    private String reaction;
+    private Set<String> games = new HashSet<>();
+
+    public Gamer(String name, String reaction) {
+        this.reaction = reaction;
+        this.name = name;
+    }
+
+    /* write your code here ... */
+    @Override
+    public void update(String game) {
+        buyGame(game);
+    }
+
+
+    public void buyGame(String game) {
+        games.add(game);
+        System.out.println(this.name + " says: " + reaction);
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
+}
+
+/** Main Class */
+
+class Main {
+    public static void main(String[] args) {
+
+        final Scanner scanner = new Scanner(System.in);
+
+        RockstarGames rockStarGames = new RockstarGames();
+
+        Gamer garry = new Gamer("Garry Rose", "I want to pre-order");
+        Gamer peter = new Gamer("Peter Johnston", "Pinch me...");
+        Gamer helen = new Gamer("Helen Jack", "Jesus, it's new game from Rockstar!");
+
+        /* write your code here ... */
+        rockStarGames.addObserver(garry);
+        rockStarGames.addObserver(peter);
+        rockStarGames.addObserver(helen);
+
+        String game = scanner.nextLine();
+        System.out.println("It's happened! RockstarGames releases new game - " + game + "!");
+
+        rockStarGames.release(game);
+        /* write your code here ... */
+        scanner.close();
+    }
+}

@@ -41,6 +41,8 @@ backend_projects/Web_Quiz_Engine/"Web Quiz Engine with Java"/task/build/*
 
 *.yaml
 
+*.db
+
 backend_projects/Web_Quiz_Engine/util/build
 
 backend_projects/Web_Quiz_Engine/Web Quiz Engine with Java/task/build/*
@@ -49,6 +51,8 @@ backend_projects/Account Service/Account Service (Java)/task/build/*
 
 backend_projects/Account Service/.gradle/*
 
-*.db
+backend_projects/Account Service (Java)/.gradle/*
 
+backend_projects/Car Sharing1/h2
+backend_projects/Car Sharing1/gradle
 
