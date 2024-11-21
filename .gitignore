@@ -63,5 +63,6 @@ backend_projects/Car Sharing1/gradle
 **/.gradle/*
 **/out/*
 
+backend_projects/Car Sharing/h2-2016-05-26/*
 
 
