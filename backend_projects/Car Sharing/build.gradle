@@ -30,6 +30,7 @@ subprojects {
 
     dependencies {
         testImplementation 'com.github.hyperskill:hs-test:release-SNAPSHOT'
+        testImplementation 'com.h2database:h2:2.2.224'
     }
 
     configurations.all {

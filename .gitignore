@@ -61,5 +61,7 @@ backend_projects/Car Sharing1/gradle
 **/build/*
 **/bin/*
 **/.gradle/*
+**/out/*
+
 
 
