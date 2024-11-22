@@ -80,6 +80,59 @@ class DBClient {
         }
     }
 
+    public List<String> listCompanyCars(String companyName) throws Exception {
+        String getCarsSQl = "SELECT * from CAR where company_id = (SELECT ID from COMPANY WHERE name = ?);";
+
+        try (Connection conn = DriverManager.getConnection(this.dbUrl);
+             PreparedStatement st = conn.prepareStatement(getCarsSQl))
+        {
+            List<String> result = new ArrayList<>();
+            conn.setAutoCommit(true);
+
+            // add the company name to the SQL query
+            st.setObject(1, companyName);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                result.add(rs.getString("name"));
+            }
+            return result;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public void createCar(String companyName, String carName) {
+        String findCompanyNameSQL = "SELECT id from COMPANY WHERE name = ?;";
+        String createCompanySQL = "INSERT INTO CAR (name, company_id) VALUES (?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(this.dbUrl);
+             PreparedStatement st1 = conn.prepareStatement(findCompanyNameSQL);
+             PreparedStatement st2 = conn.prepareStatement(createCompanySQL)
+        )
+
+        {
+            conn.setAutoCommit(true);
+
+            // extract the company ID
+            st1.setObject(1, companyName);
+            ResultSet rs = st1.executeQuery();
+            rs.next();
+            int companyID = rs.getInt("id");
+
+            // add the car
+            st2.setObject(1, carName);
+            st2.setObject(2, companyID);
+            st2.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public void check() throws  Exception{
         String createCompanySQL = "SELECT * from INFORMATION_SCHEMA.CONSTRAINTS";
         try (Connection conn = DriverManager.getConnection(this.dbUrl);
@@ -108,22 +161,83 @@ class UserInterface {
         this.scanner = new Scanner(System.in);
     }
 
-    private void listCompanies(DBClient client) throws Exception{
-        System.out.println("Company list:");
-        List<String> cs = client.listCompanies();
-        if (cs.isEmpty()) {
-            System.out.println("The company list is empty!\n");
-            return;
+    private void listCompanyCars(DBClient client, String companyName) throws  Exception {
+        // find the list of company cars
+        List<String> carNames = client.listCompanyCars(companyName);
+
+        if (carNames.isEmpty()) {
+            System.out.println("The car list is empty!\n");
+            return ;
         }
+
+        System.out.println(companyName + " cars:");
         int counter = 1;
-        for (String c: cs) {
+        for (String c : carNames) {
             System.out.println(counter + ". " + c);
             counter += 1;
         }
         System.out.println();
     }
 
-    private void createCompany(DBClient client) {
+    private void createCar(DBClient client, String companyName) throws Exception {
+        System.out.println("Enter the car name:");
+        String carName = scanner.nextLine();
+        client.createCar(companyName, carName);
+        System.out.println("The car was added!");
+    }
+
+
+    private void companyMenu(DBClient client, String companyName) throws Exception{
+        System.out.println("'" + companyName +  "' company:");
+
+        while (true) {
+            System.out.println("1. Car list\n" +
+                    "2. Create a car\n" +
+                    "0. Back");
+            int choice = Integer.parseInt(scanner.nextLine());
+
+            if (choice == 0) {
+                return ;
+            }
+
+            if (choice == 1) {
+                listCompanyCars(client, companyName);
+            }
+
+            else if (choice == 2) {
+                createCar(client, companyName);
+            }
+        }
+    }
+
+
+    private void listCompaniesOption(DBClient client) throws Exception {
+        List<String> cs = client.listCompanies();
+        if (cs.isEmpty()) {
+            System.out.println("The company list is empty!\n");
+            return;
+        }
+
+        System.out.println("Choose a company:");
+        int counter = 1;
+        for (String c : cs) {
+            System.out.println(counter + ". " + c);
+            counter += 1;
+        }
+        System.out.println(("0. Back"));
+
+        int choice = Integer.parseInt(scanner.nextLine());
+        if (choice == 0) {
+            return ;
+        }
+
+        String cN = cs.get(choice - 1);
+
+        companyMenu(client, cN);
+    }
+
+
+    private void createCompanyOption(DBClient client) {
         System.out.println("Enter the company name:");
         String companyName = scanner.nextLine();
         client.createCompany(companyName);
@@ -138,10 +252,10 @@ class UserInterface {
             int choice = Integer.parseInt(scanner.nextLine());
 
             if (choice == 2) {
-                this.createCompany(client);
+                this.createCompanyOption(client);
             }
             else if (choice == 1) {
-                this.listCompanies(client);
+                this.listCompaniesOption(client);
             }
             else {
                 return;
@@ -205,11 +319,23 @@ public class Main {
              Statement st = conn.createStatement();
         ) {
             conn.setAutoCommit(true);
-            String sql = "CREATE TABLE IF NOT EXISTS COMPANY " +
+
+            // create the company table
+            String companySql = "CREATE TABLE IF NOT EXISTS COMPANY " +
                     "(ID INT AUTO_INCREMENT PRIMARY KEY, " +
                     " NAME VARCHAR UNIQUE NOT NULL); ";
 
-            st.executeUpdate(sql);
+            st.executeUpdate(companySql);
+
+            // create the car table
+            String carSql = "CREATE TABLE IF NOT EXISTS CAR (" +
+                    "ID INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "NAME VARCHAR UNIQUE NOT NULL, " +
+                    "COMPANY_ID INT NOT NULL," +
+                    "FOREIGN KEY (COMPANY_ID) REFERENCES COMPANY (ID)" +
+                    ");";
+
+            st.execute(carSql);
 
         } catch (SQLException e) {
             throw e;
@@ -223,8 +349,5 @@ public class Main {
         String dbUrl = setup(args);
         UserInterface ui = new UserInterface();
         ui.mainLoop(dbUrl);
-//        DBClient client = new DBClient(dbUrl);
-//
-//        client.check();
     }
 }
