@@ -339,7 +339,6 @@ class DBClient {
     }
 }
 
-
 class UserInterface {
     private final Scanner scanner;
 

@@ -2,6 +2,9 @@
 This script contains my solutions for curated arrays problems on GFG
 """
 
+import random
+random.seed(0)
+
 
 # starting with: https://www.geeksforgeeks.org/problems/peak-element/1?page=1&sprint=50746f92a895c22a50504ac0c1fb9c84&sortBy=submissions
 def _peakElement(arr, low, high):
@@ -133,8 +136,6 @@ def maxSubArrayNaive(array):
             best_sum = max(best_sum, sum(array[i:j + 1]))
     return best_sum
 
-import random
-random.seed(0)
 
 def random_array(n:int, low=0, high=100):
     return [random.randint(low, high) for _ in range(n)]
