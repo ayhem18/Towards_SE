@@ -1,8 +1,11 @@
 """
-Solving some easy Tree problems when feeling a bit rusty
+Solving Tree Problems of level 1 according to this gfg guide: 
+
+https://www.geeksforgeeks.org/top-50-tree-coding-problems-for-interviews/ 
 """
 
 from typing import Tuple
+from collections import defaultdict
 
 class Node:
     def __init__(self,val):
@@ -275,3 +278,117 @@ def largestValues(root: Node):
             queue.append((level + 1, node.left))           
 
     return [level_max[i] for i in range(len(level_max))]
+
+
+# https://www.geeksforgeeks.org/problems/kth-largest-element-in-bst/1
+def k_largest_count(root: Node, k: int) -> Tuple[int, int]:
+    root_count = 0
+    
+    if root.right is not None:
+        right_count, right_res = k_largest_count(root.right, k)
+        
+        if right_res is not None:
+            return right_count, right_res
+
+        root_count += right_count
+
+    if root_count == k - 1: 
+        return root_count, root.data
+
+    root_count += 1
+
+    if root.left is not None:
+        left_count, left_res = k_largest_count(root.left, k - root_count)
+
+        if left_res is not None:
+            return left_count, left_res
+    
+        root_count += left_count
+
+    return root_count, None
+
+def kthLargest(root: Node, k:int):
+    return k_largest_count(root, k)[-1]
+
+
+# https://www.geeksforgeeks.org/problems/zigzag-tree-traversal/1
+def zigZagTraversal(root: Node):   
+    
+    queue = deque([])
+    stack = deque([(0, root)])
+
+    total_count = 0
+    count_map = {}
+
+    current_level = 0
+    current_level_count = 0
+
+    level_count = defaultdict(lambda : 0)
+    level_count[0] = 1
+
+    while len(queue) != 0 or len(stack) != 0:
+        if current_level_count == level_count[current_level]:
+            current_level += 1
+            current_level_count = 0
+
+        current_level_count += 1
+
+        if current_level % 2 == 0:
+            level, node = stack.popleft()
+        else:
+            level, node = queue.pop()
+        
+        assert level == current_level
+
+        count_map[total_count] = node.data
+        total_count += 1
+
+        if level % 2 == 0:
+            if node.left is not None:
+                queue.append((level + 1, node.left))           
+                level_count[level + 1] += 1
+
+            if node.right is not None:
+                queue.append((level + 1, node.right))           
+                level_count[level + 1] += 1
+
+        else:                
+            if node.right is not None:
+                stack.appendleft((level + 1, node.right))           
+                level_count[level + 1] += 1
+
+            if node.left is not None:
+                stack.appendleft((level + 1, node.left))           
+                level_count[level + 1] += 1
+
+    return [count_map[i] for i in range(len(count_map))] 
+
+
+
+def min_val_bst(root: Node):
+    element = root
+    while element.left is not None:
+        element = element.left
+    
+    return element
+
+# https://www.geeksforgeeks.org/problems/inorder-successor-in-bst/1
+def inorderSuccessor(root: Node, x: Node):
+    if x.right is not None:
+        return min_val_bst(x.right)
+
+    element = root
+    last_parent = None
+
+    while element.data != x.data :
+        if element.data < x.data:
+            element = element.right
+
+        elif element.data > x.data:
+            last_parent = element
+            element = element.left
+
+    if last_parent is not None:
+        return last_parent
+    
+    return None
