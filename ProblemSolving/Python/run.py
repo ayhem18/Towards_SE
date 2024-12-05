@@ -47,8 +47,8 @@ def test_sorting_array_with_known_elements():
         assert sorted_array == array, "code does not work"
 
 
-from trees.gfg.easy import Node, tree_array_rep, isSymmetric, diameter, isBalanced, largestValues, kthLargest, zigZagTraversal, inorderSuccessor
-
+from trees.gfg.easy import Node, tree_array_rep, isSymmetric, diameter, isBalanced, largestValues, kthLargest, zigZagTraversal, inorderSuccessor, rightView
+from trees.gfg.medium import bottomView
 
 def check_trees2array():
     n1 = Node(1)
@@ -146,41 +146,23 @@ def testSymmetrie():
 
 
 def check_depth():
-    n10 = Node(10)
-    n5 = Node(5)
-    n4 = Node(4)
-    n8 = Node(8)
-
-    n12 = Node(12)
-    n11 = Node(11)
-    n20 = Node(20)
-
-    # print("#" * 10)
-    n10.left = n5
-    n5.left = n4
-    n5.right = n8
-
-    n10.right = n12
-    n12.left = n11
-    n12.right = n20
-
-
-    n2 = Node(2)
     n1 = Node(1)
+    n2 = Node(2)
     n3 = Node(3)
 
-    n2.left = n1
-    n2.right = n3
+    n4 = Node(4)
+    n5 = Node(5)
+    n6 = Node(6)
 
-    val = inorderSuccessor(n2, n2)
-    if val is not None:
-        print(val.data)
+    n1.right = n2
+    n1.left = n3
 
-    # print(inorderSuccessor(n10, n8))
-    # print(inorderSuccessor(n10, n20))
-    # print(inorderSuccessor(n10, n11))
+    n3.left = n4
+    n4.right = n5
+    
+    n2.right = n6
 
-
+    print(bottomView(n1))
 
 
 

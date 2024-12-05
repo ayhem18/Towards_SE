@@ -356,9 +356,9 @@ def zigZagTraversal(root: Node):
             if node.right is not None:
                 stack.appendleft((level + 1, node.right))           
                 level_count[level + 1] += 1
-
             if node.left is not None:
                 stack.appendleft((level + 1, node.left))           
+
                 level_count[level + 1] += 1
 
     return [count_map[i] for i in range(len(count_map))] 
@@ -392,3 +392,28 @@ def inorderSuccessor(root: Node, x: Node):
         return last_parent
     
     return None
+
+
+# https://www.geeksforgeeks.org/problems/right-view-of-binary-tree/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+
+def rightView(root: Node):
+    # the idea of this problem is to find the rightmost node at each level
+    # let's do the usual level-order traversal
+
+    queue = deque([(0, root)])
+
+    node_per_level = {}
+
+    while len(queue) > 0:
+        level, node = queue.popleft()   
+
+        if node.left is not None:
+            queue.append((level + 1, node.left))
+
+        if node.right is not None:
+            queue.append((level + 1, node.right))
+
+        node_per_level[level] = node.data
+
+    return [node_per_level[i] for i in range(len(node_per_level))]
+
