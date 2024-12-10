@@ -1,84 +1,157 @@
-# noinspection PyPep8Naming,PyShadowingNames,PyMethodMayBeStatic
-from itertools import chain
+# noinspection PyPep8Naming,PyShadowingNames,PyMethodMayBeStatic    def wordBoggle(self,board,dictionary):
+
+
 import numpy as np
+from typing import List, Tuple
+from itertools import chain
+from collections import defaultdict
+from copy import deepcopy
+
+# let's star with a function that determines all combinations that sum up to target value
+def combination_sum(nums, target: int):
+    # this function assumes the input is sorted
+    if target < nums[0]:
+        return []
+    # the next base case: a list of length 1
+    if len(nums) == 1:
+        # since an element can be picked at most once
+        return [[target]] if target == nums[0] else []
+    n = nums[0]
+    res = []
+
+    for i in range(2):
+        new_target = target - i * n
+        current_list = [n for _ in range(i)]
+        if new_target == 0:
+            res.append(current_list)
+        elif new_target > 0:
+            temp = combination_sum(nums[1:], new_target)
+            if len(temp) > 0:
+                for j in range(len(temp)):
+                    temp[j] = current_list + temp[j]
+                res.extend(temp)
+    return res
 
 
-# noinspection PyMethodMayBeStatic,PyShadowingNames
-class Solution:
-    # let's star with a function that determines all combinations that sum up to target value
-    def combination_sum(self, nums, target: int):
-        # this function assumes the input is sorted
-        if target < nums[0]:
-            return []
-        # the next base case: a list of length 1
-        if len(nums) == 1:
-            # since an element can be picked at most once
-            return [[target]] if target == nums[0] else []
-        n = nums[0]
-        res = []
+# https://practice.geeksforgeeks.org/problems/word-search/1?page=1&category[]=Backtracking&sortBy=submissions
+# As they say 3rd time is the charm!!!
+def find_word(grid, current_pos, objective_str: str, visited_pos: set = None):
+    if visited_pos is None:
+        visited_pos = set()
+    # the first base case is:
+    if len(objective_str) == 0:
+        return True
+    y, x = current_pos
+    if grid[y][x] != objective_str[0]:
+        return False
+    # at this point the letter at the current position is the same as the first letter
+    # of the objective string which is of length 1: so basically a letter
+    if len(objective_str) == 1:
+        return True
 
-        for i in range(2):
-            new_target = target - i * n
-            current_list = [n for _ in range(i)]
-            if new_target == 0:
-                res.append(current_list)
-            elif new_target > 0:
-                temp = self.combination_sum(nums[1:], new_target)
-                if len(temp) > 0:
-                    for j in range(len(temp)):
-                        temp[j] = current_list + temp[j]
-                    res.extend(temp)
-        return res
+    # at this point we need to add the current position to the visited_position
+    visited_pos.add(current_pos)
+    next_pos = []
+    # detect the next positions
+    if y + 1 < len(grid) and (y + 1, x) not in visited_pos:
+        next_pos.append((y + 1, x))
 
-    # https://practice.geeksforgeeks.org/problems/word-search/1?page=1&category[]=Backtracking&sortBy=submissions
-    # As they say 3rd time is the charm!!!
-    def find_word(self, grid, current_pos, objective_str: str, visited_pos: set = None):
-        if visited_pos is None:
-            visited_pos = set()
-        # the first base case is:
-        if len(objective_str) == 0:
+    if x + 1 < len(grid[0]) and (y, x + 1) not in visited_pos:
+        next_pos.append((y, x + 1))
+
+    if y > 0 and (y - 1, x) not in visited_pos:
+        next_pos.append((y - 1, x))
+
+    if x > 0 and (y, x - 1) not in visited_pos:
+        next_pos.append((y, x - 1))
+
+    for pos in next_pos:
+        temp = find_word(grid, pos, objective_str[1:], visited_pos=visited_pos)
+        if temp:
             return True
-        y, x = current_pos
-        if grid[y][x] != objective_str[0]:
-            return False
-        # at this point the letter at the current position is the same as the first letter
-        # of the objective string which is of length 1: so basically a letter
-        if len(objective_str) == 1:
-            return True
+    # at this point none of the options lead to the word so return False
+    # after removing the current position from the visited positions
+    visited_pos.discard(current_pos)
+    return False
 
-        # at this point we need to add the current position to the visited_position
-        visited_pos.add(current_pos)
-        next_pos = []
-        # detect the next positions
-        if y + 1 < len(grid) and (y + 1, x) not in visited_pos:
-            next_pos.append((y + 1, x))
-
-        if x + 1 < len(grid[0]) and (y, x + 1) not in visited_pos:
-            next_pos.append((y, x + 1))
-
-        if y > 0 and (y - 1, x) not in visited_pos:
-            next_pos.append((y - 1, x))
-
-        if x > 0 and (y, x - 1) not in visited_pos:
-            next_pos.append((y, x - 1))
-
-        for pos in next_pos:
-            temp = self.find_word(grid, pos, objective_str[1:], visited_pos=visited_pos)
-            if temp:
+def isWordExist(board, word):
+    for y in range(len(board)):
+        for x in range(len(board[0])):
+            t = find_word(board, (y, x), objective_str=word)
+            if t:
                 return True
-        # at this point none of the options lead to the word so return False
-        # after removing the current position from the visited positions
-        visited_pos.discard(current_pos)
-        return False
+    return False
 
-    def isWordExist(self, board, word):
-        for y in range(len(board)):
-            for x in range(len(board[0])):
-                t = self.find_word(board, (y, x), objective_str=word)
-                if t:
-                    return True
-        # let's get this shit started my man !!
+
+
+
+# another medium problem
+# https://www.geeksforgeeks.org/problems/word-boggle4143/1?page=1&category=Backtracking&status=unsolved&sortBy=submissions
+
+def find_word_on_board(board:List[List], word: str, initial_y: int, initial_x: int, steps: List[Tuple[int]]) -> bool:
+    # we assume that initial position corresponds to the first letter of the word, when this function is called
+    steps.append((initial_y, initial_x))
+
+    # set the position to -1 on the board 
+    board[initial_y][initial_x] = -1
+
+    if len(word) == 1:
+        return True
+
+    # look for in-boundry cells
+    next_cells = [ (initial_y + i, initial_x + j) for i in range(-1, 2) for j in range(-1, 2) if 0 <= (i + initial_y) < len(board) and 0 <= (j + initial_x) < len(board[0])]
+    # keep only the cells that contain the next letter    
+    next_cells = [ (y, x) for (y, x) in next_cells if board[y][x] == word[1]]
+
+    if len(next_cells) == 0:
         return False
+    
+    for y, x in next_cells:
+        temp = find_word_on_board(board, word[1:], initial_x=x, initial_y=y, steps=steps)
+        
+        if temp:
+            # the moment we find it, no need to proceed further
+            return True
+
+    # the word cannot be built from the board
+    return False
+
+
+def wordBoggle(board: List[List], words: set):
+    # a copy of the board to be traversed
+    copy_board = deepcopy(board)
+    
+
+    # iterate through the board and build a map between letters and positions
+    letter_positions = defaultdict(lambda : [])
+
+    for i in range(len(board)):
+        for j in range(len(board[0])):
+            letter_positions[board[i][j]].append((i, j))
+
+    found_words = set()
+
+    for w in words:
+        if w[0] not in letter_positions:
+            continue
+            
+        # iterate through all the possible initial positions
+        for iy, ix in letter_positions[w[0]]:
+            steps = []
+            word_found = find_word_on_board(board=copy_board, word=w, initial_y=iy, initial_x=ix, steps=steps)
+
+            # clear the board from the "-1" cells
+            for y, x in steps:
+                copy_board[y][x] = board[y][x]
+            
+            if word_found:
+                found_words.add(w)
+                break
+
+    return sorted(list(found_words))
+
+
+class Solution:
 
     # let's go with rates this time:
     # https://practice.geeksforgeeks.org/problems/rat-in-a-maze-problem/1?page=1&category[]=Backtracking&sortBy=submissions
@@ -244,19 +317,3 @@ class Solution:
         for row in grid:
             print(row)
 
-
-if __name__ == '__main__':
-    sol = Solution()
-    g = [[3, 0, 6, 5, 0, 8, 4, 0, 0],
-         [5, 2, 0, 0, 0, 0, 0, 0, 0],
-         [0, 8, 7, 0, 0, 0, 0, 3, 1],
-         [0, 0, 3, 0, 1, 0, 0, 8, 0],
-         [9, 0, 0, 8, 6, 3, 0, 0, 5],
-         [0, 5, 0, 0, 9, 0, 6, 0, 0],
-         [1, 3, 0, 0, 0, 0, 2, 5, 0],
-         [0, 0, 0, 0, 0, 0, 0, 7, 4],
-         [0, 0, 5, 2, 0, 6, 3, 0, 0]]
-
-    new_g = sol.SolveSudoku(g)
-    print(new_g)
-    # sol.printGridBetter(new_g)

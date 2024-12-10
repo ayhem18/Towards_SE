@@ -144,7 +144,6 @@ def testSymmetrie():
 
     print(isSymmetric(n1))
 
-
 def check_depth():
     n1 = Node(1)
     n2 = Node(2)
@@ -165,13 +164,30 @@ def check_depth():
     print(bottomView(n1))
 
 
+from backtracking.hard import wordBreak
+from backtracking.medium import wordBoggle
+
+
+def check_bt():
+    b = [
+        ["C", "A", "P"],
+        ["A", "N", "D"],
+        ["T", "I", "E"],
+    ]
+
+    b = [
+        ["f"],
+        ["c"],
+        ["d"],
+    ]
+
+    words = ["ff", "cec" "bf"]
+
+    print(wordBoggle(b, words))
+
 
 if __name__ == '__main__':
     random.seed(0)
     np.random.seed(0)
-    # test_constant_space_array_rotation()
-    # test_sorting_array_with_known_elements()  
-    
-    # check_trees2array()
-    # testSymmetrie()
-    check_depth()
+
+    check_bt()
