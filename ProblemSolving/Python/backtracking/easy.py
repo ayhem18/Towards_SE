@@ -1,8 +1,7 @@
 from math import factorial, ceil
 from copy import copy
+from standard import choose_k_from_set
 
-
-# noinspection PyMethodMayBeStatic,PyShadowingNames,SpellCheckingInspection
 
 # even though this function works, regardless of the input
 # it will return a large number of duplicate sets in case
@@ -35,28 +34,8 @@ def findAllPossiblePaths( n: int, m: int, grid):
 # this is my attempt to solve:
 # https://practice.geeksforgeeks.org/problems/combination-sum-iii/1?page=1&category[]=Backtracking&sortBy=accuracy
 # let's start with some inner methods
-def choose_k_from_set( nums: list[int], k: int):
-    if k > len(nums):
-        return []
-    if k == len(nums):
-        return [nums]
-    if k == 1:
-        return [[n] for n in nums]
 
-    res = []
-    # there are 2 possible cases, either we add the current element, or not
-    # add the current element
 
-    temp = choose_k_from_set(nums[1:], k - 1)
-    for i in range(len(temp)):
-        temp[i] = [nums[0]] + temp[i]
-    res.extend(temp)
-
-    if len(nums) >= k + 1:
-        temp = choose_k_from_set(nums[1:], k)
-        res.extend(temp)
-
-    return res
 
 def combinationSum( k, target):
     temp = choose_k_from_set(nums=list(range(1, 10)), k=k)

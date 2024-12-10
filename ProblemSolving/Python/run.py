@@ -165,29 +165,28 @@ def check_depth():
 
 
 from backtracking.hard import wordBreak
-from backtracking.medium import wordBoggle
-
+from backtracking.medium import wordBoggle, decodedString, permutation
+from backtracking.standard import all_subsets, choose_k_from_set
 
 def check_bt():
-    b = [
-        ["C", "A", "P"],
-        ["A", "N", "D"],
-        ["T", "I", "E"],
-    ]
+    s = "A"
+    print(permutation(s))
+    
+    s = "AB"
+    print(permutation(s))
+    print("#" * 10)
 
-    b = [
-        ["f"],
-        ["c"],
-        ["d"],
-    ]
+    s = "ABC"
+    print(permutation(s))
+    print("#" * 10)
 
-    words = ["ff", "cec" "bf"]
-
-    print(wordBoggle(b, words))
+    s = "ABCD"
+    print(permutation(s))
 
 
 if __name__ == '__main__':
     random.seed(0)
-    np.random.seed(0)
-
+    np.random.seed(0)  
     check_bt()
+
+    

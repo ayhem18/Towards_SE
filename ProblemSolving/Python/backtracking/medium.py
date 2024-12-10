@@ -7,6 +7,9 @@ from itertools import chain
 from collections import defaultdict
 from copy import deepcopy
 
+from backtracking.standard import all_subsets
+
+
 # let's star with a function that determines all combinations that sum up to target value
 def combination_sum(nums, target: int):
     # this function assumes the input is sorted
@@ -32,9 +35,7 @@ def combination_sum(nums, target: int):
                 res.extend(temp)
     return res
 
-
 # https://practice.geeksforgeeks.org/problems/word-search/1?page=1&category[]=Backtracking&sortBy=submissions
-# As they say 3rd time is the charm!!!
 def find_word(grid, current_pos, objective_str: str, visited_pos: set = None):
     if visited_pos is None:
         visited_pos = set()
@@ -82,12 +83,7 @@ def isWordExist(board, word):
                 return True
     return False
 
-
-
-
-# another medium problem
 # https://www.geeksforgeeks.org/problems/word-boggle4143/1?page=1&category=Backtracking&status=unsolved&sortBy=submissions
-
 def find_word_on_board(board:List[List], word: str, initial_y: int, initial_x: int, steps: List[Tuple[int]]) -> bool:
     # we assume that initial position corresponds to the first letter of the word, when this function is called
     steps.append((initial_y, initial_x))
@@ -115,7 +111,6 @@ def find_word_on_board(board:List[List], word: str, initial_y: int, initial_x: i
 
     # the word cannot be built from the board
     return False
-
 
 def wordBoggle(board: List[List], words: set):
     # a copy of the board to be traversed
@@ -150,6 +145,108 @@ def wordBoggle(board: List[List], words: set):
 
     return sorted(list(found_words))
 
+
+# probably my first time using recursion this very specific way
+# https://www.geeksforgeeks.org/problems/decode-the-string2444/1?page=1&category=Backtracking&status=unsolved&sortBy=submissions
+def decode_inner_string(string: str) -> Tuple[str, int]:
+    str_counter = 0
+
+    decoded_str = ""
+
+    while string[str_counter] != "]":
+        # add any letter
+        if string[str_counter].isalpha():
+            decoded_str += string[str_counter]
+            str_counter += 1
+        
+        elif string[str_counter].isdigit():
+            number = string[str_counter]
+            digit_counter = str_counter + 1
+
+            while string[digit_counter].isdigit():
+                digit_counter += 1
+                number += string[digit_counter]
+
+            # at this point the number was formed
+            # move the string counter to the digit_counter value + 1 (since we have "[" right after the digit)
+            str_counter = digit_counter + 1 
+
+            recursive_decoded_string, length = decode_inner_string(string[str_counter:])
+            
+            str_counter += length
+
+            decoded_str += int(number) * recursive_decoded_string
+
+    # add one for the "]" character
+    str_counter += 1
+
+    return decoded_str, str_counter
+
+def decodedString(string: str) -> str:
+    n = len(string)
+    str_counter = 0
+
+    decoded_str = ""
+
+
+    while str_counter < n:
+        
+        if string[str_counter].isalpha():
+            decoded_str += string[str_counter]
+            str_counter += 1
+
+        elif string[str_counter].isdigit():
+            # the "number" can have multiple digits
+            number = string[str_counter]
+            digit_counter = str_counter + 1
+
+            while string[digit_counter].isdigit():
+                number += string[digit_counter]
+                digit_counter += 1
+
+            # at this point the number was formed
+            # move the string ocunter to the digit counter value + 1 (since we have "[" right after the digit)
+            str_counter = digit_counter + 1 
+
+            inner_str, inner_str_org_length = decode_inner_string(string[str_counter:])
+
+            str_counter += inner_str_org_length
+
+            decoded_str += int(number) * inner_str
+
+
+    return decoded_str
+
+
+# https://www.geeksforgeeks.org/problems/permutation-with-spaces3627/1?page=1&category=Backtracking&status=unsolved&sortBy=submissions
+
+# the problem first requires determining all the subsets of the list [1, length(str) - 1]
+# each subset maps to a unique string
+def add_spaces(string: str, space_positions: List[int]) -> str:
+    if len(space_positions) == 0:
+        return string 
+
+    last_space_index = 0
+    new_str = string[0]
+    counter = 1
+    
+    for counter in range(1, len(string)):
+        if last_space_index < len(space_positions) and  counter == space_positions[last_space_index]:
+            new_str += " " 
+            last_space_index += 1
+            
+        new_str += string[counter]
+
+    return new_str
+
+def permutation(s: str) -> List[str]:
+    n = len(s)
+    
+    if n == 1:
+        return [s]
+    
+    spaces_positions = all_subsets(list(range(1, n)))
+    return sorted([add_spaces(s, sp) for sp in spaces_positions])
 
 class Solution:
 

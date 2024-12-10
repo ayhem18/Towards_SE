@@ -48,4 +48,3 @@ def wordBreak(words: Union[dict, set], string: str) -> list[str]:
     return [" ".join(r) for r in wordBreakList(words, string)]
 
 
-
