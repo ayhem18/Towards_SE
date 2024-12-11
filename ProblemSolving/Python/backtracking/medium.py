@@ -248,88 +248,167 @@ def permutation(s: str) -> List[str]:
     spaces_positions = all_subsets(list(range(1, n)))
     return sorted([add_spaces(s, sp) for sp in spaces_positions])
 
+
+
+# let's go with rats this time:
+# https://practice.geeksforgeeks.org/problems/rat-in-a-maze-problem/1?page=1&category[]=Backtracking&sortBy=submissions
+# need some variables for directions
+UP = 'U'
+DOWN = 'D'
+LEFT = 'L'
+RIGHT = 'R'
+
+def inner_find_path(grid, current_pos, last_move: tuple = None, visited_pos: set = None):
+    # start with default values of arguments
+    if visited_pos is None:
+        visited_pos = set()
+
+    # 1st base case: where the final cell is simply inaccessible
+    if grid[len(grid) - 1][len(grid[0]) - 1] == 0:
+        return []
+
+    y, x = current_pos
+    if y == len(grid) - 1 and x == len(grid[0]) - 1:
+        if last_move is not None:
+            return [last_move]
+        # this point of the code is only reached
+        # when the grid is one by one (should be probably be handled in the function that calls this function)
+        return []
+
+    # time to add the current position to the visited ones
+    visited_pos.add(current_pos)
+    # time to consider the next positions
+    next_pos = []
+    position_move_mapper = {}
+    if y + 1 < len(grid) \
+            and (y + 1, x) not in visited_pos \
+            and grid[y + 1][x] == 1:
+        # add the current position
+        next_pos.append((y + 1, x))
+        # don't forget about the mapper
+        position_move_mapper[(y + 1, x)] = DOWN
+
+    if x > 0 \
+            and (y, x - 1) not in visited_pos \
+            and grid[y][x - 1] == 1:
+        next_pos.append((y, x - 1))
+        position_move_mapper[(y, x - 1)] = LEFT
+
+    if x + 1 < len(grid[0]) \
+            and (y, x + 1) not in visited_pos \
+            and grid[y][x + 1] == 1:
+        next_pos.append((y, x + 1))
+        position_move_mapper[(y, x + 1)] = RIGHT
+
+    if y > 0 \
+            and (y - 1, x) not in visited_pos \
+            and grid[y - 1][x] == 1:
+        next_pos.append((y - 1, x))
+        position_move_mapper[(y - 1, x)] = UP
+
+    res = []
+    for pos in next_pos:
+        temp = inner_find_path(grid,
+                                    pos,
+                                    last_move=position_move_mapper[pos],
+                                    visited_pos=visited_pos)
+        if last_move is not None:
+            for i in range(len(temp)):
+                temp[i] = last_move + temp[i]
+
+        res.extend(temp)
+
+    # at this point the algorithm is backtracking from the current_pos,
+    # so it should be removed from visited positions
+    visited_pos.discard(current_pos)
+    return res
+
+def findPath(matrix, _: int):
+    if len(matrix) == 1 and len(matrix[0]) == 1:
+        return []
+    if matrix[0][0] == 0:
+        return []
+    res = inner_find_path(matrix, (0, 0))
+    return sorted(res)
+
+
+
+
+
+# https://www.geeksforgeeks.org/problems/number-of-paths-in-a-matrix-with-k-coins2728/1?page=1&category=Backtracking&status=unsolved&sortBy=submissions
+def count_ways_with_k_coins(array: List[List[int]], k:int, ix:int, iy:int) -> int:
+    # base cases
+    if k < array[iy][ix]:
+        return 0
+
+    # reached the destination
+    if k == array[iy][ix] and iy == len(array) - 1 and ix == len(array[0]) - 1:
+        return 1
+
+    # down
+    down_count = 0
+    if iy + 1 < len(array):
+        down_count = count_ways_with_k_coins(array, k - array[iy][ix], ix = ix, iy = iy + 1)
+    
+    # right
+    right_count = 0
+    if ix + 1 < len(array[0]):
+        right_count = count_ways_with_k_coins(array, k - array[iy][ix], ix = ix + 1, iy = iy)
+
+    return right_count + down_count
+
+
+def numberOfPathBacktracking (n: int , k: int , arr: List[List[int]]) -> int:
+    return count_ways_with_k_coins(array=arr, k=k, ix=0, iy=0)
+
+
+# the backtracking solution exceeds time limit, which means I need to resort to DP
+def xy2i(x:int, y:int, array: List[List]) -> int:
+    return y * len(array) + x
+
+def i2xy(index: int, array: List[List]) -> Tuple[int, int]:
+    return (index // len(array), index % len(array))
+
+def numberOfPath(n: int , k: int , arr: List[List[int]]) -> int:
+    dp = [[0 for _ in range(k + 1)] for _ in range(len(arr) * len(arr[0]))]
+
+    # first set the values for the first row
+    sum_first_row = 0
+    
+    for i in range(len(arr[0])):
+        sum_first_row += arr[0][i] 
+        
+        if sum_first_row > k:
+            break
+
+        index = xy2i(x=i, y=0, array=arr)
+        dp[index][sum_first_row] = 1
+
+    sum_first_col = 0
+    for i in range(len(arr)):
+        sum_first_col += arr[i][0] 
+
+        if sum_first_col > k:
+            break
+
+        index = xy2i(x=0, y=i, array=arr)
+        dp[index][sum_first_col] = 1
+
+    for i in range(1, len(arr)):
+        for j in range(1, len(arr)):
+            index_up = xy2i(x=j, y=i - 1, array=arr)
+            index_left = xy2i(x=j - 1, y=i, array=arr)
+            index_point = xy2i(x=j, y=i, array=arr)
+            point_val = arr[i][j]
+
+            for v in range(k - point_val + 1):
+                dp[index_point][v + point_val] += (dp[index_up][v] + dp[index_left][v])
+
+    return dp[-1][-1]
+
+
 class Solution:
 
-    # let's go with rates this time:
-    # https://practice.geeksforgeeks.org/problems/rat-in-a-maze-problem/1?page=1&category[]=Backtracking&sortBy=submissions
-    # need some class variables for directions
-    UP = 'U'
-    DOWN = 'D'
-    LEFT = 'L'
-    RIGHT = 'R'
-
-    def inner_find_path(self, grid, current_pos, last_move: tuple = None, visited_pos: set = None):
-        # start with default values of arguments
-        if visited_pos is None:
-            visited_pos = set()
-
-        # 1st base case: where the final cell is simply inaccessible
-        if grid[len(grid) - 1][len(grid[0]) - 1] == 0:
-            return []
-
-        y, x = current_pos
-        if y == len(grid) - 1 and x == len(grid[0]) - 1:
-            if last_move is not None:
-                return [last_move]
-            # this point of the code is only reached
-            # when the grid is one by one (should be probably be handled in the function that calls this function)
-            return []
-
-        # time to add the current position to the visited ones
-        visited_pos.add(current_pos)
-        # time to consider the next positions
-        next_pos = []
-        position_move_mapper = {}
-        if y + 1 < len(grid) \
-                and (y + 1, x) not in visited_pos \
-                and grid[y + 1][x] == 1:
-            # add the current position
-            next_pos.append((y + 1, x))
-            # don't forget about the mapper
-            position_move_mapper[(y + 1, x)] = self.DOWN
-
-        if x > 0 \
-                and (y, x - 1) not in visited_pos \
-                and grid[y][x - 1] == 1:
-            next_pos.append((y, x - 1))
-            position_move_mapper[(y, x - 1)] = self.LEFT
-
-        if x + 1 < len(grid[0]) \
-                and (y, x + 1) not in visited_pos \
-                and grid[y][x + 1] == 1:
-            next_pos.append((y, x + 1))
-            position_move_mapper[(y, x + 1)] = self.RIGHT
-
-        if y > 0 \
-                and (y - 1, x) not in visited_pos \
-                and grid[y - 1][x] == 1:
-            next_pos.append((y - 1, x))
-            position_move_mapper[(y - 1, x)] = self.UP
-
-        res = []
-        for pos in next_pos:
-            temp = self.inner_find_path(grid,
-                                        pos,
-                                        last_move=position_move_mapper[pos],
-                                        visited_pos=visited_pos)
-            if last_move is not None:
-                for i in range(len(temp)):
-                    temp[i] = last_move + temp[i]
-
-            res.extend(temp)
-
-        # at this point the algorithm is backtracking from the current_pos,
-        # so it should be removed from visited positions
-        visited_pos.discard(current_pos)
-        return res
-
-    def findPath(self, matrix, _: int):
-        if len(matrix) == 1 and len(matrix[0]) == 1:
-            return []
-        if matrix[0][0] == 0:
-            return []
-        res = self.inner_find_path(matrix, (0, 0))
-        return sorted(res)
 
     # time to solve some sodoku problem:
     # https://practice.geeksforgeeks.org/problems/solve-the-sudoku-1587115621/1?page=1&category[]=Backtracking&sortBy=submissions

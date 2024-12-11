@@ -163,30 +163,47 @@ def check_depth():
 
     print(bottomView(n1))
 
-
 from backtracking.hard import wordBreak
-from backtracking.medium import wordBoggle, decodedString, permutation
+
+from backtracking.medium import wordBoggle, decodedString, permutation, numberOfPath, numberOfPathBacktracking
 from backtracking.standard import all_subsets, choose_k_from_set
 
+
 def check_bt():
-    s = "A"
-    print(permutation(s))
-    
-    s = "AB"
-    print(permutation(s))
-    print("#" * 10)
+    arr = [
+        [1, 2, 3], 
+        [4, 6, 5], 
+        [9, 8, 7]
+        ]
 
-    s = "ABC"
-    print(permutation(s))
-    print("#" * 10)
+    for i in range(5, 30):
+        s1, s2 = numberOfPathBacktracking(n=len(arr), k=i, arr=arr), numberOfPath(n=len(arr), k=i, arr=arr)
+        assert s1 == s2
+        
 
-    s = "ABCD"
-    print(permutation(s))
+    arr = [
+        [1, 2, 3], 
+        [4, 6, 5], 
+        [3, 2, 1]
+        ]
+
+
+    for i in range(5, 20):
+        s1, s2 = numberOfPathBacktracking(n=len(arr), k=i, arr=arr), numberOfPath(n=len(arr), k=i, arr=arr)
+        assert s1 == s2
+
+
+from arrays.medium import kthSmallest
+
+def farray():
+    a = [20, 30, 400, 500, 7000, 6000, 80000]
+
+    for i in range(1, len(a) + 1): 
+        print(kthSmallest(a, i))
 
 
 if __name__ == '__main__':
     random.seed(0)
     np.random.seed(0)  
-    check_bt()
-
+    farray()
     

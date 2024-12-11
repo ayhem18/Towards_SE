@@ -86,3 +86,8 @@ def all_subsets(array: List[int]) -> List[List[int]]:
 
 
 
+
+# maybe relatively standard
+# https://www.geeksforgeeks.org/problems/unique-partitions1041/1?page=1&category=Backtracking&status=unsolved&sortBy=submissions
+
+# can be optimized with DP
