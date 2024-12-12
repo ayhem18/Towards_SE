@@ -64,7 +64,7 @@ const submit_button = document.getElementById("submit_item")
 submit_button.addEventListener("click", add_item)
 
 
-// create a function at the list level: using the even bubbling te
+// create a function at the list level: using the event bubbling
 
 function delete_item(event) {
     // find the button
@@ -82,7 +82,7 @@ function reset () {
     // if there is a list of any kind complete remove it
     shopping_lists = document.getElementsByTagName("ul")
     if (shopping_lists.length == 0) {
-        console.log("Nothing to reset")
+        alert("nothing to reset")
         return;
     }
 
