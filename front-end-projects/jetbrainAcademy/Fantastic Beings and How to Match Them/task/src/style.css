@@ -1,0 +1,40 @@
+#board {
+    /*
+    set the background image
+    */
+    background-image: url("graphics/board-bg.png");
+    background-size: cover; /* makes the image expand / shrink to cover the size of the element*/
+
+    height: 100vh;
+    padding: 0;
+}
+
+#status-bar {
+
+    width: 100%; /*the same width as its parent element*/
+    height: 10vw;
+
+    background-image: url("graphics/state-panel-bg.png");
+    background-size: cover;
+
+}
+
+#map {
+    height: 60vh;
+    width: 60vh;
+
+    /*this is equivalent to:
+    margin-top: 3vh
+    margin-right:auto
+    margin-bottom:auto
+    margin-left: auto
+
+    setting auto for left / right centers the element horizontally
+  */
+    margin: 3vh auto auto auto;
+}
+
+.cell {
+    border:solid rgb(103, 101, 168) 1px;
+    background-color: rgb(103, 101, 168, 0.4);
+}
