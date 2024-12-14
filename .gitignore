@@ -65,4 +65,11 @@ backend_projects/Car Sharing1/gradle
 
 backend_projects/Car Sharing/h2-2016-05-26/*
 
+*node_modules*
+
+*package.json*
+*package-lock.json*
+
+
+
 

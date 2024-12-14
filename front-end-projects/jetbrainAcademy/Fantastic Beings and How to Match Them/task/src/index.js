@@ -42,4 +42,3 @@ if (user_clear_map){
 
 
 
-
