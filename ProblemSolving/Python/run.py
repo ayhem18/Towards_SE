@@ -112,57 +112,6 @@ def check_trees2array():
 
     print(tree_array_rep(n1))
 
-def testSymmetrie():
-
-    n1 = Node(1)
-    n2 = Node(2)
-    n3 = Node(2)
-
-    n1.left = n2
-    n1.right = n3
-
-    print(isSymmetric(n1))
-
-    n1 = Node(1)
-    n2 = Node(2)
-    n3 = Node(2)
-
-    n4 = Node(1)
-    n5 = Node(1)
-
-    n6 = Node(1)
-    n7 = Node(1)
-
-    n1.left = n2
-    n1.right = n3
-
-    n2.right = n4
-    n3.left = n5
-
-    n2.left = n6
-    n3.right = n7
-
-    print(isSymmetric(n1))
-
-def check_depth():
-    n1 = Node(1)
-    n2 = Node(2)
-    n3 = Node(3)
-
-    n4 = Node(4)
-    n5 = Node(5)
-    n6 = Node(6)
-
-    n1.right = n2
-    n1.left = n3
-
-    n3.left = n4
-    n4.right = n5
-    
-    n2.right = n6
-
-    print(bottomView(n1))
-
 from backtracking.hard import wordBreak
 
 from backtracking.medium import wordBoggle, decodedString, permutation, numberOfPath, numberOfPathBacktracking
@@ -194,13 +143,13 @@ def check_bt():
 
 
 from arrays.medium import kthSmallest
+from arrays.twoPointers import maxIndexDiff
 
 def farray():
-    a = [20, 30, 400, 500, 7000, 6000, 80000]
+    a = [10, 11, 12, 8, 7, 6, 5, 4, 3, 2, 1, 9]
+    print(maxIndexDiff(a))
 
-    for i in range(1, len(a) + 1): 
-        print(kthSmallest(a, i))
-
+    pass
 
 if __name__ == '__main__':
     random.seed(0)
