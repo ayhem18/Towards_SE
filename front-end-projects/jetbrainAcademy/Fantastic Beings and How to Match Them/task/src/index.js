@@ -145,7 +145,225 @@ window.clearMap = clear_map;
 //     window.clearMap();
 // }
 
-// call the function to create the board
-// const creaturesMap = getRandomCreaturesMap(5, 5);
-window.renderMap(5, 5)
 
+// global variable saving the currently clicked cell
+let CLICKED_CELL = null;
+
+// functions to handle the game play
+function getCoordinates(cell) {
+    let coords_1 = cell.dataset['coords'];
+
+    if (coords_1 === undefined) {
+        throw `The HTML elements are expected to have data-coords  attributes.`;
+    }
+
+    let c1 = coords_1.split("_");
+
+    let x1 = parseInt(c1[0][1]);
+    let y1 = parseInt(c1[1][1]);
+
+    return Array.of(y1, x1);
+}
+
+
+// check if two cells are adjacent
+function areCellsAdjacent(cell1, cell2) {
+    let c1 = getCoordinates(cell1);
+    let c2 = getCoordinates(cell2);
+
+    let y1 = c1[0];
+    let x1 = c1[1];
+
+    let y2 = c2[0];
+    let x2 = c2[1];
+
+    // rule the case where both cells are the same
+    if (x1 === x2 && y1 === y2) {
+        return false;
+    }
+
+    return ((Math.abs(x1 - x2) <= 1) && (y1 === y2)) || ((x1 === x2) && (Math.abs(y1 - y2) <= 1));
+}
+
+// a function that returns the cell given the coordinates
+function getCell(y, x) {
+    // extract the board element
+    let board = document.getElementById("map");
+    return board.children[y].children[x];
+}
+
+function findSequences(y, x) {
+    let board = document.getElementById("map");
+    let maxY = board.children.length;
+    let maxX = board.children[0].length;
+
+    // first step is to extract the cell
+    let initialCell = getCell(y, x);
+    let beingName = initialCell.getAttribute("data-being");
+
+    // first consider the vertical direction
+
+    // upwards
+    let up_y = y;
+
+    while (up_y >= 0) {
+        let currentBeingName = getCell(up_y, x).getAttribute("data-being");
+        if (beingName !== currentBeingName) {
+            break;
+        }
+        up_y -= 1;
+    }
+
+    // downwards
+    let down_y = y;
+
+    while (down_y < maxY) {
+        let currentBeingName = getCell(down_y, x).getAttribute("data-being");
+        if (beingName !== currentBeingName) {
+            break;
+        }
+        down_y += 1;
+    }
+
+    // consider the horizontal direction
+    // to the right
+    let right_x = x;
+
+    while (right_x < maxX) {
+        let currentBeingName = getCell(y, right_x).getAttribute("data-being");
+        if (beingName !== currentBeingName) {
+            break;
+        }
+        right_x += 1;
+    }
+
+    // to the left
+    let left_x = x;
+
+    while (left_x >= 0) {
+        let currentBeingName = getCell(y, left_x).getAttribute("data-being");
+        if (beingName !== currentBeingName) {
+            break;
+        }
+        left_x -= 1;
+    }
+
+    let cleared_cells = [];
+
+    // create an array to save the coordinates of the cell to be cleared
+    if (right_x - left_x + 1 >= 3) {
+        for (let i = left_x; i <= right_x; i++) {
+            cleared_cells.push([y, i]);
+        }
+    }
+
+    if (down_y - up_y + 1 >= 3) {
+        for(let i = up_y; i <= down_y; i++) {
+            cleared_cells.push([i, x]);
+        }
+    }
+
+    return cleared_cells;
+}
+
+function clearCells(cellCoordinates) {
+    for (let i = 0; i < cellCoordinates.length; i++) {
+        let y = cellCoordinates[i][0];
+        let x = cellCoordinates[i][1];
+        let cell = getCell(y, x);
+        cell.innerHTML = "";
+    }
+}
+
+function swap(cell1, cell2) {
+    // the idea is simple, just swap the innerHTML values
+    let c1 = getCoordinates(cell1.children[0]);
+    let c2 = getCoordinates(cell2.children[0]);
+
+    let y1 = c1[0];
+    let x1 = c1[1];
+
+    let y2 = c2[0];
+    let x2 = c2[1];
+
+    let c1_str = `x${x1}_y${y1}`;
+    let c2_str = `x${x2}_y${y2}`;
+
+    // make sure to update the `data-coords` attribute in the swapped images
+    cell1.children[0].setAttribute("data-coords", c1_str);
+    cell2.children[0].setAttribute("data-coords", c2_str);
+
+    // swap the inner html
+    let temp = cell1.innerHTML;
+    cell1.innerHTML = cell2.innerHTML;
+    cell2.innerHTML = temp;
+
+}
+
+function selectCell(cell) {
+    // highlight the target cell using css
+    cell.style.backgroundImage = "url(./images/cell-selected-bg.png)";
+    cell.style.backgroundSize = "cover";
+}
+
+function deselectCell(cell) {
+    // highlight the target cell using css
+    cell.style.backgroundImage = null;
+    cell.style.backgroundSize = null
+}
+
+
+function clickCellEventHandler(event) {
+
+    // step1: extract the event target
+    let targetCell = event.target.parentNode;
+    console.log(`The cell ${targetCell.dataset} is clicked!`);
+
+    // step2 proceed depending on the value of CLICKED_CELL
+    if (CLICKED_CELL === null) {
+        console.log("first cell clicked");
+        CLICKED_CELL = targetCell;
+        selectCell(targetCell);
+        return;
+    }
+
+    // at this point the CLICKED_CELL was set before the event
+    if (CLICKED_CELL === targetCell) {
+        // will be interpreted as deselecting the cell
+        console.log("cell deselected")
+        deselectCell(targetCell);
+        return;
+    }
+
+    // at this point the CLICKED_CELL is set and the target cell is different from CLICKED_CELL
+    // step1: make sure the cells are adjacent
+    // the coordinate attributes are saved at the image level and not the cell level (unfortuately)
+    if (! areCellsAdjacent(CLICKED_CELL.children[0], targetCell.children[0])) {
+        return;
+    }
+
+    swap(CLICKED_CELL, targetCell);
+    deselectCell(CLICKED_CELL);
+    CLICKED_CELL = null;
+
+
+}
+
+
+// add the event listener
+// the event handling mechanism should probably be moved to th board element
+// using event bubbling (at the time of writing this code, I do not remember the mechanism in question)
+function setClickEventListeners() {
+    let board = document.getElementById("map");
+    for (let i = 0; i < board.children.length; i++) {
+        for (let j = 0; j < board.children[i].children.length; j++) {
+            board.children[i].children[j].addEventListener("click", clickCellEventHandler);
+        }
+    }
+}
+
+
+// call the function to create the board
+window.renderMap(5, 5)
+// don't forget to set the event handlers
+setClickEventListeners();

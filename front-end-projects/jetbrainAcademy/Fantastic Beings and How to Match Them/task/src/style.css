@@ -38,3 +38,12 @@
     border:solid rgb(103, 101, 168) 1px;
     background-color: rgb(103, 101, 168, 0.4);
 }
+
+
+/*
+whenever a cursor moves along a cell, the background changes
+*/
+.cell:hover {
+    background-image: url("images/cell-hover-bg.png");
+    background-size: cover;
+}
