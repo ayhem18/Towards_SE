@@ -13,6 +13,12 @@ creatureToImg.set(CREATURE_NAMES[2], `./images/${CREATURE_NAMES[2]}.png`)
 creatureToImg.set(CREATURE_NAMES[3], `./images/${CREATURE_NAMES[3]}.png`)
 creatureToImg.set(CREATURE_NAMES[4], `./images/${CREATURE_NAMES[4]}.png`)
 
+
+// a global variable to save the number of cleared cells in each column, row
+const CLEARED_BY_ROW = new Map();
+const CLEARED_BY_COLUMN = new Map();
+
+
 function getRandomCreature() {
     let creatureIndex = Math.floor(Math.random() * creatureToImg.size);
     return CREATURE_NAMES[creatureIndex];
@@ -42,14 +48,26 @@ function initializeMap(n_rows, n_cols) {
             let cell = document.createElement("td");
             // make sure to set its class to "cell"
             cell.classList.add("cell");
+            // add an attribute to the cell node that determines its coordinates
+            cell.setAttribute("data-coords", `x${j}_y${i}`)
             // add it as a child to the row html element
             row.appendChild(cell);
         }
         // having all the cells in the row added, add the row to the board html element
         board.appendChild(row);
     }
-}
+    // after initializing the map, set the values in the CLEARED_BY_ROW and CLEARED_BY_COLUMN accordingly
+    // writing this piece of code in the initializeMap function ensures that those variables will be set correctly
+    // when redrawing the map
+    for (let i = 0; i < n_rows; i++) {
+        CLEARED_BY_ROW.set(i, 0)
+    }
 
+    for (let i = 0; i < n_cols; i++) {
+        CLEARED_BY_COLUMN.set(i, 0)
+    }
+
+}
 
 function renderMap(nRows, nCols) {
     const randomCreaturesMap = getRandomCreaturesMap(nRows, nCols);
@@ -87,7 +105,6 @@ function renderMap(nRows, nCols) {
         }
     }
 }
-
 
 function redrawMap(creaturesMap) {
     // make sure the creaturesMap object is a multidimensional array
@@ -127,7 +144,6 @@ function redrawMap(creaturesMap) {
     return true;
 }
 
-
 // a function to clear the map
 function clear_map() {
     let board = document.getElementById("map");
@@ -139,14 +155,8 @@ window.renderMap = renderMap;
 window.redrawMap = redrawMap;
 window.clearMap = clear_map;
 
-// let user_clear_map = confirm("clear the board ?")
-//
-// if (user_clear_map){
-//     window.clearMap();
-// }
 
-
-// global variable saving the currently clicked cell
+// a global variable saving the currently clicked cell
 let CLICKED_CELL = null;
 
 // functions to handle the game play
@@ -164,7 +174,6 @@ function getCoordinates(cell) {
 
     return Array.of(y1, x1);
 }
-
 
 // check if two cells are adjacent
 function areCellsAdjacent(cell1, cell2) {
@@ -195,7 +204,7 @@ function getCell(y, x) {
 function findSequences(y, x) {
     let board = document.getElementById("map");
     let maxY = board.children.length;
-    let maxX = board.children[0].length;
+    let maxX = board.children[0].children.length;
 
     // first step is to extract the cell
     let initialCell = getCell(y, x);
@@ -206,98 +215,134 @@ function findSequences(y, x) {
     // upwards
     let up_y = y;
 
-    while (up_y >= 0) {
-        let currentBeingName = getCell(up_y, x).getAttribute("data-being");
-        if (beingName !== currentBeingName) {
-            break;
-        }
+    while ((up_y - 1 >= 0) &&
+    (getCell(up_y - 1, x).getAttribute("data-being")) === beingName) {
         up_y -= 1;
     }
 
     // downwards
     let down_y = y;
 
-    while (down_y < maxY) {
-        let currentBeingName = getCell(down_y, x).getAttribute("data-being");
-        if (beingName !== currentBeingName) {
-            break;
-        }
+    while ((down_y + 1 < maxY) &&
+    (getCell(up_y + 1, x).getAttribute("data-being")) === beingName) {
         down_y += 1;
     }
 
-    // consider the horizontal direction
-    // to the right
+    // consider the horizontal direction: to the right
     let right_x = x;
 
-    while (right_x < maxX) {
-        let currentBeingName = getCell(y, right_x).getAttribute("data-being");
-        if (beingName !== currentBeingName) {
-            break;
-        }
-        right_x += 1;
+    while ((right_x + 1 < maxX) &&
+    (getCell(y, right_x + 1).getAttribute("data-being")) === beingName) {
+        down_y += 1;
     }
 
     // to the left
     let left_x = x;
 
-    while (left_x >= 0) {
-        let currentBeingName = getCell(y, left_x).getAttribute("data-being");
-        if (beingName !== currentBeingName) {
-            break;
-        }
+    while((left_x -1 >= 0) &&
+    (getCell(y, left_x - 1).getAttribute("data-being")) === beingName) {
         left_x -= 1;
-    }
-
-    let cleared_cells = [];
+    }    
+    
+    let clearedCellsCoordinates= [];
 
     // create an array to save the coordinates of the cell to be cleared
     if (right_x - left_x + 1 >= 3) {
         for (let i = left_x; i <= right_x; i++) {
-            cleared_cells.push([y, i]);
+            clearedCellsCoordinates.push([y, i]);
         }
     }
 
     if (down_y - up_y + 1 >= 3) {
         for(let i = up_y; i <= down_y; i++) {
-            cleared_cells.push([i, x]);
+            clearedCellsCoordinates.push([i, x]);
         }
     }
 
-    return cleared_cells;
+    return clearedCellsCoordinates;
+}
+
+function update_after_clearing_rows(rowIndex) {
+    // the idea here is to update the coordinates of each row with an index larger than the passed one
+    const board = document.getElementById("map");
+    for (let i = rowIndex + 1; i < board.children.length; i++) {
+        for (let j = 0; j < board.children[i].children.length; j++) {
+            let cell = board.children[i].children[j];
+            // update the data-coords field for the cell element
+            cell.setAttribute("data-coords", `x${j}_y${i-1}`)
+            // update the same attribute for the image if it exists (the cell might be cleared already)
+            if (cell.innerHTML !== "") {
+                cell.children[0].setAttribute("data-coords", `y${j}_y${i-1}`);
+            }
+        }
+    }
+}
+
+function update_after_clearing_columns(columnIndex) {
+    // the idea here is update all the columns
+    const board = document.getElementById("map");
+    for (let i = 0; i < board.children.length; i++) {
+        for (let j = columnIndex + 1; j < board.children[i].children.length; j++) {
+            let cell = board.children[i].children[j];
+            // update the data-coords field for the cell element
+            cell.setAttribute("data-coords", `x${j - 1}_y${i}`)
+            // update the same attribute for the image if it exists (the cell might be cleared already)
+            if (cell.innerHTML !== "") {
+                cell.children[0].setAttribute("data-coords", `y${j - 1}_y${i}`);
+            }
+        }
+    }
 }
 
 function clearCells(cellCoordinates) {
+
+    const board = document.getElementById("map");
+    let maxRows = board.children.length;
+    let maxCols = board.children[0].children.length;
+
     for (let i = 0; i < cellCoordinates.length; i++) {
         let y = cellCoordinates[i][0];
         let x = cellCoordinates[i][1];
         let cell = getCell(y, x);
         cell.innerHTML = "";
+        // make sure to increase the number of cleared cells by row and column
+        // the column is determined by "x"
+        CLEARED_BY_COLUMN.set(x, CLEARED_BY_COLUMN.get(x) + 1);
+        CLEARED_BY_ROW.set(y, CLEARED_BY_ROW.get(y) + 1);
+    }
+
+    // make sure to start with later rows
+
+    for (let i = maxRows - 1; i >= 0; i--) {
+        if (CLEARED_BY_ROW.get(i) === maxRows) { // this means the i-th row has been fully cleared
+            // get the current coordinates
+            update_after_clearing_rows(i);
+        }
+    }
+
+    // make sure to start with later columns
+    for (let i = maxCols - 1; i >=0 ; i--) {
+        if (CLEARED_BY_COLUMN.get(i) === maxCols) { // this means the i-th row has been fully cleared
+            // get the current coordinates
+            update_after_clearing_columns(i);
+        }
     }
 }
 
 function swap(cell1, cell2) {
-    // the idea is simple, just swap the innerHTML values
-    let c1 = getCoordinates(cell1.children[0]);
-    let c2 = getCoordinates(cell2.children[0]);
-
-    let y1 = c1[0];
-    let x1 = c1[1];
-
-    let y2 = c2[0];
-    let x2 = c2[1];
-
-    let c1_str = `x${x1}_y${y1}`;
-    let c2_str = `x${x2}_y${y2}`;
-
-    // make sure to update the `data-coords` attribute in the swapped images
-    cell1.children[0].setAttribute("data-coords", c1_str);
-    cell2.children[0].setAttribute("data-coords", c2_str);
-
     // swap the inner html
     let temp = cell1.innerHTML;
     cell1.innerHTML = cell2.innerHTML;
     cell2.innerHTML = temp;
 
+    // swap the being attributes on the cell element
+    temp = cell1.getAttribute("data-being");
+    cell1.setAttribute("data-being", cell2.getAttribute("data-being"));
+    cell2.setAttribute("data-being", temp);
+
+    // make sure to update the data-coords attribute of the image child node as well
+    cell1.children[0].setAttribute("data-coords", cell1.getAttribute("data-coords"));
+    cell2.children[0].setAttribute("data-coords", cell2.getAttribute("data-coords"));
 }
 
 function selectCell(cell) {
@@ -312,16 +357,14 @@ function deselectCell(cell) {
     cell.style.backgroundSize = null
 }
 
-
 function clickCellEventHandler(event) {
 
     // step1: extract the event target
     let targetCell = event.target.parentNode;
-    console.log(`The cell ${targetCell.dataset} is clicked!`);
 
     // step2 proceed depending on the value of CLICKED_CELL
     if (CLICKED_CELL === null) {
-        console.log("first cell clicked");
+        //console.log("first cell clicked");
         CLICKED_CELL = targetCell;
         selectCell(targetCell);
         return;
@@ -330,25 +373,35 @@ function clickCellEventHandler(event) {
     // at this point the CLICKED_CELL was set before the event
     if (CLICKED_CELL === targetCell) {
         // will be interpreted as deselecting the cell
-        console.log("cell deselected")
+        //console.log("cell deselected")
         deselectCell(targetCell);
+        CLICKED_CELL = null;
         return;
     }
 
     // at this point the CLICKED_CELL is set and the target cell is different from CLICKED_CELL
     // step1: make sure the cells are adjacent
-    // the coordinate attributes are saved at the image level and not the cell level (unfortuately)
-    if (! areCellsAdjacent(CLICKED_CELL.children[0], targetCell.children[0])) {
+    // the coordinate attributes are saved at the image level and not the cell level (unfortunately)
+    if (! areCellsAdjacent(CLICKED_CELL, targetCell)) {
         return;
     }
 
     swap(CLICKED_CELL, targetCell);
     deselectCell(CLICKED_CELL);
+
+    // // before setting the CLICKED cell to null, find some sequences
+    let targetCoords = getCoordinates(targetCell);
+
+    let ty = targetCoords[0];
+    let tx = targetCoords[1];
+
+    // let sequences = findSequences(ty, tx);
+
+    // clearCells(sequences);
+
     CLICKED_CELL = null;
 
-
 }
-
 
 // add the event listener
 // the event handling mechanism should probably be moved to th board element

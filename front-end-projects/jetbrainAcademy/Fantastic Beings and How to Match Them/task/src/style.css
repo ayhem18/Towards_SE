@@ -44,6 +44,6 @@
 whenever a cursor moves along a cell, the background changes
 */
 .cell:hover {
-    background-image: url("images/cell-hover-bg.png");
+    background-image: url("cell-hover-bg.png");
     background-size: cover;
 }
