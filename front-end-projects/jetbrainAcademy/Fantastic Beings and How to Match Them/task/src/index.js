@@ -50,6 +50,9 @@ function initializeMap(n_rows, n_cols) {
             cell.classList.add("cell");
             // add an attribute to the cell node that determines its coordinates
             cell.setAttribute("data-coords", `x${j}_y${i}`)
+            cell.setAttribute("data-x", `${j}`);
+            cell.setAttribute("data-y", `${i}`);
+
             // add it as a child to the row html element
             row.appendChild(cell);
         }
@@ -59,6 +62,9 @@ function initializeMap(n_rows, n_cols) {
     // after initializing the map, set the values in the CLEARED_BY_ROW and CLEARED_BY_COLUMN accordingly
     // writing this piece of code in the initializeMap function ensures that those variables will be set correctly
     // when redrawing the map
+    CLEARED_BY_ROW.clear();
+    CLEARED_BY_COLUMN.clear();
+
     for (let i = 0; i < n_rows; i++) {
         CLEARED_BY_ROW.set(i, 0)
     }
@@ -99,8 +105,6 @@ function renderMap(nRows, nCols) {
             let creatureImage = document.createElement("img");
             creatureImage.setAttribute("src",creatureToImg.get(beingName));
             creatureImage.setAttribute("data-coords", `x${j}_y${i}`);
-            creatureImage.style.width = "80%";
-            creatureImage.style.margin = "0 10% 0 10%";
             cell.appendChild(creatureImage);
         }
     }
@@ -161,18 +165,21 @@ let CLICKED_CELL = null;
 
 // functions to handle the game play
 function getCoordinates(cell) {
-    let coords_1 = cell.dataset['coords'];
-
-    if (coords_1 === undefined) {
-        throw `The HTML elements are expected to have data-coords  attributes.`;
-    }
-
-    let c1 = coords_1.split("_");
-
-    let x1 = parseInt(c1[0][1]);
-    let y1 = parseInt(c1[1][1]);
-
-    return Array.of(y1, x1);
+    let y = parseInt(cell.dataset["y"]);
+    let x = parseInt(cell.dataset["x"]);
+    return Array.of(y, x);
+    // let coords_1 = cell.dataset['coords'];
+    //
+    // if (coords_1 === undefined) {
+    //     throw `The HTML elements are expected to have data-coords  attributes.`;
+    // }
+    //
+    // let c1 = coords_1.split("_");
+    //
+    // let x1 = parseInt(c1[0][1]);
+    // let y1 = parseInt(c1[1][1]);
+    //
+    // return Array.of(y1, x1);
 }
 
 // check if two cells are adjacent
@@ -210,6 +217,10 @@ function findSequences(y, x) {
     let initialCell = getCell(y, x);
     let beingName = initialCell.getAttribute("data-being");
 
+    if (beingName === null) {
+        throw "a selected cell with a null beingName";
+    }
+
     // first consider the vertical direction
 
     // upwards
@@ -224,34 +235,34 @@ function findSequences(y, x) {
     let down_y = y;
 
     while ((down_y + 1 < maxY) &&
-    (getCell(up_y + 1, x).getAttribute("data-being")) === beingName) {
+    (getCell(down_y + 1, x).getAttribute("data-being")) === beingName) {
         down_y += 1;
     }
 
-    // consider the horizontal direction: to the right
-    let right_x = x;
-
-    while ((right_x + 1 < maxX) &&
-    (getCell(y, right_x + 1).getAttribute("data-being")) === beingName) {
-        down_y += 1;
-    }
-
-    // to the left
-    let left_x = x;
-
-    while((left_x -1 >= 0) &&
-    (getCell(y, left_x - 1).getAttribute("data-being")) === beingName) {
-        left_x -= 1;
-    }    
+    // // consider the horizontal direction: to the right
+    // let right_x = x;
+    //
+    // while ((right_x + 1 < maxX) &&
+    // (getCell(y, right_x + 1).getAttribute("data-being")) === beingName) {
+    //     right_x += 1;
+    // }
+    //
+    // // to the left
+    // let left_x = x;
+    //
+    // while((left_x -1 >= 0) &&
+    // (getCell(y, left_x - 1).getAttribute("data-being")) === beingName) {
+    //     left_x -= 1;
+    // }
     
     let clearedCellsCoordinates= [];
 
     // create an array to save the coordinates of the cell to be cleared
-    if (right_x - left_x + 1 >= 3) {
-        for (let i = left_x; i <= right_x; i++) {
-            clearedCellsCoordinates.push([y, i]);
-        }
-    }
+    // if (right_x - left_x + 1 >= 3) {
+    //     for (let i = left_x; i <= right_x; i++) {
+    //         clearedCellsCoordinates.push([y, i]);
+    //     }
+    // }
 
     if (down_y - up_y + 1 >= 3) {
         for(let i = up_y; i <= down_y; i++) {
@@ -276,6 +287,21 @@ function update_after_clearing_rows(rowIndex) {
             }
         }
     }
+    // remove the <tr> element from the board
+    board.children[rowIndex].remove();
+
+    // update the CLEARED_BY_ROW variable as follows:
+    // for each row larger than rowIndex, move the value CLEARED_BY_ROW[i] to the key i - 1
+    for (let i = rowIndex + 1; i < board.children.length; i++) {
+        CLEARED_BY_ROW.set(i - 1, CLEARED_BY_ROW.get(i));
+    }
+    // remove the last row
+    CLEARED_BY_ROW.delete(board.children.length - 1);
+
+    // decrement the number of cleared cells in each column
+    for (let i = 0; i <= board.children[0].length; i++) {
+        CLEARED_BY_COLUMN.set(i, CLEARED_BY_COLUMN.get(i) - 1);
+    }
 }
 
 function update_after_clearing_columns(columnIndex) {
@@ -291,42 +317,60 @@ function update_after_clearing_columns(columnIndex) {
                 cell.children[0].setAttribute("data-coords", `y${j - 1}_y${i}`);
             }
         }
+        // remove the <td> cell completely from the dom
+        board.children[i].children[columnIndex].remove();
+    }
+
+    // update the CLEARED_BY_COLUMN variable as follows
+    // for each row column larger than columnIndex, move the value CLEARED_BY_COLUMN[i] to the key i - 1
+    for (let i = columnIndex + 1; i < board.children[0].length; i++) {
+        CLEARED_BY_COLUMN.set(i - 1, CLEARED_BY_COLUMN.get(i));
+    }
+    CLEARED_BY_COLUMN.delete(board.children[0].length - 1);
+
+    // decrement the number of cleared cells in each row
+    for (let i = 0; i <= board.children.length; i++) {
+        CLEARED_BY_ROW.set(i, CLEARED_BY_ROW.get(i) - 1);
     }
 }
 
 function clearCells(cellCoordinates) {
 
-    const board = document.getElementById("map");
-    let maxRows = board.children.length;
-    let maxCols = board.children[0].children.length;
+    // const board = document.getElementById("map");
+    // let maxRows = board.children.length;
+    // let maxCols = board.children[0].children.length;
 
     for (let i = 0; i < cellCoordinates.length; i++) {
         let y = cellCoordinates[i][0];
         let x = cellCoordinates[i][1];
         let cell = getCell(y, x);
+        // make sure to remove the image
         cell.innerHTML = "";
+        // make sure to set the attribute to None, so it won't be used
+        cell.setAttribute("data-being", '');
+
         // make sure to increase the number of cleared cells by row and column
         // the column is determined by "x"
-        CLEARED_BY_COLUMN.set(x, CLEARED_BY_COLUMN.get(x) + 1);
-        CLEARED_BY_ROW.set(y, CLEARED_BY_ROW.get(y) + 1);
+        // CLEARED_BY_COLUMN.set(x, CLEARED_BY_COLUMN.get(x) + 1);
+        // CLEARED_BY_ROW.set(y, CLEARED_BY_ROW.get(y) + 1);
     }
 
-    // make sure to start with later rows
-
-    for (let i = maxRows - 1; i >= 0; i--) {
-        if (CLEARED_BY_ROW.get(i) === maxRows) { // this means the i-th row has been fully cleared
-            // get the current coordinates
-            update_after_clearing_rows(i);
-        }
-    }
-
-    // make sure to start with later columns
-    for (let i = maxCols - 1; i >=0 ; i--) {
-        if (CLEARED_BY_COLUMN.get(i) === maxCols) { // this means the i-th row has been fully cleared
-            // get the current coordinates
-            update_after_clearing_columns(i);
-        }
-    }
+    // // make sure to start with later rows
+    //
+    // for (let i = maxRows - 1; i >= 0; i--) {
+    //     if (CLEARED_BY_ROW.get(i) === maxRows) { // this means the i-th row has been fully cleared
+    //         // get the current coordinates
+    //         update_after_clearing_rows(i);
+    //     }
+    // }
+    //
+    // // make sure to start with later columns
+    // for (let i = maxCols - 1; i >=0 ; i--) {
+    //     if (CLEARED_BY_COLUMN.get(i) === maxCols) { // this means the i-th row has been fully cleared
+    //         // get the current coordinates
+    //         update_after_clearing_columns(i);
+    //     }
+    // }
 }
 
 function swap(cell1, cell2) {
@@ -360,7 +404,17 @@ function deselectCell(cell) {
 function clickCellEventHandler(event) {
 
     // step1: extract the event target
-    let targetCell = event.target.parentNode;
+    let targetCell = event.target;
+
+    // check if the target cell is an image element
+    if (targetCell.tagName.toLowerCase() === "img") {
+        targetCell = targetCell.parentNode;
+    }
+
+    if (targetCell.innerHTML === "") {
+        alert("An empty cell cannot be selected");
+        return;
+    }
 
     // step2 proceed depending on the value of CLICKED_CELL
     if (CLICKED_CELL === null) {
@@ -389,18 +443,32 @@ function clickCellEventHandler(event) {
     swap(CLICKED_CELL, targetCell);
     deselectCell(CLICKED_CELL);
 
-    // // before setting the CLICKED cell to null, find some sequences
+    // find whether the target cell is part of some sequence
     let targetCoords = getCoordinates(targetCell);
-
     let ty = targetCoords[0];
     let tx = targetCoords[1];
+    let sequences1 = findSequences(ty, tx);
 
-    // let sequences = findSequences(ty, tx);
 
-    // clearCells(sequences);
+    // find whether the clicked cell is part of some sequence
+    targetCoords = getCoordinates(CLICKED_CELL);
+    ty = targetCoords[0];
+    tx = targetCoords[1];
+    let sequences2 = findSequences(ty, tx)
+
+    // push all elements of the 2nd sequence to the first one
+    sequences1.push(...sequences2);
+
+    if (sequences1.length === 0) {
+        // swap the clicked and target cell back
+        swap(CLICKED_CELL, targetCell);
+
+    } else {
+        // clear the sequences
+        clearCells(sequences1);
+    }
 
     CLICKED_CELL = null;
-
 }
 
 // add the event listener
@@ -410,7 +478,9 @@ function setClickEventListeners() {
     let board = document.getElementById("map");
     for (let i = 0; i < board.children.length; i++) {
         for (let j = 0; j < board.children[i].children.length; j++) {
-            board.children[i].children[j].addEventListener("click", clickCellEventHandler);
+            // board.children[i].children[j].addEventListener("click", clickCellEventHandler);
+            let cell = board.children[i].children[j];
+            cell.addEventListener("click", clickCellEventHandler);
         }
     }
 }
@@ -418,5 +488,13 @@ function setClickEventListeners() {
 
 // call the function to create the board
 window.renderMap(5, 5)
+
+// window.renderMap(3, 3)
+
+// window.redrawMap([
+//     ['kelpie', 'puffskein', 'puffskein'],
+//     ['swooping', 'zouwu', 'puffskein'],
+//     ['kelpie', 'puffskein', 'zouwu']
+// ]);
 // don't forget to set the event handlers
 setClickEventListeners();

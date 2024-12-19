@@ -140,12 +140,13 @@ class Test extends StageTest {
             await being1.click();
             const being2 = await this.page.findBySelector('img[data-coords=x2_y2]');
             await being2.click();
-            sleep(500);
+            sleep(10000);
 
             this.cells = await this.page.findAllBySelector('.cell[data-being]');
             const neededCells = ['kelpie', 'puffskein', '', 'swooping', 'zouwu', '', 'kelpie', 'zouwu', ''];
-            for (let i = 0; i < this.cells.length; i++) {
-                if (await this.cells[i].getAttribute('data-being') !== neededCells[i]) {
+            for (let i = this.cells.length - 1; i >=0 ; i--) {
+                let val = await this.cells[i].getAttribute('data-being');
+                if (val !== neededCells[i]) {
                     return wrong(`After clicking on adjacent elements, the resulting sequences of identical creatures should be removed.`);
                 }
             }

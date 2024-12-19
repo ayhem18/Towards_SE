@@ -39,6 +39,10 @@
     background-color: rgb(103, 101, 168, 0.4);
 }
 
+img {
+    width: 80%;
+    margin: 0 10% 0 10%;
+}
 
 /*
 whenever a cursor moves along a cell, the background changes
