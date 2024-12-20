@@ -63,7 +63,7 @@ class Test extends StageTest {
         this.node.execute(async () => {
             const being = await this.page.findBySelector('img[data-coords=x0_y0]');
             await being.hover();
-            sleep(500);
+            sleep(500)
 
             const cell = await this.page.findBySelector('.cell');
             let style = await cell.getComputedStyles();
@@ -72,7 +72,23 @@ class Test extends StageTest {
                 correct() :
                 wrong(`The clicked cell must have a background image.`);
         }),
-        //Test#7 - check click on non-neighboring cells
+        //Test#7 - check game-footer object
+        this.node.execute(async () => {
+            await this.page.refresh();
+            sleep(500);
+            let gameResult = await this.page.findBySelector('#game-footer');
+            let content = '';
+            if (gameResult) {
+                content = await gameResult.innerHtml();
+            } else {
+                return wrong(`The page must contain the #game-footer element.`);
+            }
+
+            return content === 'Swap animals to form a sequence of three in a row' ?
+                correct() :
+                wrong(`The game-footer element should contain a line with game instruction (your line: ${content}.`);
+        }),
+        //Test#8 - check click on non-neighboring cells
         this.node.execute(async () => {
             await this.page.refresh();
             sleep(500);
@@ -91,7 +107,7 @@ class Test extends StageTest {
                 correct() :
                 wrong(`When you click on one cell and the second click on another, non-adjacent cell, nothing should happen.`);
         }),
-        //Test#8 - check clearMap function
+        //Test#9 - check clearMap function
         this.page.execute(() => {
             if (window.clearMap instanceof Function) {
                 window.clearMap();
@@ -103,7 +119,7 @@ class Test extends StageTest {
                 correct() :
                 wrong(`Check your window.clearMap() function, now after it works, not all map cells are cleared.`)
         }),
-        //Test#9 - check renderMap function
+        //Test#10 - check renderMap function
         this.page.execute(() => {
             if (window.renderMap instanceof Function) {
                 window.renderMap(5, 5);
@@ -115,50 +131,108 @@ class Test extends StageTest {
                 correct() :
                 wrong(`Check your window.renderMap() function. When trying to draw a 5 by 5 map, it draws a map consisting of ${this.cells.length} cells.`)
         }),
-        //Test#10 - check window.redrawMap
+        //Test#11 - check window.redrawMap
         this.page.execute(() => {
             window.clearMap();
             window.renderMap(3, 3);
             try {
                 window.redrawMap([
                     ['kelpie', 'puffskein', 'puffskein'],
-                    ['swooping', 'zouwu', 'puffskein'],
+                    ['zouwu', 'zouwu', 'puffskein'],
                     ['kelpie', 'puffskein', 'zouwu']
                 ]);
             } catch (e) {
                 return wrong(`Check the window.redrawMap method - it should not throw any errors: ` + e);
             }
-            let cellObjects = document.getElementsByClassName('cell');
-
             window.generateRandomBeingName = function() {
                 if (!window.generateNameFlag) window.generateNameFlag = 1;
                 window.generateNameFlag++;
                 let being = generateNameFlag % 2 === 0 ? 'puffskein' : 'zouwu';
                 return being;
             }
-            return cellObjects[5]?.dataset.being === 'puffskein' && cellObjects[8]?.dataset.being === 'zouwu' ?
+            let cellObjects = document.getElementsByClassName('cell');
+            return cellObjects[5].dataset.being === 'puffskein' && cellObjects[8].dataset.being === 'zouwu' ?
                 correct() :
                 wrong(`Check the window.redrawMap method - at the moment it does not add creatures to the positions specified in the array.`)
         }),
-        //Test#11 - check click on neighboring cells
+        //Test#12 - check victory
         this.node.execute(async () => {
-            sleep(500);
             const being1 = await this.page.findBySelector('img[data-coords=x1_y2]');
             await being1.click();
             const being2 = await this.page.findBySelector('img[data-coords=x2_y2]');
             await being2.click();
             sleep(1500);
 
-            this.cells = await this.page.findAllBySelector('.cell[data-being]');
-            const neededCells = ['kelpie', 'puffskein', 'puffskein', 'swooping', 'zouwu', 'zouwu', 'kelpie', 'zouwu', 'puffskein'];
+            let movesValue = await this.page.findBySelector('#moves-value');
+            let zouwuCount = await this.page.findBySelector('#beings-for-win span.zouwu');
+            let gameResult = await this.page.findBySelector('#game-footer');
+            let scoreObj = await this.page.findBySelector('#score-value');
 
-            for (let i = 0; i < this.cells.length; i++) {
-                if (await this.cells[i].getAttribute('data-being') !== neededCells[i]) {
-                    return wrong(`After clicking on adjacent elements, the resulting sequences of identical creatures should be removed.`);
-                }
+            let moves = await movesValue?.innerHtml();
+            let zouwu = await zouwuCount?.innerHtml();
+            let res = await gameResult?.innerHtml();
+            let score = await scoreObj?.innerHtml();
+
+            await this.page.refresh();
+            sleep(1000);
+
+            return moves === '0' && zouwu === '0' && score === '30' && res === 'You won! Reload the page to start the game again.' ?
+                correct() :
+                wrong(`If you win, you should have 0 moves (you have ${moves} moves), 0 creatures named zouwu (you have ${zouwu} zouwu), 
+30 score (you have ${score} score) and the game-footer element should contain a line about the victory (your line: ${res}.`);
+        }),
+        //Test#13 - check font
+        this.page.execute(() => {
+            window.clearMap();
+            window.renderMap(3, 3);
+            window.redrawMap([
+                ['kelpie', 'puffskein', 'kelpie'],
+                ['salamander', 'salamander', 'puffskein'],
+                ['kelpie', 'puffskein', 'salamander']
+            ]);
+            window.generateRandomBeingName = function() {
+                if (!window.generateNameFlag) window.generateNameFlag = 1;
+                window.generateNameFlag++;
+                let being = generateNameFlag % 2 === 0 ? 'puffskein' : 'zouwu';
+                return being;
             }
 
-            return correct();
+            const scoreValue = window.getComputedStyle(document.querySelector('#score-value'));
+            const movesValue = window.getComputedStyle(document.querySelector('#moves-value'));
+            const gameFooter = window.getComputedStyle(document.querySelector('#game-footer'));
+
+            return scoreValue.fontFamily.includes('Marmelad') && gameFooter.fontFamily.includes('Marmelad') &&
+            movesValue.fontFamily.includes('Marmelad') ?
+                correct() :
+                wrong(`Use the Marmelad font for #score-value, #moves-value and #game-footer elements.`);
+
+        }),
+        //Test#14 - check the loss
+        this.node.execute(async () => {
+            sleep(5500);
+
+            const being1 = await this.page.findBySelector('img[data-coords=x2_y1]');
+            await being1.click();
+            const being2 = await this.page.findBySelector('img[data-coords=x2_y2]');
+            await being2.click();
+            sleep(5500);
+
+            let movesValue = await this.page.findBySelector('#moves-value');
+            let zouwuCount = await this.page.findBySelector('#beings-for-win span.zouwu');
+            let gameResult = await this.page.findBySelector('#game-footer');
+            let scoreObj = await this.page.findBySelector('#score-value');
+
+            let moves = await movesValue.innerHtml();
+            let zouwu = await zouwuCount.innerHtml();
+            let res = await gameResult.innerHtml();
+            let score = await scoreObj.innerHtml();
+
+            return moves === '0' && zouwu === '3' && score === '0' && res === 'You lost! Reload the page to start the game again.' ?
+                correct() :
+                wrong(`If you lost, you should have 0 moves (you have ${moves} moves),
+                3 creatures named zouwu (you have ${zouwu} zouwu),
+                0 score (you have ${score} score)
+                and the game-footer element should contain a line about the loss (your line: ${res}.`);
         }),
     ]
 

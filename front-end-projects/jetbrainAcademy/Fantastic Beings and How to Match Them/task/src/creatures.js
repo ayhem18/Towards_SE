@@ -13,10 +13,11 @@ creatureToImg.set(CREATURE_NAMES[2], `./images/${CREATURE_NAMES[2]}.png`)
 creatureToImg.set(CREATURE_NAMES[3], `./images/${CREATURE_NAMES[3]}.png`)
 creatureToImg.set(CREATURE_NAMES[4], `./images/${CREATURE_NAMES[4]}.png`)
 
-function getRandomCreature() {
+function generateRandomBeingName() {
     let creatureIndex = Math.floor(Math.random() * creatureToImg.size);
     return CREATURE_NAMES[creatureIndex];
 }
+
 
 // a function to populate the board with creatures randomly
 function getRandomCreaturesMap(nRows, nCols) {
@@ -26,8 +27,12 @@ function getRandomCreaturesMap(nRows, nCols) {
     for (let i = 0; i < nRows; i++) {
         for (let j = 0; j < nCols; j++) {
             // get the random being
-            matrix[i][j] = getRandomCreature();
+            matrix[i][j] = generateRandomBeingName();
         }
     }
     return matrix;
 }
+
+// set it as an attribute to the window object.
+window.generateRandomBeingName = generateRandomBeingName;
+

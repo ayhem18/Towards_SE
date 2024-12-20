@@ -1,6 +1,28 @@
 // a function to set the "board" element as a table.
-function initializeMap(n_rows, n_cols) {
-    console.log("map initialized !!!!")
+
+function setCellAttributes(cell, y, x) {
+    cell.setAttribute("data-coords", `x${x}_y${y}`)
+    cell.setAttribute("data-y", `${y}`);
+    cell.setAttribute("data-x", `${x}`);
+}
+
+function setCellBeingInfo(cell, beingName,) {
+    if (cell.getAttribute("data-coords") === null) {
+        throw "The cell must have a 'data-coords' attribute";
+    }
+    // set additional attributes to the cell node
+    cell.setAttribute("data-being", beingName);
+    // create an image element
+    let creatureImage = document.createElement("img");
+    creatureImage.setAttribute("src",creatureToImg.get(beingName));
+    // set the image data-coords attribute to the same value as that of "data-coords"
+    creatureImage.setAttribute("data-coords", cell.getAttribute("data-coords"));
+    // add "img" element to the cell
+    cell.appendChild(creatureImage);
+}
+
+function initializeMap(n_rows, n_cols, initializeGamePlayVars) {
+    // console.log("map initialized !!!!")
 
     let board = document.getElementById("map");
     for (let i = 0; i < n_rows; i++) {
@@ -11,10 +33,7 @@ function initializeMap(n_rows, n_cols) {
             // make sure to set its class to "cell"
             cell.classList.add("cell");
             // add an attribute to the cell node that determines its coordinates
-            cell.setAttribute("data-coords", `x${j}_y${i}`)
-            cell.setAttribute("data-x", `${j}`);
-            cell.setAttribute("data-y", `${i}`);
-
+            setCellAttributes(cell, i, j);
             // add it as a child to the row html element
             row.appendChild(cell);
         }
@@ -22,16 +41,23 @@ function initializeMap(n_rows, n_cols) {
         board.appendChild(row);
     }
 
-    initializeVars(n_rows, n_cols);
+    initializeGamePlayVars(n_rows, n_cols);
 }
 
-function renderMap(nRows, nCols) {
+function setClickEventListeners(eventHandler) {
+    let board = document.getElementById("map");
+    for (let i = 0; i < board.children.length; i++) {
+        for (let j = 0; j < board.children[i].children.length; j++) {
+            board.children[i].children[j].addEventListener("click", eventHandler);
+        }
+    }
+}
+
+function render(nRows, nCols, initialGamePlayVars, clickCellEventHandler) {
     const randomCreaturesMap = getRandomCreaturesMap(nRows, nCols);
-    // let nRows = creaturesMap.length;
-    // let nCols = creaturesMap[0].length;
 
     // first initialize the map: DOM manipulation
-    initializeMap(nRows, nCols);
+    initializeMap(nRows, nCols, initialGamePlayVars);
 
     let board = document.getElementById("map");
 
@@ -43,26 +69,14 @@ function renderMap(nRows, nCols) {
             let beingName = randomCreaturesMap[i][j];
             // get the cell
             let cell = row.children[j];
-
-            // 1. set the "data-being" attribute
-            // 2. add the img HTML element to the cell's children
-
-            // set additional attributes to the cell node
-            cell.setAttribute("data-being", beingName);
-
-
-            // create an image element
-            let creatureImage = document.createElement("img");
-            creatureImage.setAttribute("src",creatureToImg.get(beingName));
-            creatureImage.setAttribute("data-coords", `x${j}_y${i}`);
-            cell.appendChild(creatureImage);
+            setCellBeingInfo(cell, beingName);
         }
     }
 
-    setClickEventListeners();
+    setClickEventListeners(clickCellEventHandler);
 }
 
-function redrawMap(creaturesMap) {
+function redraw     (creaturesMap, initializeGamePlayVars, clickCellEventHandler) {
     // make sure the creaturesMap object is a multidimensional array
     if (! (Array.isArray(creaturesMap) && Array.isArray(creaturesMap[0]))) {
         return false;
@@ -97,10 +111,10 @@ function redrawMap(creaturesMap) {
         }
     }
     // make sure to set the global variables correctly
-    initializeVars(nRows, nCols);
+    initializeGamePlayVars(nRows, nCols);
 
     // set the listeners
-    setClickEventListeners();
+    setClickEventListeners(clickCellEventHandler);
     // at this point everything is good
     return true;
 }
