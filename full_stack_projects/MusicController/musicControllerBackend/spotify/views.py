@@ -20,7 +20,7 @@ from .models import SpotifyAuthCode
 # https://developer.spotify.com/documentation/web-api/tutorials/code-flow
 
 
-# this view serves a single purpose: getting a authorization code that
+# this view serves a single purpose: getting an authorization code that
 # can be exchanged with an access token
 class SpotifyAppCodeView(CreateAPIView):
 
@@ -90,7 +90,7 @@ class SpotifyAppCodeView(CreateAPIView):
 
             print(f"received spotify response !!! with status code : {spotify_response.status_code}")
         except Exception as e:
-            print("Exception raise somewheree")
+            print("Exception raised somewhere")
             return Response(data={"error_message": "something broke while authorizing with spotify", "python_error": str(e)}, 
                             status=st.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -138,7 +138,7 @@ class SpotifyAppCodeView(CreateAPIView):
 
 
     def get_serializer(self, *args, **kwargs) -> SpotifyAuthCodeSerializer:
-        # override the method just to add a type hint an make everything abit more readable...
+        # override the method just to add a type hint and make everything a bit more readable...
         return super().get_serializer(*args, **kwargs)
 
 

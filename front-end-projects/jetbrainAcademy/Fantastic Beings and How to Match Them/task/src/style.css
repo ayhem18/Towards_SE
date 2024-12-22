@@ -1,3 +1,8 @@
+/**
+importing the Marmelad font from GoogleFonts
+ */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Marmelad&family=McLaren&family=Permanent+Marker&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
 #board {
     /*
     set the background image
@@ -5,19 +10,89 @@
     background-image: url("images/board-bg.png");
     background-size: cover; /* makes the image expand / shrink to cover the size of the element*/
 
+    /*expand across the entire viewport*/
     height: 100vh;
+    width: 100vw;
     padding: 0;
 }
 
-#status-bar {
 
-    width: 100%; /*the same width as its parent element*/
+/*
+STATUS BAR STYLING
+*/
+
+#status-bar {
+    /*the same width as its parent element*/
+    width: 100%;
     height: 10vw;
 
     background-image: url("images/state-panel-bg.png");
     background-size: cover;
-
 }
+
+/*
+SECTION FOR THE SCORES FOR EACH BEING
+*/
+
+#sb_img_container {
+    /*
+    the container itself should be placed correctly on the x-axis
+    */
+    margin-left: 28%;
+
+    /*set the dimensions to align it with the section of being images*/
+    height: 60%;
+    width: 18%;
+
+    display: flex;
+    flex-direction: row;
+
+    border: solid 1px black;
+}
+
+/*#sb_img_container > * {*/
+/*    max-height: 60%;*/
+/*}*/
+
+.being_status_bar_img {
+    /*since the parent of such elements will now be the flex container*/
+    /*height: 50%;*/
+    max-width:20%
+}
+
+.being_status_score_div {
+    /*this attribute allows positioning "count" span element lower on the status bar
+    */
+    position: relative;
+    /*max-width: 5%;*/
+}
+
+.being_count {
+    /*
+    these two attributes help position the actual number relatively lower
+    */
+    position: relative;
+    top: 50%;
+
+    font-family: "Marmelad", cursive;
+    font-size: 5em;
+}
+
+/*
+STYLING FOR THE MOVES SECTION
+*/
+
+/*#num_moves_container {*/
+/*    position: relative;*/
+/*}*/
+
+#num_moves_text {
+    position: relative;
+    top:50%;
+}
+
+
+
 
 #map {
     height: 60vh;
@@ -39,7 +114,7 @@
     background-color: rgb(103, 101, 168, 0.4);
 }
 
-img {
+img .being_cell_img{
     width: 80%;
     margin: 0 10% 0 10%;
 }
@@ -50,4 +125,14 @@ whenever a cursor moves along a cell, the background changes
 .cell:hover {
     background-image: url("cell-hover-bg.png");
     background-size: cover;
+}
+
+footer {
+    /*
+    */
+    position: relative;
+    bottom: 10%;
+
+    width: 100%;
+    height: 10vw;
 }

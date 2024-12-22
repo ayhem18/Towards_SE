@@ -9,18 +9,57 @@
 
 
 <main id = "board">
-    <div id = "status-bar">
+    <div id = "status-bar"> 
+
+        <div id="sb_img_container">
+
+            <img class="being_status_bar_img" id="zoowu_img"  src="./images/zouwu.png" alt="">
+            <div class="being_status_score_div">
+                <span class="being_count">3</span>
+            </div>
+
+            <img class="being_status_bar_img" id="kelpie_img"  src="./images/kelpie.png" alt="">
+            <div class="being_status_score_div">
+                <span class="being_count">0</span>
+            </div>
+
+            <img class="being_status_bar_img" src="./images/kelpie.png" alt="">
+            <div class="being_status_score_div">
+                <span class="being_count">0</span>
+            </div>
+
+            <img class="being_status_bar_img" src="./images/kelpie.png" alt="">
+            <div class="being_status_score_div">
+                <span class="being_count">0</span>
+            </div>
+
+        </div>
+
+<!--        the container to save the number of moves left-->
+        <div id="num_moves_container">
+            <span id="num_moves_text"> num moves 1</span>
+        </div>
+
+<!--        the container for the scores-->
+        <div id="score_container">
+
+        </div>
+
     </div>
 
     <table id = "map">
     </table>
 
-    <script src="creatures.js"></script>
-    <script src="canvas.js"></script>
-    <script src="gamePlay.js"></script>
-    <script src="index.js"></script>
+    <footer>
+
+    </footer>
 
 </main>
+
+<script src="creatures.js"></script>
+<script src="canvas.js"></script>
+<script src="gamePlay.js"></script>
+<script src="index.js"></script>
 
 </body>
 </html>

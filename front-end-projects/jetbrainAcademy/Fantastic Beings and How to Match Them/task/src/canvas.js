@@ -17,6 +17,10 @@ function setCellBeingInfo(cell, beingName,) {
     creatureImage.setAttribute("src",creatureToImg.get(beingName));
     // set the image data-coords attribute to the same value as that of "data-coords"
     creatureImage.setAttribute("data-coords", cell.getAttribute("data-coords"));
+
+    // make sure the image has a certain class to apply specific styling
+    creatureImage.classList.add("being_cell_img")
+
     // add "img" element to the cell
     cell.appendChild(creatureImage);
 }
