@@ -143,13 +143,11 @@ def check_bt():
 
 
 from arrays.medium import kthSmallest
-from arrays.twoPointers import maxIndexDiff
+from arrays.twoPointers import closestToZero
 
 def farray():
-    a = [10, 11, 12, 8, 7, 6, 5, 4, 3, 2, 1, 9]
-    print(maxIndexDiff(a))
-
-    pass
+    arr = [-5, 0, 1, 2, 3, 4]    
+    print(closestToZero(arr))
 
 if __name__ == '__main__':
     random.seed(0)

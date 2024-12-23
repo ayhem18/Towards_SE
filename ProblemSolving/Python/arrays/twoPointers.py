@@ -1,74 +1,43 @@
 """
-Well classifying problems is a bit difficult
+The idea of 2 pointers might have been tightly associated to some specific set of problems, but the idea is quite general.
 """
 
-# https://www.geeksforgeeks.org/problems/maximum-index-1587115620/1?page=1&category=Arrays&difficulty=Medium&status=unsolved&sortBy=submissions
-
-from typing import List
+from typing import List, Optional
 
 
-# the algorithm below doesn't woek
-def maxIndexDiff(a :List[int]):
-    maxs = {}
-    mins = {}
+# https://www.geeksforgeeks.org/problems/two-numbers-with-sum-closest-to-zero1737/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
 
-    counter = 0
-    n = len(a)
+def closestToZero (arr: List[int], n: Optional[int] = None) -> int:
+    """
+    This function finds the pair with the sum closest to zero. Such a sum is equivalent to find the sum with the minimum absolute value. 
+    """    
 
-    while counter + 1 < n:
+    # sort the array as it is not necessarily sorted
+    arr = sorted(arr)
 
-        initial = counter
-        while counter + 1 < n and a[counter] <= a[counter + 1]:
-            counter += 1
+    # set the length of the array
+    n = len(arr) if n is None else n
+
+    # set the pointers
+    p1, p2 = 0, n - 1
+
+    best_sum = arr[p1] + arr[p2]
+    current_sum = best_sum
+
+    while p1 < p2:
+        # the idea is simple
+        current_sum = arr[p1] + arr[p2] 
+
+        best_sum = min([current_sum, best_sum], key=lambda x: (abs(x), -x))
         
-        if counter != initial:
-            mins[len(mins)] = initial
+        if current_sum > 0:
+            p2 -= 1
 
-        # save the maximum value
-        maxs[len(maxs)] = counter
-
-        # at this point we know that a[counter] > a[counter + 1]
-        while counter + 1 < n and a[counter] > a[counter + 1]:
-            counter += 1
-
-    mins = [mins[i] for i in range(len(mins))]
-    maxs = [maxs[i] for i in range(len(maxs))]
-
-    if len(mins) == 0: # which means that sequence is decreasing
-        return 0
-
-
-    i1, i2 = 0, len(maxs) - 1
-
-    while True:
-        if a[mins[i1]] <= a[maxs[i2]]:
-            return maxs[i2] - mins[i1]
+        elif current_sum < 0:            
+            p1 += 1
         
-        next2 = i2
-        next1 = i1
+        else:
+            return 0
+        
 
-        while next2 >= 0 and a[maxs[next2]] <= a[maxs[i2]]:
-            next2 -= 1
-
-        while next1 < len(mins) and a[mins[next1]] >= a[mins[i1]]:
-            next1 += 1
-
-        # consider the possible candidates
-        candidates = []
-
-        if a[mins[next1]] <= a[maxs[next2]]:
-            candidates.append((next1, next2))
-
-        if a[mins[i1]] <= a[maxs[next2]]:
-            candidates.append((i1, next2))
-
-        if a[mins[next1]] <= a[maxs[i2]]:
-            candidates.append((next1, i2))
-
-        if len(candidates) > 0:
-            index1, index2 = max(candidates, key=lambda x: maxs[x[1]] - mins[x[0]])
-            return maxs[index2] - mins[index1]
-
-        i1 = next1
-        i2 = next2
-
+    return best_sum

@@ -2,44 +2,6 @@
 This file contains my solutions for some problems on 'arrays'
 """
 from math_utils import greatest_common_divisor
-from utils import random_array
-
-import math
-
-def longSubarrWthSumDivByK (arr: list[int],  n: int, K) : 
-    """
-    https://www.geeksforgeeks.org/problems/longest-subarray-with-sum-divisible-by-k1259/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=bottom_sticky_on_article 
-    """
-
-    total = 0
-    prefixSum = arr.copy()
-    for i, v in enumerate(arr):
-        total += v
-        prefixSum[i] = (total % K)
-
-    max_len = -1
-    for i, v in enumerate(prefixSum):
-        if v == 0:
-            max_len = i + 1
-    
-    # if the entire array has a sum divisible by 'K', then return already
-    if max_len == n:
-        return n
-
-    mods_indices = {}
-    for i, v in enumerate(prefixSum):
-        if v in mods_indices:
-            mods_indices[v][1] = i
-        else:
-            mods_indices[v] = [i, -1]
-
-    for _, pair in mods_indices.items():
-        if pair[1] != -1:
-            max_len = max(max_len, pair[1] - pair[0])
-
-    return max_len
-
-
 
 # this problem is the reason, I am considering studying Number Theory once again
 # rotate an array with any K using O(1) space
@@ -98,7 +60,6 @@ def rotate_linear_space(array: list, k:int):
 # https://www.geeksforgeeks.org/problems/sort-an-array-of-0s-1s-and-2s4231/1
 
 # method1: just save the indices of each value in a dictionary and then populate the array ; O(n) space complexity
-
 # sorting an array with known values can be done in o(1) with extra headache
 
 def sort_array_with_known_elements(array: list, targets: list = None):
@@ -148,45 +109,6 @@ def sort_array_with_known_elements(array: list, targets: list = None):
         sorted_array_end = pnt1
         target_value_index -= 1
         
-    
-
-# this problem is simply another problem in disguise
-# https://www.geeksforgeeks.org/problems/count-subarrays-with-equal-number-of-1s-and-0s-1587115620/1
-
-def countSubarrWithEqualZeroAndOne(arr, n = None):
-    if n is None:
-        n = len(arr)
-
-    # first convert 0s to -1
-    for i in range(n):
-        if arr[i] == 0:
-            arr[i] = -1
-
-    acc_sum_array = [0 for _ in range(n)]
-    ac_sum = 0
-
-    ac_sum_map = {}
-
-    for j in range(n):
-        ac_sum += arr[j]
-        acc_sum_array[j] = ac_sum 
-
-        if ac_sum not in ac_sum_map:
-            ac_sum_map[ac_sum] = 0 
-
-        ac_sum_map[ac_sum] += 1
-
-    res = 0
-
-    # now we have all the values
-    for s in acc_sum_array:
-        res += int(s == 0) 
-    
-    for _, v in ac_sum_map.items():        
-        res += (v * (v- 1)) // 2
-
-    return res
-
 
 # I am not sure if there is an in-place solution to this problem
 def rearrange(arr):
@@ -230,8 +152,6 @@ def rearrange(arr):
         index_num += 1
 
     return new_array    
-
-
 
 
 def rearrange_simpler(arr):
