@@ -2,6 +2,24 @@
 This script contains problems solved with the prefix array technique.
 """
 
+from typing import List, Union
+from collections import defaultdict
+
+def prefixSum(arr: List) -> Union[float, int]:
+    # the variable to save the sum at each point
+    s = 0
+    
+    # the array
+    acc_sum = [0 for _ in arr]
+
+    # the loop to save the accumulative sums
+    for index, v in enumerate(arr):
+        s += v
+        acc_sum[index] = s
+
+    return acc_sum        
+        
+
 # this one is kinda tough !!
 # the python version of the same algorithm exceeds the time limit imposed by GFG
 # the same algorithm written in C++ passes all tests !!
@@ -133,3 +151,33 @@ def countSubarrWithEqualZeroAndOne(arr, n = None):
         res += (v * (v- 1)) // 2
 
     return res
+
+
+# https://www.geeksforgeeks.org/problems/longest-span-with-same-sum-in-two-binary-arrays5142/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+def longestCommonSum(arr1: List[int], arr2: List[int]) -> int:
+    # I did not use the fact that arr1 and arr2 are binary which is slightly worrying me but still, why not...
+    accsum1 = prefixSum(arr1)
+    accsum2 = prefixSum(arr2)
+
+    max_span = 0
+
+    for i, (v1, v2) in enumerate(zip(accsum1, accsum2)):
+        if v1 == v2:
+            max_span = i + 1
+
+    diff_hash = defaultdict(lambda : [])
+
+    for index, (v1, v2) in enumerate(zip(accsum1, accsum2)):
+        d = v1 - v2
+        if d not in diff_hash or len(diff_hash[d]) == 1:
+            diff_hash[d].append(index)
+        else:
+            diff_hash[d][-1] = index
+
+    # iterate through the differences hashmap    
+    res = 0
+    for _, indices in diff_hash.items():
+        if len(indices) == 2:
+            res = max(indices[1] - indices[0], res) 
+
+    return max(max_span, res)

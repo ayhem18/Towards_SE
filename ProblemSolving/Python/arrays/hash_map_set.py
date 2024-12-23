@@ -30,7 +30,6 @@ def missingNumber(arr: List[int]) -> int:
 
 # 1st check: must have an even number of element 
 # save the count of elements with each reminder: {i: {# v | v % k = i }}
-# 
 
 def canPair(nums: List[int], k: int):
     if len(nums) % 2 == 1:
@@ -59,4 +58,56 @@ def canPair(nums: List[int], k: int):
             return False
         
     return True
+
+
+# going through few problems from this list: 
+# https://www.geeksforgeeks.org/hashing-data-structure/?ref=lbp
+# some of them are just dumb...
+
+# somehow this problem has an accuracy of 30%
+# https://www.geeksforgeeks.org/problems/incomplete-array3859/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+def countElements(n: int, a: List[int]) -> int:
+    min_val, max_val = a[0], a[0]
+    for v in a: 
+        min_val = min(min_val, v)
+        max_val = max(max_val, v)
+
+    return max_val - min_val + 1 - len(set(a))
+
+
+"""
+https://www.geeksforgeeks.org/problems/count-distinct-elements-in-every-window/1
+"""
+def countDistinct(arr, n, k):
+    counter = {}
+    for v in arr[:k]:
+        if v not in counter:
+            counter[v] = 0
+        counter[v] += 1
     
+    res = [0 for _ in range(n - k + 1)]
+    res[0] = len(counter)
+
+    for i in range(k, n):
+        val_remove = arr[i - k]
+        val_add = arr[i]
+
+        # add val_add
+        if val_add not in counter:
+            counter[val_add] = 0
+        
+        counter[val_add] += 1
+        
+        counter[val_remove] -= 1
+        if counter[val_remove] == 0:
+            del(counter[val_remove])
+
+        res[i - k + 1] = len(counter)
+
+    return res
+
+
+# https://www.geeksforgeeks.org/problems/find-rectangle-with-corners-as-1--141631/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card 
+def ValidCorner(matrix: List[List[int]]): 
+    # iterate thorugh
+    pass

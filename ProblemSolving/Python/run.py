@@ -144,10 +144,24 @@ def check_bt():
 
 from arrays.medium import kthSmallest
 from arrays.twoPointers import closestToZero
+from arrays.prefixArray import longestCommonSum
 
 def farray():
-    arr = [-5, 0, 1, 2, 3, 4]    
-    print(closestToZero(arr))
+    # arr1 = [0, 1, 0, 0, 0, 0]
+    # arr2 = [1, 0, 1, 0, 0, 1]
+
+    # arr1 = [0, 0, 1, 1, 0, 0] 
+    # arr2 = [1, 0, 1, 0, 0, 1]
+
+    arr1 = [1]
+    arr2 = [1]
+
+    print(longestCommonSum(arr1, arr2))
+
+    arr1 = [0, 0, 1, 1]
+    arr2 = [1, 0, 0, 1]
+
+    print(longestCommonSum(arr1, arr2))
 
 if __name__ == '__main__':
     random.seed(0)

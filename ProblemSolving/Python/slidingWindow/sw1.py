@@ -84,33 +84,3 @@ def longestUniqueSubsttr(string):
     return max_len
 
         
-"""
-https://www.geeksforgeeks.org/problems/count-distinct-elements-in-every-window/1
-"""
-def countDistinct(arr, n, k):
-    counter = {}
-    for v in arr[:k]:
-        if v not in counter:
-            counter[v] = 0
-        counter[v] += 1
-    
-    res = [0 for _ in range(n - k + 1)]
-    res[0] = len(counter)
-
-    for i in range(k, n):
-        val_remove = arr[i - k]
-        val_add = arr[i]
-
-        # add val_add
-        if val_add not in counter:
-            counter[val_add] = 0
-        
-        counter[val_add] += 1
-        
-        counter[val_remove] -= 1
-        if counter[val_remove] == 0:
-            del(counter[val_remove])
-
-        res[i - k + 1] = len(counter)
-
-    return res
