@@ -1,8 +1,8 @@
 header *{
-    /*this class is designed to appear not top the web page reaglrdless*/
+    /*this class is designed to appear on top of the page regardless*/
     position: fixed;
     top: 0px;
-    margin-top:0px auto;
+    margin:0px auto auto auto;
     /*positioned elements (with position value != static) are stacked up on the web page depending on the value of z-index*/        
     z-index:2; 
 }   

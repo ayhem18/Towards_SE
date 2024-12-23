@@ -21,6 +21,7 @@ button {
 }
 
 button a {
+    /*selector for any link within a button*/
     color:white;
 }
 

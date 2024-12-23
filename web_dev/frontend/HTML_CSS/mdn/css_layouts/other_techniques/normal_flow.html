@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NormalFlowPractice</title>
+    <link rel="stylesheet" href="normal_flow.css">
+
+</head>
+<body>
+    <main>
+        <section class="no_overflow_section">
+            <p id="p1">
+                Any block element will take all the space available. Adding too much text to occupy multiple lines: 
+                But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally
+            </p>
+
+            <p id="p2">
+                That's another block of text. Although its width is set to 25% that of its parent, the next paragraph will be moved to the next line
+            </p>
+
+            <p id="p3">
+                Regardless of the element's width, the next element will be moved to the next line
+            </p>
+            
+            <span id="s1">
+                a span text: inline mode. 
+            </span>
+
+            <span id="s2">
+                another span element: on the same line as the previous one   
+            </span>
+        </section>
+
+        <section class="overflow_section">
+            <p id="p1">
+                Any block element will take all the space available. Adding too much text to occupy multiple lines: 
+                But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally
+            </p>
+
+            <p id="p2">
+                That's another block of text. Although its width is set to 25% that of its parent, the next paragraph will be moved to the next line
+            </p>
+
+            <p id="p3">
+                Regardless of the element's width, the next element will be moved to the next line
+            </p>
+            
+            <span id="s1">
+                a span text: inline mode. 
+            </span>
+
+            <span id="s2">
+                another span element: on the same line as the previous one   
+            </span>
+        </section>
+
+        <section class="useless_section"> 
+            
+        </section>
+
+        <!-- time to add more details to this hmtl -->
+        <section class="float_section">
+                <div class="float_box_left">
+                </div>
+
+                <div class="float_box_right">
+                </div>
+
+
+                <div id="text_between_floats">
+                    <p>
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                    </p>
+                </div>
+
+                <div id="text_between_floats">
+                    <p>
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                        a lot of text for no reason.
+                    </p>
+                </div>
+
+
+        </section>
+
+
+        <!-- the real question: isn't possible to reach similar effects using relative positioning...  -->
+
+
+        <section class="relative_pos_section">
+            <div class="float_box_left">
+            </div>
+
+            <div class="float_box_right">
+            </div>
+
+
+            <div id="text_between_floats">
+                <p>
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                </p>
+            </div>
+
+            <div id="text_between_floats">
+                <p>
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                    a lot of text for no reason.
+                </p>
+            </div>
+
+
+    </section>
+
+    </main>
+
+</body>
+</html>
