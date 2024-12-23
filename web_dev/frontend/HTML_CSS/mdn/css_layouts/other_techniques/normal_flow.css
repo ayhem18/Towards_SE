@@ -72,6 +72,7 @@
     border: solid 1px black;
     
 }
+
 .float_box_right {
     float: right;
     width: 20%;
@@ -83,7 +84,85 @@
 }
 
 
-.relative_pos_section {
+.another_float_box_right {
+    float: right;
+    width: 20%;
+    min-height: 100px;
+
+    margin-left: 20px;
+
+    background-color: rgb(0,0, 255, 0.4)
+}
+
+.float_aligned_section {
     margin-top: 30px;
     border: solid 2px rebeccapurple;
+}
+
+.float_container {
+    border:solid 2px black;
+}
+
+.float_div {
+    float:left;
+    width: 33%;
+    min-height: 200px;  
+    border: solid 1px black
+}
+
+
+.rel_aligned_section {
+    margin-top:20px;
+    min-height: 100px;
+    border: solid 1px green;
+    /*set the position to relative to enable relative positioning for the child elements*/
+    position: relative;
+}
+
+#rel1 {
+    width: 50%;
+    position: relative; 
+    min-height: 100px;
+    border: solid 1px black;
+    background-color: rgb(0 255, 0, 0.4);
+}
+
+/*in order to have rel1 and rel2 aligned, I need to have the rel2 element basically set at top: -(height of rel1) and left: (width of rel1)
+which is clearly non-scalable and very error-prone.
+*/
+
+#rel2 {
+    width: 33%;
+    position: relative;
+
+
+    top: -100px;
+    left: 33vw; 
+
+    border: solid 1px black;
+    min-height: 100px;
+    background-color: rgb(255, 255, 0, 0.9);
+}
+
+#rel3 {
+    width: 33%; 
+    min-height: 100px;
+    border: black 1px solid;
+}
+
+.pos_section {
+    margin-top: 20px;
+    border: solid 1px peru;
+
+
+    position: relative /*setting it to relative so that the children elements with position: absolute will have this element as a reference*/
+
+    
+}
+
+#abs_div {
+    position: absolute;
+    top: 50%; /*we can use % since it is part of the normal flow: % refers to the dimensions of the first ancestor with non-static position */
+    height: 50%;
+    background-color: rgb(0, 0, 255, 0.6);
 }
