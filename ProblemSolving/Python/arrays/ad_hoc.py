@@ -33,3 +33,19 @@ def kthSmallest(array: List[List[int]], k: int) -> int:
 
     return i - 1
 
+
+# https://www.geeksforgeeks.org/problems/rearrange-array-such-that-even-positioned-are-greater-than-odd4804/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+def rearrangeArray(arr: List[int]):
+    sorted_arr = sorted(arr)
+    
+    n = len(arr)
+    
+    new_arr = [0 for _ in range(n)]
+
+    for i in range(1, n, 2):
+        new_arr[i] =  sorted_arr[n - 1 - i // 2]
+
+    for i in range(0, n, 2):
+        new_arr[i] = sorted_arr[i // 2]
+
+    return new_arr

@@ -6,7 +6,6 @@ from typing import List, Optional
 
 
 # https://www.geeksforgeeks.org/problems/two-numbers-with-sum-closest-to-zero1737/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
-
 def closestToZero (arr: List[int], n: Optional[int] = None) -> int:
     """
     This function finds the pair with the sum closest to zero. Such a sum is equivalent to find the sum with the minimum absolute value. 
@@ -41,3 +40,33 @@ def closestToZero (arr: List[int], n: Optional[int] = None) -> int:
         
 
     return best_sum
+
+
+# although this problem is not listed as a 2 pointers, it is indeed a 2 pointers problem
+# https://www.geeksforgeeks.org/problems/segregate-0s-and-1s5106/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+
+# the main idea is that at each iteration we are extending the sorted subarrays on both sides
+
+def segregate0and1(arr: List[int]):
+    n = len(arr)
+    pnt1, pnt2 = 0, n - 1
+
+    while True:
+        while (pnt1 < pnt2 and arr[pnt1] == 0):
+            pnt1 += 1
+
+        # check if the termination condition was reached
+        if pnt1 == pnt2:
+            return
+
+        while (pnt1 < pnt2 and arr[pnt2] == 1):
+            pnt2 -= 1
+        
+        if pnt1 == pnt2:
+            return
+        
+        # set arr[pnt1] to zero and arr[pnt2] to one
+        arr[pnt1] = 0
+        arr[pnt2] = 1
+
+    
