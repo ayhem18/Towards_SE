@@ -11,9 +11,10 @@ importing the Marmelad font from GoogleFonts
     background-size: cover; /* makes the image expand / shrink to cover the size of the element*/
 
     /*expand across the entire viewport*/
-    height: 100vh;
+    height: 99vh;
     width: 100vw;
     padding: 0;
+
 }
 
 
@@ -34,64 +35,93 @@ STATUS BAR STYLING
 SECTION FOR THE SCORES FOR EACH BEING
 */
 
-#sb_img_container {
-    /*
-    the container itself should be placed correctly on the x-axis
-    */
-    margin-left: 28%;
 
-    /*set the dimensions to align it with the section of being images*/
-    height: 60%;
-    width: 18%;
+#status-bar-content {
+    height: 60%; /* 60% percent should be good enough*/
+    width: 100%;
+
+    display: grid;
+
+    /*need 5 columns: 1st: empty space to the left
+       2nd : being count bar
+       3rd : moves count bar
+       4th : score count bar
+       5: empty space to the right
+     */
+    grid-template-columns: 28% 18% 8% 19% 27%;
+    grid-template-rows: 100%; /*a single row would suffice*/
+
+    /*no need for gaps*/
+
+    /*the items are not expect*/
+    align-items: center;
+    justify-content: center;
+}
+
+#status-bar-content > * {
+    color: white;
+    font-family: "Marmelad", cursive;
+    text-align: center;
+}
+
+#being_count_bar {
+    /*make sure to set the being_count_bar correctly*/
+    grid-row: 1;
+    grid-column: 2;
 
     display: flex;
     flex-direction: row;
+    justify-content: stretch;
 
-    border: solid 1px black;
+    /*border: solid 1px black;*/
 }
-
-/*#sb_img_container > * {*/
-/*    max-height: 60%;*/
-/*}*/
 
 .being_status_bar_img {
-    /*since the parent of such elements will now be the flex container*/
-    /*height: 50%;*/
-    max-width:20%
+    max-width: 20%;
 }
 
-.being_status_score_div {
-    /*this attribute allows positioning "count" span element lower on the status bar
-    */
+.being_count_div {
+    /*setting the position to 'relative' to better control */
     position: relative;
-    /*max-width: 5%;*/
+    min-width: 5%;
 }
 
 .being_count {
     /*
     these two attributes help position the actual number relatively lower
     */
-    position: relative;
-    top: 50%;
-
-    font-family: "Marmelad", cursive;
-    font-size: 5em;
-}
-
-/*
-STYLING FOR THE MOVES SECTION
-*/
-
-/*#num_moves_container {*/
-/*    position: relative;*/
-/*}*/
-
-#num_moves_text {
-    position: relative;
-    bottom: 100%;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 8rem;
 }
 
 
+#moves_count_bar {
+    grid-column: 3;
+    grid-row: 1;
+    font-size: 10rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#score_count_bar {
+    grid-column: 4;
+    grid-row: 1;
+
+    /*set it a flexbox element*/
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    column-gap: 6rem;
+}
+
+#score_count_bar > * {
+    font-size: 10rem;
+}
 
 #map {
     height: 60vh;

@@ -23,7 +23,7 @@
     grid-template-columns: 10% 20% 20% 20% 10%;
     grid-template-rows: 10% 25% 25% 25% 10%;
 
-    column-gap: 5%; /*even though the content spans 3 columns, there are still gaps in between the spanned columns*/
+    column-gap: 5%; /*even though the content spans 3 columns, there are still gaps in between the spanned columns but without affecting the content inside the grid area.*/
 
     /*the default value of grid-template-rows / columns = auto*/
 
