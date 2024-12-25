@@ -3,7 +3,8 @@ import numpy as np
 from tqdm import tqdm
 
 from utils import random_array
-from arrays.arrays import rotate_constant_space, rotate_linear_space, sort_array_with_known_elements
+from arrays.arrays import sort_array_with_known_elements
+from mathy.file1 import rotate_constant_space, rotate_linear_space 
 
 def test_constant_space_array_rotation():
     for _ in tqdm(range(1000)):
@@ -142,8 +143,15 @@ def ad_hoc_arr():
     arr = [1, 2, 3, 4, 5, 6, 7]
     print(rearrangeArray(arr))
 
+from mathy.file1 import subarraySum 
+
+def mathy_arrays():
+    arr = [1, 2, 3,]
+    print(subarraySum(arr))
+    print(subarraySum([0, 1]))    
+
 
 if __name__ == '__main__':
     random.seed(0)
     np.random.seed(0)  
-    ad_hoc_arr()
+    mathy_arrays()    

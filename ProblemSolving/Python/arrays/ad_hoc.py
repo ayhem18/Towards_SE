@@ -5,7 +5,8 @@ This script contains my solutions for array problems on gfg
 from typing import List
 
 # https://www.geeksforgeeks.org/problems/kth-smallest-element5635/1?page=1&category=Arrays&difficulty=Medium&status=unsolved&sortBy=submissions
-# this problem uses a very specific idea: basic O(n) sorting using using extra O(n) memory
+# this problem uses a very specific idea: basic O(n) sorting using extra memory. Such an approach is only applicable to scenarios where the range of data is known in advance
+# and can fit into memory.
 
 def kthSmallest(array: List[List[int]], k: int) -> int:
     # find the maximum element in the array
@@ -35,6 +36,7 @@ def kthSmallest(array: List[List[int]], k: int) -> int:
 
 
 # https://www.geeksforgeeks.org/problems/rearrange-array-such-that-even-positioned-are-greater-than-odd4804/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+# the main idea of this problem is to 
 def rearrangeArray(arr: List[int]):
     sorted_arr = sorted(arr)
     
