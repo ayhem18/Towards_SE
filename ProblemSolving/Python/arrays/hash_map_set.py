@@ -3,7 +3,7 @@ This script contains my solutions for gfg problems that can be solved mainly usi
 """
 
 from typing import List
-from collections import defaultdict, deque
+from collections import defaultdict, deque, Counter
 
 # https://www.geeksforgeeks.org/problems/smallest-positive-missing-number-1587115621/1?page=1&category=Arrays&difficulty=Medium&status=unsolved&sortBy=submissions
 def missingNumber(arr: List[int]) -> int:
@@ -320,3 +320,13 @@ def removeDuplicates(arr: List[int]):
     
     return new_arr
     
+
+# the simplest DSA question ever...
+def isSubset( a1, a2, n=None, m=None):
+    c1, c2 = Counter(a1), Counter(a2)
+    for k, v in c2.items():
+        if k not in c1:
+            return False
+        if v > c1[k]:
+            return False
+    return True

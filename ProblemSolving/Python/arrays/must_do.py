@@ -8,7 +8,6 @@ from collections import Counter
 random.seed(0)
 
 
-
 # starting with: https://www.geeksforgeeks.org/problems/peak-element/1?page=1&sprint=50746f92a895c22a50504ac0c1fb9c84&sortBy=submissions
 def _peakElement(arr, low, high):
     # first check the border cases
@@ -32,15 +31,6 @@ def peakElement(arr, n):
     if n == 1:
         return 0
     return _peakElement(arr, 0, n - 1)
-
-def isSubset( a1, a2, n=None, m=None):
-    c1, c2 = Counter(a1), Counter(a2)
-    for k, v in c2.items():
-        if k not in c1:
-            return False
-        if v > c1[k]:
-            return False
-    return True
 
 
 

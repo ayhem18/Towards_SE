@@ -137,11 +137,17 @@ def farray():
     print(removeDuplicates([0, 0, 0, 0, 0]))
     print(removeDuplicates([0, 1, 2, 3, 4]))
 
-from arrays.ad_hoc import rearrangeArray
+from arrays.ad_hoc import rearrangeArray, find3Numbers
 
-def ad_hoc_arr():
-    arr = [1, 2, 3, 4, 5, 6, 7]
-    print(rearrangeArray(arr))
+def adhoc_array():
+    # a = [1, 4, 1, 1, 2, 3]
+    # print(find3Numbers(a))
+    # a = [5, 4, 3, 2, 4, 3, 5, 1, 2]
+    # print(find3Numbers(a))
+
+    a = [1, 2, 2, 2, 2, 1, 2, 0, 1, -1]
+    print(find3Numbers(a))
+
 
 from mathy.file1 import subarraySum 
 
@@ -154,4 +160,4 @@ def mathy_arrays():
 if __name__ == '__main__':
     random.seed(0)
     np.random.seed(0)  
-    mathy_arrays()    
+    adhoc_array()    

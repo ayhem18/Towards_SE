@@ -3,51 +3,83 @@ This script contains my solutions for array problems on gfg
 """
 
 from typing import List
+from collections import deque
 
-# https://www.geeksforgeeks.org/problems/kth-smallest-element5635/1?page=1&category=Arrays&difficulty=Medium&status=unsolved&sortBy=submissions
-# this problem uses a very specific idea: basic O(n) sorting using extra memory. Such an approach is only applicable to scenarios where the range of data is known in advance
-# and can fit into memory.
 
-def kthSmallest(array: List[List[int]], k: int) -> int:
-    # find the maximum element in the array
-    max_element = -float("inf")
+# https://www.geeksforgeeks.org/problems/sorted-subsequence-of-size-3/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+# one of the most difficult problems I have tried to solve
+
+
+# I need to create a special data structure
+class threeMaxStack:
+    def __init__(self):
+        self.s = deque()
     
-    # find the maximum element
-    for v in array: 
-        max_element = max(max_element, v)
-    
-    # an array to save whether an element exists in the array
-    memory_bank = [0 for _ in range(max_element + 1)]
-    
-    for v in array: 
-        memory_bank[v] = 1
-
-    counter, i = 0, 1
-
-    while i < max_element + 1:
-        counter += int(memory_bank[i] == 1)
+    def add(self, val: int) -> int:
         
-        if counter == k:
-            return i
+        if len(self.s) == 0:
+            self.s.append(val)
+            return 0
+
+        if len(self.s) == 1:
+            # if the new value is less or equal to the current value
+            # then simply substitute it
+            if val <= self.s[0]:
+                self.s[0] = val
+                return 0
+            
+            # at this point we have only one value at the queue and 
+            # the new value is larger than the current value, so add it
+            self.s.append(val)
+            return 0
+
+        # at this point: len(self.s) == 2
+        if val > self.s[-1]:
+            # this means we have 3 sorted elements
+            self.s.append(val)
+            return 1 
+
+        # the new element is less or equal to the last element
+        if self.s[0] < val <= self.s[-1]:
+            self.s[-1] = val
+            return 0
+
+        # this means that val is less than the very first element: "val" should be moved to the second stack !!!    
+        return -1
+    
+    def clear(self):
+        self.s.clear()
+
+    def copy(self, another: 'threeMaxStack'):
+        self.s = another.s.copy()
+
+
+    def __len__(self) -> int:
+        return len(self.s)
+
+
+def find3Numbers(arr: List[int]) -> List[int]:
+    if len(arr) < 3:
+        return False
+    
+    if len(arr) == 3:
+        return arr[0] < arr[1] and arr[1] < arr[2]
+    
+    s1 = threeMaxStack()
+    s2 = threeMaxStack()
+
+    for v in arr:
+        a1 = s1.add(v)
         
-        i += 1
+        if a1 == 1:
+            return True
+        
+        if a1 == -1:
+            s2.add(v)
+            
+            if len(s2) == 2:
+                s1.copy(s2)
+                s2.clear()
+            
+    return False
 
-    return i - 1
-
-
-# https://www.geeksforgeeks.org/problems/rearrange-array-such-that-even-positioned-are-greater-than-odd4804/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
-# the main idea of this problem is to 
-def rearrangeArray(arr: List[int]):
-    sorted_arr = sorted(arr)
-    
-    n = len(arr)
-    
-    new_arr = [0 for _ in range(n)]
-
-    for i in range(1, n, 2):
-        new_arr[i] =  sorted_arr[n - 1 - i // 2]
-
-    for i in range(0, n, 2):
-        new_arr[i] = sorted_arr[i // 2]
-
-    return new_arr
