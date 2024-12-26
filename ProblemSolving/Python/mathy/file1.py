@@ -86,6 +86,12 @@ def subarraySum(arr: List[int]):
 # https://www.geeksforgeeks.org/problems/find-repetitive-element-from-1-to-n-1/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
 
 # the idea is to know the sum of 1 + 2 + ... n (to solve it in o(1) of course)
-
 def findDuplicate(arr: List[int]):
     pass
+
+
+def missingNumber(arr: List[int]):
+    s = sum(arr)
+    n = len(arr)
+    total = ((n + 1) * (n + 2)) // 2
+    return total - s

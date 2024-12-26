@@ -71,3 +71,64 @@ def kthSmallest(array: List[List[int]], k: int) -> int:
         i += 1
 
     return i - 1
+
+
+# https://www.geeksforgeeks.org/problems/minimum-swaps/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card 
+def minSwaps(arr: List[int]) -> int:
+    # not sure if the solution works really, but it is worth a shot
+    arr_sorted = sorted(arr)
+
+    visited = set()
+
+    current_component = set()
+
+    map_sorted = {}
+    
+    for i, v in enumerate(arr_sorted):
+        map_sorted[v] = i
+
+    count = 0
+
+    for i, v in enumerate(arr):
+        # first check if it is in the right position
+        if i == map_sorted[v]:
+            # this means the element should not be moved 
+            continue
+
+        if v in visited: 
+            continue
+        
+        traverse_node = v
+
+        while True:
+
+            if traverse_node in current_component:
+                count += len(current_component) - 1
+                current_component.clear()
+                break
+
+            current_component.add(traverse_node)
+            visited.add(traverse_node)
+            traverse_node = arr[map_sorted[traverse_node]]
+            
+    return count
+
+
+def get_min_max(arr: List[int]):
+    min_val, max_val = float("inf"), -float("inf")
+    for v in arr:
+        min_val = min(min_val, v)
+        max_val = max(max_val, v)
+
+    return min_val, max_val
+
+
+def rotate(arr: List[int]):
+    
+    last = arr[-1]
+    n = len(arr)
+
+    for i in range(n - 2, -1, -1):
+        arr[i + 1] = arr[i]
+
+    arr[0] = last

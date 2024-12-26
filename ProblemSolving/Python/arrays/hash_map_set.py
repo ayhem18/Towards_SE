@@ -330,3 +330,45 @@ def isSubset( a1, a2, n=None, m=None):
         if v > c1[k]:
             return False
     return True
+
+
+# this question for some reason has an 18% accuracy percetange (I mean, it is a waste of time to do, if one reaches a certain level)
+def findDuplicates(arr: List[int]):
+    d = {}
+    count = 0
+    for v in arr:
+        if v not in d:
+            d[v] = 0
+
+        if d[v] == 1:
+            count += 1
+        
+        d[v] += 1
+
+    res = [0 for _ in range(count)]
+
+    i = 0
+    for k, freq in d.items():
+        if freq > 1: 
+            res[i] = k
+            i += 1
+    
+    return res
+
+
+
+def findTwoElement(arr: List[int]):
+    n = len(arr)
+    arr_set = set(arr)
+    missing = 0 
+
+    for v in range(1, n + 1):
+        if v not in arr_set:
+            missing = v
+            break
+    
+    # find the repeating number
+    diff = (n * (n + 1)) // 2 - sum(arr)
+    repeating = missing - diff
+    return repeating, missing
+

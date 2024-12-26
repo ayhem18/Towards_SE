@@ -4,7 +4,15 @@ from tqdm import tqdm
 
 from utils import random_array
 from arrays.arrays import sort_array_with_known_elements
-from mathy.file1 import rotate_constant_space, rotate_linear_space 
+from backtracking.medium import numberOfPath, numberOfPathBacktracking
+from arrays.ad_hoc import find3Numbers
+from arrays.sorting import minSwaps
+from arrays.hash_map_set import findDuplicates, findTwoElement
+
+from mathy.file1 import rotate_constant_space, rotate_linear_space, subarraySum 
+from trees.gfg.easy import Node, tree_array_rep
+
+# testing the inplace rotation algorithm based on ideas from number theory
 
 def test_constant_space_array_rotation():
     for _ in tqdm(range(1000)):
@@ -38,9 +46,7 @@ def test_sorting_array_with_known_elements():
 
         assert sorted_array == array, "code does not work"
 
-
-from trees.gfg.easy import Node, tree_array_rep
-
+# checking the code to convert a tree from the Node representation to the array representation
 def check_trees2array():
     n1 = Node(1)
     n2 = Node(2)
@@ -103,9 +109,7 @@ def check_trees2array():
 
     print(tree_array_rep(n1))
 
-
-from backtracking.medium import numberOfPath, numberOfPathBacktracking
-
+# some function to check some backtracking problem
 def check_bt():
     arr = [
         [1, 2, 3], 
@@ -129,35 +133,41 @@ def check_bt():
         s1, s2 = numberOfPathBacktracking(n=len(arr), k=i, arr=arr), numberOfPath(n=len(arr), k=i, arr=arr)
         assert s1 == s2
 
-from arrays.twoPointers import closestToZero, segregate0and1
-from arrays.prefixArray import longestCommonSum
-from arrays.hash_map_set import removeDuplicates
 
-def farray():
-    print(removeDuplicates([0, 0, 0, 0, 0]))
-    print(removeDuplicates([0, 1, 2, 3, 4]))
-
-from arrays.ad_hoc import rearrangeArray, find3Numbers
-
+# adhoc probblems
 def adhoc_array():
-    # a = [1, 4, 1, 1, 2, 3]
-    # print(find3Numbers(a))
-    # a = [5, 4, 3, 2, 4, 3, 5, 1, 2]
-    # print(find3Numbers(a))
-
     a = [1, 2, 2, 2, 2, 1, 2, 0, 1, -1]
     print(find3Numbers(a))
 
 
-from mathy.file1 import subarraySum 
-
+# mathy array problems
 def mathy_arrays():
     arr = [1, 2, 3,]
     print(subarraySum(arr))
     print(subarraySum([0, 1]))    
 
 
+def sorting_arrays():
+    a = [1, 2, 3, 4]
+    print(minSwaps(a))
+
+    a = [1, 3, 2, 4]
+    print(minSwaps(a))
+
+    a = [1, 3, 4, 2, 5, 7, 8, 9, 6]
+    print(minSwaps(a))
+
+    a = [1, 3, 4, 2, 5, 7, 8, 9, 6, 10, 11, 12]
+    print(minSwaps(a))
+
+    a = [1, 2, 5, 3, 4, 6, 10, 9, 8, 7]
+    print(minSwaps(a))
+
+
 if __name__ == '__main__':
     random.seed(0)
     np.random.seed(0)  
-    adhoc_array()    
+
+    a = [4, 3, 6, 2, 1, 1]
+    
+    print(findTwoElement(a))
