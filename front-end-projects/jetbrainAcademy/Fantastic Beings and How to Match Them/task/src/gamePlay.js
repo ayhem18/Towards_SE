@@ -5,10 +5,23 @@
 // a global variable saving the currently clicked cell
 let GP2_CLICKED_CELL = null;
 
+// a global variable to track the number of beings wiped out
+let BEINGS_COUNTS = null;
+
+let NUM_MOVES = 0;
+
 function initializeGamePlayVars2(nRows, nCols) {
     // this game Play does not save any global information using the number of columns and rows
     GP2_CLICKED_CELL = null;
+    BEINGS_COUNTS = new Map();
+
+    for (const n in CREATURE_NAMES) {
+        BEINGS_COUNTS.set(n, 0); /*each being is set to zero*/
+    }
+
+    NUM_MOVES = 0;
 }
+
 
 function clearCells(cellCoordinates) {
     for (let i = 0; i < cellCoordinates.length; i++) {
@@ -37,8 +50,21 @@ function initialRefill(clearedCellsCoordinates) {
             throw `trying to fill a non-cleared cell. found inner HTML: ${cell.innerHTML}`
         }
 
-        setCellBeingInfo(cell, beingName); // the image as well as the "data-being" attribute should be set
+        // set the image and the data-being attribute
+        setCellBeingInfo(cell, beingName);
     }
+}
+
+function updateGameState(clearedCells) {
+    for (let i = 0; i < clearedCells.length; i++) {
+        let coords = clearedCells[i];
+        let y = coords[0];
+        let x = coords[1];
+        let beingName = getCell(y, x).getAttribute("data-being");
+        BEINGS_COUNTS.set(beingName, BEINGS_COUNTS.get(beingName) + 1);
+    }
+
+    NUM_MOVES += 1;
 }
 
 
@@ -106,14 +132,16 @@ function GP2_clickCellEventHandler(event) {
                         (x) => x.split("_").map(x => parseInt(x))
                     );
 
-
     if (sequences1.length === 0) {
         // swap the clicked and target cell back
         swap(GP2_CLICKED_CELL, targetCell);
     } else {
         // clear the sequences
         clearCells(sequences1);
+        updateGameState(sequences1);
         initialRefill(sequences1);
+        /*update the canvas*/
+        updateGameStateCanvas(BEINGS_COUNTS, NUM_MOVES)
     }
 
     GP2_CLICKED_CELL = null;

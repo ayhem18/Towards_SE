@@ -3,12 +3,25 @@
 */
 
 
+const beingTargetCounts = new Map();
+beingTargetCounts.set("zouwu", 3);
+beingTargetCounts.set("kelpie", 0);
+
+
 function fRender(nRows, nCols) {
-    return render(nRows, nCols, initializeGamePlayVars2, GP2_clickCellEventHandler);
+    return render(nRows, nCols,
+        beingTargetCounts,
+        1,
+        initializeGamePlayVars2,
+        GP2_clickCellEventHandler);
 }
 
 function fRedraw(creaturesMap) {
-    return redraw(creaturesMap, initializeGamePlayVars2, GP2_clickCellEventHandler);
+    return redraw(creaturesMap,
+        beingTargetCounts,
+        1,
+        initializeGamePlayVars2,
+        GP2_clickCellEventHandler);
 }
 
 window.renderMap = fRender;

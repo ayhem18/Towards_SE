@@ -1,5 +1,11 @@
 // a function to set the "board" element as a table.
 
+// global variable to keep track of the game state
+let SCORE = 0;
+let MAX_NUM_MOVES = null;
+let BEINGS_TARGET_COUNTS = null;
+
+
 function setCellAttributes(cell, y, x) {
     cell.setAttribute("data-coords", `x${x}_y${y}`)
     cell.setAttribute("data-y", `${y}`);
@@ -25,7 +31,7 @@ function setCellBeingInfo(cell, beingName,) {
     cell.appendChild(creatureImage);
 }
 
-function initializeMap(n_rows, n_cols, initializeGamePlayVars) {
+function initializeMap(n_rows, n_cols) {
     // console.log("map initialized !!!!")
 
     let board = document.getElementById("map");
@@ -44,8 +50,6 @@ function initializeMap(n_rows, n_cols, initializeGamePlayVars) {
         // having all the cells in the row added, add the row to the board html element
         board.appendChild(row);
     }
-
-    initializeGamePlayVars(n_rows, n_cols);
 }
 
 function setClickEventListeners(eventHandler) {
@@ -57,11 +61,85 @@ function setClickEventListeners(eventHandler) {
     }
 }
 
-function render(nRows, nCols, initialGamePlayVars, clickCellEventHandler) {
+function setBeingsTargetBar(beingTargetCounts) {
+
+    // step1: create a div
+    let mainDiv = document.createElement("div");
+    mainDiv.setAttribute("id", "being_count_bar")
+
+
+    let imageCount = 0;
+
+    for (let [key, value] of beingTargetCounts.entries()) {
+        imageCount += 1;
+
+        let beingImage = document.createElement("image");
+        //
+        beingImage.setAttribute("src", creatureToImg.get(key));
+        beingImage.setAttribute("class", "being_status_bar_img");
+        beingImage.setAttribute("id", `img${imageCount}`);
+
+        let beingCountDiv = document.createElement("div");
+        beingCountDiv.setAttribute("class", "being_count_div");
+
+        let beingCountSpan = document.createElement("span");
+        beingCountSpan.setAttribute("class", "being_count");
+        beingCountSpan.appendChild(document.createTextNode(`${0}`));
+        beingCountDiv.appendChild(beingCountSpan);
+
+        // add to MainDiv
+        mainDiv.appendChild(beingImage);
+        mainDiv.appendChild(beingCountSpan);
+
+    }
+
+    const statusBarContent = document.createElement("status-bar-content");
+    statusBarContent.appendChild(mainDiv);
+}
+
+function setNumMovesBar(maxNumMoves) {
+    /*create the bar with the number of moves left*/
+    let movesCountDiv = document.createElement("div");
+    movesCountDiv.setAttribute("id", "moves_count_bar");
+
+    let movesCountTextSpan = document.createElement("span");
+    movesCountTextSpan.setAttribute("id", "moves_count_text");
+    movesCountTextSpan.appendChild(document.createTextNode("Moves"));
+
+    let movesCountSpan = document.createElement("span");
+    movesCountTextSpan.setAttribute("id", "moves_count");
+    movesCountTextSpan.appendChild(document.createTextNode(`${maxNumMoves}`));
+
+    // add both spans to the movesCountDiv
+    movesCountDiv.appendChild(movesCountTextSpan);
+    movesCountDiv.appendChild(movesCountSpan);
+
+    const statusBarContent = document.createElement("status-bar-content");
+    statusBarContent.appendChild(movesCountDiv);
+}
+
+function setGameStateCanvas(beingTargets, max_num_moves) {
+    BEINGS_TARGET_COUNTS = beingTargets;
+    MAX_NUM_MOVES = max_num_moves;
+
+    let statusBarContentDiv = document.createElement("div");
+    statusBarContentDiv.setAttribute("id", "status-bar-content");
+
+    const statusBar = document.getElementById("status-bar");
+    statusBar.appendChild(statusBarContentDiv);
+
+    setBeingsTargetBar(BEINGS_TARGET_COUNTS);
+    setNumMovesBar(MAX_NUM_MOVES);
+}
+
+
+function render(nRows, nCols, beingTargets, maxNumMoves,
+                initialGamePlayVars,
+                clickCellEventHandler) {
     const randomCreaturesMap = getRandomCreaturesMap(nRows, nCols);
 
-    // first initialize the map: DOM manipulation
-    initializeMap(nRows, nCols, initialGamePlayVars);
+    // first initialize the map
+    initializeMap(nRows, nCols);
 
     let board = document.getElementById("map");
 
@@ -77,10 +155,20 @@ function render(nRows, nCols, initialGamePlayVars, clickCellEventHandler) {
         }
     }
 
+    // initialize the gameplay variabels
+    initialGamePlayVars(nRows, nCols);
+    // set the event listeners
     setClickEventListeners(clickCellEventHandler);
+
+    // initialize the game state
+    setGameStateCanvas(beingTargets, maxNumMoves);
 }
 
-function redraw     (creaturesMap, initializeGamePlayVars, clickCellEventHandler) {
+function redraw (creaturesMap,
+                 beingTargets,
+                 maxNumMoves,
+                 initializeGamePlayVars,
+                 clickCellEventHandler) {
     // make sure the creaturesMap object is a multidimensional array
     if (! (Array.isArray(creaturesMap) && Array.isArray(creaturesMap[0]))) {
         return false;
@@ -256,4 +344,11 @@ function swap(cell1, cell2) {
     // make sure to update the data-coords attribute of the image child node as well
     cell1.children[0].setAttribute("data-coords", cell1.getAttribute("data-coords"));
     cell2.children[0].setAttribute("data-coords", cell2.getAttribute("data-coords"));
+}
+
+
+
+
+function updateGameStateCanvas() {
+
 }
