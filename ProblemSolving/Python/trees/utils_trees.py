@@ -1,6 +1,7 @@
 """
 a small script for Tree utility functions
 """
+from typing import Optional
 
 class Node:
     def __init__(self,val):
@@ -10,6 +11,7 @@ class Node:
 
 
 
+# HEIGHT OF A TREE !!! (ONE NODE TREE WITH HEIGHT 1)
 def heigh_min1(root: Node) -> int:
     # this function assumes that a tree with only one node: the "root" has a depth / height of "1"
     left_height, right_height = 0, 0
@@ -22,6 +24,19 @@ def heigh_min1(root: Node) -> int:
     
     return 1 + max(left_height, right_height)
 
+# NUMBER OF NODES IN A TREE
+def getSize(root : Optional['Node']) -> int:
+    if root is None:
+        return 0
+    
+    total = 1
+    if root.left is not None:
+        total += getSize(root.left)
+
+    if root.right is not None:
+        total += getSize(root.right)
+
+    return total
 
 def fill_tree_array(node: Node, node_index: int, tree: list):
     if node is None:

@@ -7,7 +7,8 @@ it can be extended to have a function f that uses f_prime where f_prime returns 
 
 """
 
-from typing import Tuple
+from typing import Dict, Tuple, Union, List
+from collections import defaultdict
 
 from .utils_trees import Node
 
@@ -57,6 +58,61 @@ def mirror(root: Node):
 
     mirror(root.right)
     mirror(root.left)
+
+
+def findNodeAndParentRecursive(root: Node, values: Union[List[int], set], value_node_map: Dict = None):
+    # the main idea of this function is to find a certain node with a given value
+    if not isinstance(values, set):
+        values = set(values)
+
+    if value_node_map is None:
+        value_node_map = defaultdict(lambda : [])
+
+    if root.left is not None:
+        if root.left.data in values:
+            value_node_map[root.left.data].append((root.left, root))
+        findNodeAndParentRecursive(root.left, values=values, value_node_map=value_node_map)
+
+    if root.right is not None:
+        if root.right.data in values:
+            value_node_map[root.right.data].append((root.right, root))
+        findNodeAndParentRecursive(root.right, values=values, value_node_map=value_node_map)
+
+
+def findNodeAndParent(root: Node, values: Union[List[int], set]):
+    # first check if the root has one of the values we look for
+    value_node_map = defaultdict(lambda : [])
+    
+    if root.data in values:
+        value_node_map[root.data].append((root, None))
+    
+    # call the recursive function
+    findNodeAndParentRecursive(root, values=values, value_node_map=value_node_map)
+
+    return value_node_map
+
+# https://www.geeksforgeeks.org/problems/max-and-min-element-in-binary-tree/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+def findMax(root: Node) -> int:
+    left, right = -float("inf"), -float("inf")
+
+    if root.left is not None:
+        left = findMax(root.left)
+
+    if root.right is not None:
+        right = findMax(root.right)
+
+    return max([root.data, left, right])
+
+def findMin(root: Node) -> int:
+    left, right = float("inf"), float("inf")
+
+    if root.left is not None:
+        left = findMin(root.left)
+
+    if root.right is not None:
+        right = findMin(root.right)
+
+    return min([root.data, left, right])
 
 
 
@@ -205,3 +261,39 @@ def k_largest_count(root: Node, k: int) -> Tuple[int, int]:
 def kthLargest(root: Node, k:int):
     return k_largest_count(root, k)[-1]
 
+
+# https://www.geeksforgeeks.org/problems/foldable-binary-tree/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+
+def struct_symmetric(n1: Node, n2: Node) -> bool:
+    if (n1.left is None) != (n2.right is None):
+        return False
+    
+    if (n1.right is None) != (n2.left is None):
+        return False
+    
+
+    if n1.left is not None:
+        h = struct_symmetric(n1.left, n2.right)
+        if not h:
+            return False
+
+    if n1.right is not None:
+        h = struct_symmetric(n1.right, n2.left)
+        if not h:
+            return False
+
+    return True
+
+
+def IsFoldable(root: Node):
+    if root is None:
+        return True
+    
+    if (root.left is None) != (root.right is None):
+        return False
+    
+    if root.left is None:
+        return True
+    
+    # at this point we know that both root.left and root.right are present
+    return struct_symmetric(root.left, root.right)

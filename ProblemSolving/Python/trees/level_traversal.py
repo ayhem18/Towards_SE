@@ -9,7 +9,6 @@ from collections import deque, defaultdict
 from .utils_trees import Node, tree_array_rep
 
 
-
 def largestValues(root: Node):
     level_max = {}
     
@@ -186,3 +185,57 @@ def createTree(parent: List[int]) -> Node:
                 queue.append(right_child)
 
     return root
+
+
+
+# https://www.geeksforgeeks.org/problems/check-if-two-nodes-are-cousins/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+def isCousins(root: Node, a: int, b: int) -> bool:
+    # the main goal of this problem is to determine whether the nodes with the given values 
+    # are at the same level but with a different parent
+
+    queue = deque([(0, root)])
+
+    a_info = None
+    b_info = None
+
+    while len(queue) > 0:
+        level, node = queue.popleft()   
+
+        if node.left is not None:
+            # check if the child has either the value 'a' or 'b'
+            if node.left.data == a:
+                a_info = (level + 1, node) 
+
+            if node.left.data == b:
+                b_info = (level + 1, node) 
+
+            queue.append((level + 1, node.left))
+
+        if node.right is not None:
+
+            if node.right.data == a:
+                a_info = (level + 1, node) 
+
+            if node.right.data == b:
+                b_info = (level + 1, node) 
+
+            queue.append((level + 1, node.right))
+    
+    # check the root node as well
+    if root.data == a:
+        a_info = (0, None) 
+
+    if root.data == b:
+        b_info = (0, None) 
+
+    if a_info is None or b_info is None:
+        return False
+
+    _, a_par = a_info
+    _, b_par = b_info
+
+
+    same_level = a_info[0] == b_info[0] 
+    diff_parent = (a_par.data if a_par is not None else None) == (b_par.data if b_par is not None else None)
+
+    return same_level and not diff_parent

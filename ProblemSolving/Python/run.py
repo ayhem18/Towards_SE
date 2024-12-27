@@ -7,10 +7,11 @@ from arrays.arrays import sort_array_with_known_elements
 from backtracking.medium import numberOfPath, numberOfPathBacktracking
 from arrays.ad_hoc import find3Numbers
 from arrays.sorting import minSwaps
-from arrays.hash_map_set import findDuplicates, findTwoElement
 
 from mathy.file1 import rotate_constant_space, rotate_linear_space, subarraySum 
-from trees.gfg.easy import Node, tree_array_rep
+from trees.utils_trees import Node, tree_array_rep
+from trees.basic_depth_recursion import findNodeAndParent, IsFoldable
+from trees.level_traversal import isCousins 
 
 # testing the inplace rotation algorithm based on ideas from number theory
 
@@ -139,13 +140,11 @@ def adhoc_array():
     a = [1, 2, 2, 2, 2, 1, 2, 0, 1, -1]
     print(find3Numbers(a))
 
-
 # mathy array problems
 def mathy_arrays():
     arr = [1, 2, 3,]
     print(subarraySum(arr))
     print(subarraySum([0, 1]))    
-
 
 def sorting_arrays():
     a = [1, 2, 3, 4]
@@ -164,10 +163,117 @@ def sorting_arrays():
     print(minSwaps(a))
 
 
+def getTree() -> Node:
+    n1 = Node(1)
+    n2 = Node(2)
+    n3 = Node(3)
+
+    n4 = Node(4)
+    n5 = Node(5)
+    n6 = Node(6)
+
+    n7 = Node(7)
+    n8 = Node(8)
+    n9 = Node(9)
+
+    n1.left = n2
+    n1.right = n3
+
+    n2.left = n4
+    n2.right = n5
+
+    n4.left = n6
+    n4.right = n7
+
+    n5.left = n8
+    n5.right = n9
+
+    n10 = Node(10)
+    n3.left = n10
+    n10.left = Node(11)
+
+    return n1
+
+
+def trees1():
+    n1 = getTree()
+
+    values = list(range(1, 10))
+
+    d = findNodeAndParent(n1, values)
+
+    for k, v in d.items():
+        for n in v:
+            c, p = n
+            if p is not None:
+                print(f"child: {c.data}, parent: {p.data}")
+            else:
+                print(f"child: {c.data}, parent: {p}")
+
+        print("#" * 10)
+
+
+def trees2():
+    n1 = getTree()
+    pos_pairs = [(6, 8), (7, 9), (10, 4), (10, 5), (11, 7), (11, 9), (11, 6)]
+
+    for v1, v2 in pos_pairs:
+        assert isCousins(n1, v1, v2), "positive pairs not detected"
+        assert isCousins(n1, v2, v1), "positive pairs not detected"
+
+
+    neg_pairs = [(6, 7), (8, 9), (1, 2), (1, 3), (11, 10), (3, 4)]
+
+    for v1, v2 in neg_pairs:
+        assert not isCousins(n1, v1, v2), "neg pairs  detected"
+        assert not isCousins(n1, v2, v1), "neg pairs detected"
+
+
+
+def trees3():
+    n1 = Node(1)
+    n2 = Node(2)
+    n3 = Node(3)
+    
+    n1.left = n2
+    n1.right = n3
+
+    print(IsFoldable(n1))
+
+
+    n1 = Node(1)
+    n2 = Node(2)
+    n3 = Node(3)
+    n4 = Node(4)
+    n5 = Node(5)
+    n6 = Node(6)
+
+    n1.left = n2
+    n2.left = n3
+
+    n1.right = n4
+    n4.right = n5
+
+    print(IsFoldable(n1))
+
+    n6 = Node(6)
+    n7 = Node(7)
+
+    n3.right = n6
+    n5.left =  n7
+
+    print(IsFoldable(n1))
+
+    n8 = Node(8)
+    n9 = Node(9)
+
+    n6.left = n8
+    n7.left = n9
+    
+    print(IsFoldable(n1))
+
+
 if __name__ == '__main__':
     random.seed(0)
     np.random.seed(0)  
-
-    a = [4, 3, 6, 2, 1, 1]
-    
-    print(findTwoElement(a))
+    trees3()
