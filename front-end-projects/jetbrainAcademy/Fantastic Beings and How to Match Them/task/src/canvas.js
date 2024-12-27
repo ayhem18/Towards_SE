@@ -73,7 +73,7 @@ function setBeingsTargetBar(beingTargetCounts) {
     for (let [key, value] of beingTargetCounts.entries()) {
         imageCount += 1;
 
-        let beingImage = document.createElement("image");
+        let beingImage = document.createElement("img");
         //
         beingImage.setAttribute("src", creatureToImg.get(key));
         beingImage.setAttribute("class", "being_status_bar_img");
@@ -84,16 +84,18 @@ function setBeingsTargetBar(beingTargetCounts) {
 
         let beingCountSpan = document.createElement("span");
         beingCountSpan.setAttribute("class", "being_count");
+        beingCountSpan.setAttribute("id", `${key}_count`);
+
         beingCountSpan.appendChild(document.createTextNode(`${0}`));
         beingCountDiv.appendChild(beingCountSpan);
 
         // add to MainDiv
         mainDiv.appendChild(beingImage);
-        mainDiv.appendChild(beingCountSpan);
+        mainDiv.appendChild(beingCountDiv);
 
     }
 
-    const statusBarContent = document.createElement("status-bar-content");
+    const statusBarContent = document.getElementById("status-bar-content");
     statusBarContent.appendChild(mainDiv);
 }
 
@@ -104,23 +106,47 @@ function setNumMovesBar(maxNumMoves) {
 
     let movesCountTextSpan = document.createElement("span");
     movesCountTextSpan.setAttribute("id", "moves_count_text");
-    movesCountTextSpan.appendChild(document.createTextNode("Moves"));
+    movesCountTextSpan.appendChild(document.createTextNode("Moves "));
 
     let movesCountSpan = document.createElement("span");
-    movesCountTextSpan.setAttribute("id", "moves_count");
-    movesCountTextSpan.appendChild(document.createTextNode(`${maxNumMoves}`));
+    movesCountSpan.setAttribute("id", "moves_count");
+    movesCountSpan.appendChild(document.createTextNode(`${maxNumMoves}`));
 
     // add both spans to the movesCountDiv
-    movesCountDiv.appendChild(movesCountTextSpan);
-    movesCountDiv.appendChild(movesCountSpan);
+    movesCountDiv.append(movesCountTextSpan, movesCountSpan)
 
-    const statusBarContent = document.createElement("status-bar-content");
+    const statusBarContent = document.getElementById("status-bar-content");
     statusBarContent.appendChild(movesCountDiv);
+}
+
+function setScoreBar() {
+    // the div to save both the score text and the actual score
+    let scoreCountDiv = document.createElement("div");
+    scoreCountDiv.setAttribute("id", "score_count_bar");
+
+    // span that contains the score text
+    let scoreTextSpan = document.createElement("span");
+    scoreTextSpan.setAttribute("id", "score_text");
+    scoreTextSpan.appendChild(document.createTextNode("Score: "))
+
+    // span that contains the actual score
+    let scoreSpan = document.createElement("span");
+    scoreSpan.setAttribute("id", "score");
+    scoreSpan.appendChild(document.createTextNode("0"))
+
+    // append the 2 spans to the div
+    scoreCountDiv.append(scoreTextSpan, scoreSpan);
+
+    // append the score div to the status-bar-content div
+    const statusBarContent = document.getElementById("status-bar-content");
+    statusBarContent.appendChild(scoreCountDiv);
+
 }
 
 function setGameStateCanvas(beingTargets, max_num_moves) {
     BEINGS_TARGET_COUNTS = beingTargets;
     MAX_NUM_MOVES = max_num_moves;
+    SCORE = 0;
 
     let statusBarContentDiv = document.createElement("div");
     statusBarContentDiv.setAttribute("id", "status-bar-content");
@@ -130,6 +156,7 @@ function setGameStateCanvas(beingTargets, max_num_moves) {
 
     setBeingsTargetBar(BEINGS_TARGET_COUNTS);
     setNumMovesBar(MAX_NUM_MOVES);
+    setScoreBar();
 }
 
 
@@ -207,6 +234,9 @@ function redraw (creaturesMap,
 
     // set the listeners
     setClickEventListeners(clickCellEventHandler);
+
+    setGameStateCanvas(beingTargets, maxNumMoves);
+
     // at this point everything is good
     return true;
 }
@@ -347,8 +377,33 @@ function swap(cell1, cell2) {
 }
 
 
+function    updateGameStateCanvas(beingsCounts, numMoves) {
+    let totalScore = 0;
+    // iterate through BeingsCount and
+    for (let [key, value] of beingsCounts.entries()) {
+        totalScore += value;
+        // set the number of cleared beings for each being correctly (if the being is targeted)
+        if (!BEINGS_TARGET_COUNTS.has(key)){
+            continue;
+        }
 
+        let singleBeingCount = document.getElementById(`${key}_count`);
+        singleBeingCount.innerHTML = "";
+        singleBeingCount.appendChild(document.createTextNode(`${value}`));
+    }
 
-function updateGameStateCanvas() {
+    totalScore = totalScore * 10;
+
+    // set the total score
+    const scoreElement = document.getElementById("score");
+    scoreElement.innerHTML = "";
+    // set the text once again
+    scoreElement.appendChild(document.createTextNode(`${totalScore}`));
+
+    // set the remaining number of moves
+    const movesElement = document.getElementById("moves_count");
+    movesElement.innerHTML = "";
+    // set the text once again
+    movesElement.appendChild(document.createTextNode(`${MAX_NUM_MOVES - numMoves}`));
 
 }

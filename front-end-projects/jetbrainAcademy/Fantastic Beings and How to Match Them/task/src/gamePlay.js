@@ -15,7 +15,7 @@ function initializeGamePlayVars2(nRows, nCols) {
     GP2_CLICKED_CELL = null;
     BEINGS_COUNTS = new Map();
 
-    for (const n in CREATURE_NAMES) {
+    for (const n of CREATURE_NAMES) {
         BEINGS_COUNTS.set(n, 0); /*each being is set to zero*/
     }
 
@@ -136,12 +136,14 @@ function GP2_clickCellEventHandler(event) {
         // swap the clicked and target cell back
         swap(GP2_CLICKED_CELL, targetCell);
     } else {
-        // clear the sequences
-        clearCells(sequences1);
         updateGameState(sequences1);
-        initialRefill(sequences1);
         /*update the canvas*/
         updateGameStateCanvas(BEINGS_COUNTS, NUM_MOVES)
+
+        // clear the sequences
+        clearCells(sequences1);
+        initialRefill(sequences1);
+
     }
 
     GP2_CLICKED_CELL = null;

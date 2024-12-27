@@ -6,12 +6,13 @@
 const beingTargetCounts = new Map();
 beingTargetCounts.set("zouwu", 3);
 beingTargetCounts.set("kelpie", 0);
+// beingTargetCounts.set("swooping", 6);
 
 
 function fRender(nRows, nCols) {
     return render(nRows, nCols,
         beingTargetCounts,
-        1,
+        5,
         initializeGamePlayVars2,
         GP2_clickCellEventHandler);
 }
@@ -19,7 +20,7 @@ function fRender(nRows, nCols) {
 function fRedraw(creaturesMap) {
     return redraw(creaturesMap,
         beingTargetCounts,
-        1,
+        5,
         initializeGamePlayVars2,
         GP2_clickCellEventHandler);
 }
