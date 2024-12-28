@@ -239,3 +239,96 @@ def isCousins(root: Node, a: int, b: int) -> bool:
     diff_parent = (a_par.data if a_par is not None else None) == (b_par.data if b_par is not None else None)
 
     return same_level and not diff_parent
+
+
+# https://www.geeksforgeeks.org/problems/perfect-binary-tree/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+def isPerfect(root: Node) -> bool:
+    # the main idea here is to do a level-order traversal and track the number of nodes per level
+
+    nodes_per_level = defaultdict(lambda : 0)
+    
+    queue = deque([(0, root)])
+    
+    while len(queue) != 0:
+        level, node = queue.pop()
+
+        nodes_per_level[level] += 1 
+
+        if node.right is not None:
+            queue.append((level + 1, node.right))           
+
+        if node.left is not None:
+            queue.append((level + 1, node.left))           
+
+    for level, nodes_count in nodes_per_level.items():
+        if nodes_count != 2 ** level:
+            return False
+    
+    return True
+
+
+
+# https://www.geeksforgeeks.org/problems/complete-binary-tree/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_car
+def isCompleteBT(root: Node) -> bool:
+    # the main idea here is to make sure the level-order traversal is carried out from left to right at each level and add null nodes to the queue
+    # the moment a null node is met
+    # simply check whether the queue contains a non-null node
+    # if so, return false, otherwise, the tree is complete
+
+    queue = deque([root])
+
+    while len(queue) > 0: 
+        # make sure to pop from the left (FIFO mode)
+        node = queue.popleft()
+        
+        if node is None:
+            break
+
+        queue.append(node.left)
+        queue.append(node.right)
+        
+    # iterate through the queue
+    for i in range(len(queue)):
+        if queue[i] is not None:
+            return False
+        
+    return True
+
+
+# https://www.geeksforgeeks.org/problems/duplicate-subtree-in-binary-tree/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+
+def dupSub(root: Node) -> bool:
+    # the idea here is to suck dick, like really really hard...
+    leaf_parent_set = set()
+    queue = deque([root])
+    
+    while len(queue) != 0:
+        node = queue.popleft()
+        
+        if node.left is not None:
+            c = node.left
+            
+            if c.left is None and c.right is None:
+                # this means 'c' is a leaf node
+                c_signature = (c.data, node.data, 'l')
+                if c_signature in leaf_parent_set:
+                    return True
+                leaf_parent_set.add(c_signature)
+
+            # add it to the queue
+            queue.append(node.left)                 
+
+        if node.right is not None:
+            c = node.right
+            
+            if c.left is None and c.right is None:
+                # this means 'c' is a leaf node
+                c_signature = (c.data, node.data, 'r')
+                if c_signature in leaf_parent_set:
+                    return True
+                leaf_parent_set.add(c_signature)
+
+            # add it to the queue
+            queue.append(node.right)                 
+
+    return False

@@ -11,7 +11,7 @@ from arrays.sorting import minSwaps
 from mathy.file1 import rotate_constant_space, rotate_linear_space, subarraySum 
 from trees.utils_trees import Node, tree_array_rep
 from trees.basic_depth_recursion import findNodeAndParent, IsFoldable
-from trees.level_traversal import isCousins 
+from trees.level_traversal import isCousins, isPerfect, isCompleteBT, dupSub
 
 # testing the inplace rotation algorithm based on ideas from number theory
 
@@ -273,7 +273,40 @@ def trees3():
     print(IsFoldable(n1))
 
 
+
+def trees4():
+    n1 = Node(1)
+    print(dupSub(n1)) # false
+
+    n21 = Node(2)
+    n22 = Node(2)
+
+    n1.right = n21
+    n1.left = n22
+
+    print(dupSub(n1)) # false
+
+    n31 = Node(3)    
+    n32 = Node(3)
+    
+    n21.right = n31
+    n22.left = n32
+
+    print(dupSub(n1)) # false
+
+
+    n33 = Node(3)
+    n22.right = n33
+
+    print(dupSub(n1)) # true
+
+    n33.right = Node(4)
+
+    print(dupSub(n1)) # false
+
+
+
 if __name__ == '__main__':
     random.seed(0)
     np.random.seed(0)  
-    trees3()
+    trees4()

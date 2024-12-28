@@ -297,3 +297,30 @@ def IsFoldable(root: Node):
     
     # at this point we know that both root.left and root.right are present
     return struct_symmetric(root.left, root.right)
+
+
+def diameter_depth(root: Node):
+    if root is None:
+        return 0, 0
+    
+    l_depth, r_depth = 0, 0
+    r_diameter, l_diameter = 0, 0
+
+    if root.left is not None:
+        l_diameter, l_depth = diameter_depth(root.left)
+        l_depth += 1
+
+    if root.right is not None:
+        r_diameter, r_depth = diameter_depth(root.right)
+        r_depth += 1
+    
+    depth = max(l_depth, r_depth)
+
+    return max(r_diameter, l_diameter, l_depth + r_depth), depth
+
+
+# https://www.geeksforgeeks.org/problems/diameter-of-binary-tree/1
+def diameter(self, root):
+    # the diameter can be expressed as the maximum between the diameter of the right subtree, diameter of left subtree
+    # or the sum of the depths of both subtress
+    return diameter_depth(root)[0]

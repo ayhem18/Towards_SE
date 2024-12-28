@@ -2,7 +2,7 @@
 This script contains solutions to problems based on the traversal ideas: in-order, pre-order, post-order (not level-order traversal)
 """
 
-from collections import deque
+from collections import deque, defaultdict
 from typing import List, Optional
 
 from .utils_trees import Node
