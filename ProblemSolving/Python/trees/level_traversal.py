@@ -31,7 +31,6 @@ def largestValues(root: Node):
     return [level_max[i] for i in range(len(level_max))]
 
 
-
 # https://www.geeksforgeeks.org/problems/symmetric-tree/1
 def isSymmetric(root):
     if root is None:
@@ -51,12 +50,11 @@ def isSymmetric(root):
     return True
 
 
-
 # https://www.geeksforgeeks.org/problems/zigzag-tree-traversal/1
 def zigZagTraversal(root: Node):   
-    
-    queue = deque([])
-    stack = deque([(0, root)])
+        
+    stack = deque([])
+    queue = deque([(0, root)])
 
     total_count = 0
     count_map = {}
@@ -73,8 +71,8 @@ def zigZagTraversal(root: Node):
             current_level_count = 0
 
         current_level_count += 1
+        if current_level % 2 == 1:
 
-        if current_level % 2 == 0:
             level, node = stack.popleft()
         else:
             level, node = queue.pop()
@@ -84,7 +82,7 @@ def zigZagTraversal(root: Node):
         count_map[total_count] = node.data
         total_count += 1
 
-        if level % 2 == 0:
+        if level % 2 == 1:
             if node.left is not None:
                 queue.append((level + 1, node.left))           
                 level_count[level + 1] += 1
@@ -105,9 +103,7 @@ def zigZagTraversal(root: Node):
     return [count_map[i] for i in range(len(count_map))] 
 
 
-
 # https://www.geeksforgeeks.org/problems/right-view-of-binary-tree/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
-
 def rightView(root: Node):
     # the idea of this problem is to find the rightmost node at each level
     # let's do the usual level-order traversal
@@ -128,7 +124,6 @@ def rightView(root: Node):
         node_per_level[level] = node.data
 
     return [node_per_level[i] for i in range(len(node_per_level))]
-
 
 
 # https://www.geeksforgeeks.org/problems/bottom-view-of-binary-tree/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
@@ -185,7 +180,6 @@ def createTree(parent: List[int]) -> Node:
                 queue.append(right_child)
 
     return root
-
 
 
 # https://www.geeksforgeeks.org/problems/check-if-two-nodes-are-cousins/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
@@ -267,7 +261,6 @@ def isPerfect(root: Node) -> bool:
     return True
 
 
-
 # https://www.geeksforgeeks.org/problems/complete-binary-tree/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_car
 def isCompleteBT(root: Node) -> bool:
     # the main idea here is to make sure the level-order traversal is carried out from left to right at each level and add null nodes to the queue
@@ -297,6 +290,7 @@ def isCompleteBT(root: Node) -> bool:
 
 # https://www.geeksforgeeks.org/problems/duplicate-subtree-in-binary-tree/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
 
+# the current solution is close but not exactly correct...
 def dupSub(root: Node) -> bool:
     # the idea here is to suck dick, like really really hard...
     leaf_parent_set = set()
@@ -332,3 +326,23 @@ def dupSub(root: Node) -> bool:
             queue.append(node.right)                 
 
     return False
+
+
+# https://www.geeksforgeeks.org/problems/reverse-level-order-traversal/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+# as the name suggests: return
+def reverseLevelOrder(root: Node) -> List[int]:
+    
+    queue = deque([root])
+    final_queue = deque()
+
+    while len(queue) != 0:
+        node = queue.popleft()
+        final_queue.append(node.data)
+
+        if node.right is not None:
+            queue.append((node.right))           
+
+        if node.left is not None:
+            queue.append((node.left))           
+    
+    return [final_queue[i] for i in range(len(final_queue) - 1, -1, -1)]

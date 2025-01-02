@@ -10,8 +10,8 @@ from arrays.sorting import minSwaps
 
 from mathy.file1 import rotate_constant_space, rotate_linear_space, subarraySum 
 from trees.utils_trees import Node, tree_array_rep
-from trees.basic_depth_recursion import findNodeAndParent, IsFoldable
-from trees.level_traversal import isCousins, isPerfect, isCompleteBT, dupSub
+from trees.basic_depth_recursion import findNodeAndParent, IsFoldable, lca
+from trees.level_traversal import isCousins, isPerfect, isCompleteBT, dupSub, reverseLevelOrder, zigZagTraversal
 
 # testing the inplace rotation algorithm based on ideas from number theory
 
@@ -276,33 +276,51 @@ def trees3():
 
 def trees4():
     n1 = Node(1)
-    print(dupSub(n1)) # false
+    n2 = Node(2)
+    n3 = Node(3)
+    n4 = Node(4)
+    n5 = Node(5)
 
-    n21 = Node(2)
-    n22 = Node(2)
+    n6 = Node(6)
+    n7 = Node(7)
+    n8 = Node(8)
 
-    n1.right = n21
-    n1.left = n22
+    n1.left = n2
+    n1.right = n3
 
-    print(dupSub(n1)) # false
+    print(lca(n1, 2, 3)) # 1
 
-    n31 = Node(3)    
-    n32 = Node(3)
-    
-    n21.right = n31
-    n22.left = n32
+    n2.left = n4
+    n2.right = n5
 
-    print(dupSub(n1)) # false
+    n3.left = n6
+    n3.right = n7
+    n5.right = n8
 
+    print(lca(n1, 4, 8)) # 2
 
-    n33 = Node(3)
-    n22.right = n33
+    print(lca(n1, 8, 6)) # 1
 
-    print(dupSub(n1)) # true
+    print(lca(n1, 7, 3)) # 3
 
-    n33.right = Node(4)
+    print(lca(n1, 5, 8)) # 5
 
-    print(dupSub(n1)) # false
+    print(lca(n1, 3, 8)) # 1
+
+    n9 = Node(9)
+
+    n10 = Node(10)
+
+    n5.left = n9
+
+    n7.right = n10
+
+    print(lca(n1, 9, 7)) # 1
+
+    print(lca(n1, 4, 9)) # 2
+
+    print(lca(n1, 8, 9)) # 5 
+
 
 
 

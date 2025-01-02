@@ -7,7 +7,7 @@ it can be extended to have a function f that uses f_prime where f_prime returns 
 
 """
 
-from typing import Dict, Tuple, Union, List
+from typing import Dict, Optional, Tuple, Union, List
 from collections import defaultdict
 
 from .utils_trees import Node
@@ -324,3 +324,51 @@ def diameter(self, root):
     # the diameter can be expressed as the maximum between the diameter of the right subtree, diameter of left subtree
     # or the sum of the depths of both subtress
     return diameter_depth(root)[0]
+
+
+def lcaTuple(root: Node, n1: int, n2: int) -> Tuple[Optional[Node], Optional[Node], Optional[Node]]:
+    n1_anc = None
+    n2_anc = None
+
+    if root.data == n1:
+        n1_anc = root
+    
+    if root.data == n2:
+        n2_anc = root
+
+    if root.left is not None:
+        left_lca, left_n1, left_n2 = lcaTuple(root.left, n1, n2)
+        # which means that left_lca is indeed the lca of the values we are looking for
+        if left_lca is not None:
+            return left_lca, left_lca, left_lca
+
+        if left_n1 is not None:
+            n1_anc = root
+
+        if left_n2 is not None:
+            n2_anc = root
+
+    if root.right is not None:
+        right_lca, right_n1, right_n2 = lcaTuple(root.right, n1, n2)
+    
+        # which means that left_lca is indeed the lca of the values we are looking for
+        if right_lca is not None:
+            return right_lca, right_lca, right_lca
+
+        if right_n1 is not None:
+            n1_anc = root
+
+        if right_n2 is not None:
+            n2_anc = root
+
+    if n1_anc is not None and n2_anc is not None:
+        return root, root, root
+
+    # otherwise the current root is not the lca    
+    return None, n1_anc, n2_anc
+
+
+
+def lca(root: Node, n1: int, n2: int) -> int:
+    return lcaTuple(root, n1, n2)[0].data
+
