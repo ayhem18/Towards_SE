@@ -11,7 +11,7 @@ from arrays.sorting import minSwaps
 from mathy.file1 import rotate_constant_space, rotate_linear_space, subarraySum 
 from trees.utils_trees import Node, tree_array_rep
 from trees.basic_depth_recursion import findNodeAndParent, IsFoldable, lca
-from trees.level_traversal import isCousins, isPerfect, isCompleteBT, dupSub, reverseLevelOrder, zigZagTraversal
+from trees.level_traversal import isCousins, isPerfect, isCompleteBT, dupSub, reverseLevelOrder, zigZagTraversal, getMaxSum
 
 # testing the inplace rotation algorithm based on ideas from number theory
 
@@ -275,52 +275,56 @@ def trees3():
 
 
 def trees4():
-    n1 = Node(1)
-    n2 = Node(2)
-    n3 = Node(3)
-    n4 = Node(4)
-    n5 = Node(5)
+    n0 = Node(1)
+    n1 = Node(20)
+    n2 = Node(40)
+    n3 = Node(30)
+    n4 = None
+    n5 = Node(4)
+    n6 = Node(3)
 
-    n6 = Node(6)
-    n7 = Node(7)
-    n8 = Node(8)
+    print(getMaxSum(n0)) # 1
 
-    n1.left = n2
-    n1.right = n3
+    n0.left = n1
+    n0.right = n2
+    
+    print(getMaxSum(n0)) # 60
 
-    print(lca(n1, 2, 3)) # 1
+    n1.left = n3
+    n1.right = n4
+    
+    print(getMaxSum(n0)) # 70
 
-    n2.left = n4
-    n2.right = n5
+    n2.left = n5
+    n2.right = n6
 
-    n3.left = n6
-    n3.right = n7
-    n5.right = n8
+    print(getMaxSum(n0)) # 70
 
-    print(lca(n1, 4, 8)) # 2
+    #############################
+    n0 = Node(5)
+    n1 = Node(7)
+    n2 = Node(10)
+    n3 = Node(4)
+    n4 = Node(1)
+    n5 = Node(8)
+    n6 = Node(1)
 
-    print(lca(n1, 8, 6)) # 1
+    print(getMaxSum(n0)) # 5
 
-    print(lca(n1, 7, 3)) # 3
+    n0.left = n1
+    n0.right = n2
+    
+    print(getMaxSum(n0)) # 17
 
-    print(lca(n1, 5, 8)) # 5
+    n1.left = n3
+    n1.right = n4
+    
+    print(getMaxSum(n0)) # 17
 
-    print(lca(n1, 3, 8)) # 1
+    n2.left = n5
+    n2.right = n6
 
-    n9 = Node(9)
-
-    n10 = Node(10)
-
-    n5.left = n9
-
-    n7.right = n10
-
-    print(lca(n1, 9, 7)) # 1
-
-    print(lca(n1, 4, 9)) # 2
-
-    print(lca(n1, 8, 9)) # 5 
-
+    print(getMaxSum(n0)) # 19
 
 
 
@@ -328,3 +332,4 @@ if __name__ == '__main__':
     random.seed(0)
     np.random.seed(0)  
     trees4()
+

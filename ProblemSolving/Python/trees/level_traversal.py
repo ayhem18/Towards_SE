@@ -4,7 +4,7 @@ This script contain solutions to tree problems based on the idea of level-order 
 
 import math
 
-from typing import List, Tuple
+from typing import Dict, List, Optional, Tuple
 from collections import deque, defaultdict
 from .utils_trees import Node, tree_array_rep
 
@@ -346,3 +346,102 @@ def reverseLevelOrder(root: Node) -> List[int]:
             queue.append((node.left))           
     
     return [final_queue[i] for i in range(len(final_queue) - 1, -1, -1)]
+
+
+
+#https://www.geeksforgeeks.org/problems/maximum-sum-of-non-adjacent-nodes/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+
+
+def build_tree_data(root: Node) -> Dict:
+    queue = deque([(0, root)])
+
+    data = {}
+
+    while len(queue) != 0:
+        index, node = queue.popleft()
+        data[index] = node.data
+    
+        if node.left is not None:
+            node_left_index = 2 * index + 1
+            queue.append((node_left_index, node.left))           
+
+        if node.right is not None:            
+            node_right_index = 2 * index + 2
+            queue.append((node_right_index, node.right))           
+
+    return data
+
+
+# this is honestly a very beautiful problem: a combination of Dynamic Programming and tree problems...
+
+def getMaxSumDP(node_index: int, data: Dict, memo: Optional[Dict] = None):
+    if memo is not None:
+        memo = {}
+
+    if node_index in memo:
+        return memo[node_index]
+
+    if node_index not in data:
+        return 0
+
+    lc_i, rc_i = 2 * node_index + 1, 2 * node_index + 2
+    
+    if (lc_i not in data) and (rc_i not in data):
+        # this means the current node is a leaf: the best sum with this leaf as the root
+        # is its value
+        memo[node_index] = data[node_index]
+        return data[node_index]
+
+    # at this point, the node has at least one child
+    # first case: do not include the current node: simply using the best sums of the children
+
+    lc = getMaxSumDP(lc_i, data, memo)
+    memo[lc_i] = lc
+
+    rc = getMaxSumDP(rc_i, data, memo)
+    memo[rc_i] = rc
+
+    case1 = lc + rc 
+
+    # the 2nd case: include the current node:
+    case2 = data[node_index]
+
+    # case 1 uses four nodes: left, left child, left right child, right left child, right right child
+    
+    # left, left child
+    ci = 2 * lc_i + 1
+    c = getMaxSumDP(ci, data, memo)
+    memo[ci] = c
+    case2 += c
+
+    # left, right, child
+    ci = 2 * lc_i + 2
+    c = getMaxSumDP(ci, data, memo)
+    memo[ci] = c
+    case2 += c
+
+
+    # right, left, child
+    ci = 2 * rc_i + 1
+    c = getMaxSumDP(ci, data, memo)
+    memo[ci] = c
+    case2 += c
+
+
+    # right, right, child
+    ci = 2 * rc_i + 2
+    c = getMaxSumDP(ci, data, memo)
+    memo[ci] = c
+    case2 += c
+
+    memo[node_index] = max(case1, case2)
+
+    return memo[node_index]
+
+
+def getMaxSum(root: Node) -> int:
+    # build the data dictionary
+    data = build_tree_data(root)
+    memo = {}
+    res = getMaxSumDP(0, data, memo)
+    return res
