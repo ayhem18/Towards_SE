@@ -66,3 +66,12 @@ def tree_array_rep(root: Node):
 
     fill_tree_array(root, node_index=0, tree=array)
     return array        
+
+
+class Index:
+    def __init__(self):
+        self.index = 0
+
+    def increment(self):
+        self.index += 1
+        

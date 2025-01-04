@@ -329,7 +329,6 @@ def diameter(self, root):
 
 # https://www.geeksforgeeks.org/problems/lowest-common-ancestor-in-a-binary-tree/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
 
-
 # helper function
 def lcaTuple(root: Node, n1: int, n2: int) -> Tuple[Optional[Node], Optional[Node], Optional[Node]]:
     n1_anc = None

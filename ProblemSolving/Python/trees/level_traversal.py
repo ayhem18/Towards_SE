@@ -4,7 +4,7 @@ This script contain solutions to tree problems based on the idea of level-order 
 
 import math
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 from collections import deque, defaultdict
 from .utils_trees import Node, tree_array_rep
 
@@ -352,15 +352,26 @@ def reverseLevelOrder(root: Node) -> List[int]:
 #https://www.geeksforgeeks.org/problems/maximum-sum-of-non-adjacent-nodes/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
 
 
-def build_tree_data(root: Node) -> Dict:
+def build_tree_data(root: Node, data_val: bool = True, target: Optional[int] = None) -> Union[Dict, Tuple[Dict, int]]:
     queue = deque([(0, root)])
 
     data = {}
 
+    target_index = None
+
     while len(queue) != 0:
         index, node = queue.popleft()
-        data[index] = node.data
-    
+        
+        # depending on the data_val argument, save either the value or the Node object itself
+        if data_val:
+            data[index] = node.data
+        else:
+            data[index] = node
+
+        # this condition is always false when `target` is None
+        if node.data == target:
+            target_index = index        
+
         if node.left is not None:
             node_left_index = 2 * index + 1
             queue.append((node_left_index, node.left))           
@@ -369,6 +380,9 @@ def build_tree_data(root: Node) -> Dict:
             node_right_index = 2 * index + 2
             queue.append((node_right_index, node.right))           
 
+    if target is not None:
+        return data, target_index
+    
     return data
 
 
@@ -445,3 +459,67 @@ def getMaxSum(root: Node) -> int:
     memo = {}
     res = getMaxSumDP(0, data, memo)
     return res
+
+
+
+# another beautiful problem: 
+# https://www.geeksforgeeks.org/problems/burning-tree/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+
+def minTime(root: Node, target: int) -> int:
+    # first let's build the data dictionary
+    data, target_index = build_tree_data(root, data_val=True, target=target)
+
+    visited = set()
+    
+    queue = deque([(0, target_index, target)]) # first element represents the number of seconds after which the node burns
+
+    visited.add(target_index)
+
+    seconds = 0
+
+    while len(queue) > 0:
+        s, index, _ = queue.popleft()
+        seconds = max(s, seconds)
+
+        parent_index = (index - 1) // 2
+        parent_index = max(parent_index, 0)
+
+        lc_index = 2 * index + 1
+        rc_index = 2 * index + 2
+
+        if parent_index not in visited:
+            visited.add(parent_index)
+            queue.append((s + 1, parent_index, data[parent_index]))
+
+        if lc_index in data and lc_index not in visited:
+            visited.add(lc_index)
+            queue.append((s + 1, lc_index, data[lc_index]))
+
+        if rc_index in data and rc_index not in visited:
+            visited.add(rc_index)
+            queue.append((s + 1, rc_index, data[rc_index]))
+
+    return seconds
+
+# https://www.geeksforgeeks.org/problems/root-to-leaf-paths-sum/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+# this one isn't as interesting 
+def treePathSum(root: Node):
+    leaf_sum = 0
+    queue = deque([(root, root.data)])
+
+    while len(queue) > 0:
+        node, s = queue.popleft()
+
+        if node.left is not None:
+            lcs = s * 10 + node.left.data
+            queue.append((node.left, lcs))
+
+        if node.right is not None:
+            rcs = s * 10 + node.right.data
+            queue.append((node.right, rcs))
+        
+        # check if the node is a leaf node
+        if node.left is None and node.right is None:
+            leaf_sum += s
+
+    return leaf_sum

@@ -11,7 +11,8 @@ from arrays.sorting import minSwaps
 from mathy.file1 import rotate_constant_space, rotate_linear_space, subarraySum 
 from trees.utils_trees import Node, tree_array_rep
 from trees.basic_depth_recursion import findNodeAndParent, IsFoldable, lca
-from trees.level_traversal import isCousins, isPerfect, isCompleteBT, dupSub, reverseLevelOrder, zigZagTraversal, getMaxSum
+from trees.level_traversal import isCousins, isPerfect, isCompleteBT, dupSub, reverseLevelOrder, zigZagTraversal, getMaxSum, minTime, treePathSum
+from trees.traversal import constructBinaryTree, preorder_traversal
 
 # testing the inplace rotation algorithm based on ideas from number theory
 
@@ -275,61 +276,89 @@ def trees3():
 
 
 def trees4():
-    n0 = Node(1)
-    n1 = Node(20)
-    n2 = Node(40)
-    n3 = Node(30)
-    n4 = None
-    n5 = Node(4)
-    n6 = Node(3)
-
-    print(getMaxSum(n0)) # 1
-
-    n0.left = n1
-    n0.right = n2
+    n1 = Node(1)
+    n2 = Node(2)
+    n3 = Node(3)
     
-    print(getMaxSum(n0)) # 60
+    print(treePathSum(n1)) # 1
 
-    n1.left = n3
-    n1.right = n4
-    
-    print(getMaxSum(n0)) # 70
+    n1.left = n2
+    n1.right = n3
 
-    n2.left = n5
-    n2.right = n6
+    print(treePathSum(n1)) # 25
 
-    print(getMaxSum(n0)) # 70
+    n4 = Node(4)
+    n5 = Node(5)
 
-    #############################
-    n0 = Node(5)
-    n1 = Node(7)
-    n2 = Node(10)
-    n3 = Node(4)
-    n4 = Node(1)
-    n5 = Node(8)
-    n6 = Node(1)
+    n2.left = n4
+    print(treePathSum(n1)) # 137
 
-    print(getMaxSum(n0)) # 5
+    n3.left = n5
 
-    n0.left = n1
-    n0.right = n2
-    
-    print(getMaxSum(n0)) # 17
+    print(treePathSum(n1)) # 257
 
-    n1.left = n3
-    n1.right = n4
-    
-    print(getMaxSum(n0)) # 17
 
-    n2.left = n5
-    n2.right = n6
+def trees5():
+    n1 = Node(1)
 
-    print(getMaxSum(n0)) # 19
+    pre = preorder_traversal(n1)
+
+    n1New = constructBinaryTree(pre)
+    prenew = preorder_traversal(n1New)
+
+    print(f"original: {pre}")
+    print(f"constructed: {prenew}")
+    print("#" * 10)
+
+
+    n1 = Node(1)
+    n2 = Node(2)
+    n3 = Node(3)
+
+    n1.left = n2
+    n1.right = n3
+
+    pre = preorder_traversal(n1)
+
+    n1New = constructBinaryTree(pre)
+    prenew = preorder_traversal(n1New)
+
+    print(f"original: {pre}")
+    print(f"constructed: {prenew}")
+    print("#" * 10)
+
+
+    n1 = Node(1)
+    n2 = Node(2)
+    n3 = Node(3)
+
+    n4 = Node(4)
+    n5 = Node(5)
+    n6 = Node(6)
+    n7 = Node(7)
+
+    n1.left = n2
+    n1.right = n3
+
+    n2.left = n4
+    n2.right = n5
+
+    n3.left = n6
+    n3.right = n7
+
+    pre = preorder_traversal(n1)
+
+    n1New = constructBinaryTree(pre)
+    prenew = preorder_traversal(n1New)
+
+    print(f"original: {pre}")
+    print(f"constructed: {prenew}")
+    print("#" * 10)
 
 
 
 if __name__ == '__main__':
     random.seed(0)
     np.random.seed(0)  
-    trees4()
+    trees5()
 
