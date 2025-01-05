@@ -12,3 +12,13 @@ button {
     align-items: start;
 }
 
+
+.form_container {
+    border: 1px solid black;
+    border-radius: 10px;
+
+    margin-top: 10px;
+    min-height: 10vh;
+
+    background-color: beige;
+}
