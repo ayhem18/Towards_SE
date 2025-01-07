@@ -12,7 +12,7 @@ from mathy.file1 import rotate_constant_space, rotate_linear_space, subarraySum
 from trees.utils_trees import Node, tree_array_rep
 from trees.basic_depth_recursion import findNodeAndParent, IsFoldable, lca
 from trees.level_traversal import isCousins, isPerfect, isCompleteBT, dupSub, reverseLevelOrder, zigZagTraversal, getMaxSum, minTime, treePathSum
-from trees.traversal import constructBinaryTree, preorder_traversal
+from trees.traversal import constructBinaryTree, preorder_traversal, inOrder
 
 # testing the inplace rotation algorithm based on ideas from number theory
 
@@ -279,86 +279,49 @@ def trees4():
     n1 = Node(1)
     n2 = Node(2)
     n3 = Node(3)
-    
-    print(treePathSum(n1)) # 1
+
+    print(inOrder(n1))
 
     n1.left = n2
     n1.right = n3
 
-    print(treePathSum(n1)) # 25
-
-    n4 = Node(4)
-    n5 = Node(5)
-
-    n2.left = n4
-    print(treePathSum(n1)) # 137
-
-    n3.left = n5
-
-    print(treePathSum(n1)) # 257
-
-
-def trees5():
-    n1 = Node(1)
-
-    pre = preorder_traversal(n1)
-
-    n1New = constructBinaryTree(pre)
-    prenew = preorder_traversal(n1New)
-
-    print(f"original: {pre}")
-    print(f"constructed: {prenew}")
-    print("#" * 10)
-
+    print(inOrder(n1))
 
     n1 = Node(1)
     n2 = Node(2)
     n3 = Node(3)
-
-    n1.left = n2
-    n1.right = n3
-
-    pre = preorder_traversal(n1)
-
-    n1New = constructBinaryTree(pre)
-    prenew = preorder_traversal(n1New)
-
-    print(f"original: {pre}")
-    print(f"constructed: {prenew}")
-    print("#" * 10)
-
-
-    n1 = Node(1)
-    n2 = Node(2)
-    n3 = Node(3)
-
     n4 = Node(4)
     n5 = Node(5)
     n6 = Node(6)
-    n7 = Node(7)
 
     n1.left = n2
     n1.right = n3
-
     n2.left = n4
     n2.right = n5
+    n5.left = n6
 
-    n3.left = n6
-    n3.right = n7
+    print(inOrder(n1))
 
-    pre = preorder_traversal(n1)
 
-    n1New = constructBinaryTree(pre)
-    prenew = preorder_traversal(n1New)
+    n1 = Node(1)
+    n2 = Node(2)
+    n3 = Node(3)
+    n4 = Node(4)
+    n5 = Node(5)
+    n6 = Node(6)
 
-    print(f"original: {pre}")
-    print(f"constructed: {prenew}")
-    print("#" * 10)
+    n1.left = n2
+    n2.left = n3
+    n3.left = n4
+    n4.left = n5
+    n5.right = n6
+
+    print(inOrder(n1))    
 
 
 
 if __name__ == '__main__':
     random.seed(0)
     np.random.seed(0)  
-    trees5()
+    trees4()
 

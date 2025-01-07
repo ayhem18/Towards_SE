@@ -71,7 +71,6 @@ def isSymmetric(root: Node) -> bool:
 
 # I misunderstood the problem: full does not mean having exactly 2 ** h - 1 nodes (where h is the height of the tree)
 # but each tree has either 2 or 0 children...
-
 def buildFullTreeRecursive(root: Node, preorder: List[int], pre_index: Index, level_by_index: Dict, root_level: int, max_level: int):
     # the first thing to consider is whether the node is a leaf or not
     if level_by_index[pre_index.index] == max_level:
@@ -120,3 +119,25 @@ def constructBinaryTree(pre, preMirror: List[int] = None, size: int = None):
     buildFullTreeRecursive(root=root, preorder=pre, pre_index=pre_index, level_by_index=level_by_index, root_level=1, max_level=max_level)
 
     return root
+
+# https://www.geeksforgeeks.org/problems/inorder-traversal-iterative/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+def inOrder(root: Node):
+    stack = deque([root])
+    traversal = deque()
+
+    while len(stack) > 0:
+        node = stack[-1]
+
+        if node.left is not None:
+            stack.append(node.left)
+            node.left = None
+            continue
+
+        # at this point we know the node has a left child
+        traversal.append(node.data)
+        stack.pop()
+
+        if node.right is not None:
+            stack.append(node.right)
+
+    return traversal

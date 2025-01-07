@@ -154,7 +154,8 @@ class PasswordValidator {
 //}
 
 
-class ChangePasswordRequest {    @NotBlank
+class ChangePasswordRequest {    
+    @NotBlank
     @JsonProperty("new_password")
     private String newPassword;
 

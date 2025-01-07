@@ -31,11 +31,7 @@ def __all_paths( n: int, m: int, grid, current_position):
 def findAllPossiblePaths( n: int, m: int, grid):
     return __all_paths(n, m, grid, (0, 0))
 
-# this is my attempt to solve:
 # https://practice.geeksforgeeks.org/problems/combination-sum-iii/1?page=1&category[]=Backtracking&sortBy=accuracy
-# let's start with some inner methods
-
-
 
 def combinationSum( k, target):
     temp = choose_k_from_set(nums=list(range(1, 10)), k=k)
@@ -59,7 +55,6 @@ def kthPermutation( n: int, k: int) -> str:
     string = ''.join([str(i) for i in range(1, n + 1)])
     return permute_str(string, k)
 
-# the next problem is:
 # https://practice.geeksforgeeks.org/problems/permutations-of-a-given-string2041/1?page=1&category[]=Backtracking&sortBy=submissions
 def inner_find_permutation( s):
     # let's start with some base cases:
@@ -81,7 +76,7 @@ def inner_find_permutation( s):
 def find_permutation( s):
     return sorted(list(set(inner_find_permutation(s))))
 
-def InnerCombs(self, nums, target: int):
+def InnerCombs(nums, target: int):
     # this function assumes the input is sorted
     if target < nums[0]:
         return []
@@ -136,7 +131,7 @@ phone = {2: ['a', 'b', 'c'],
             8: ['t', 'u', 'v'],
             9: ['w', 'x', 'y', 'z']}
 
-def possibleWords(self, a, _):
+def possibleWords(a, _):
     # first build the sets
     sets = [phone[v] for v in a]
     return combination_of_sets(sets)
