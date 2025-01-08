@@ -1,12 +1,12 @@
-#include <iostream>
+# include <iostream>
 # include "arrays/searching.h"
 # include "trees/file1.h"
 # include "trees/file2.h"
 # include "dp/dp1.h"
 # include "backtracking/bt1.h"
 # include <cassert>
-#include <functional>
-#include <numeric>
+# include <functional>
+# include <numeric>
 # include "arrays/must_do.h"
 # include <string>
 
@@ -151,11 +151,19 @@ void test_subarray_sum() {
 
 
 
+# include "utils.h"
 
 int main() {
-    vi h{1, 2, 3, 5, 8};
-    std::make_heap(h.begin(), h.end());
-    for (int v : h) {
-        std::cout << v<< "\n";
-    }
+    // vi h{1, 2, 3, 5, 8};
+    // std::make_heap(h.begin(), h.end());
+    // for (int v : h) {
+    //     std::cout << v<< "\n";
+    // }
+
+    std::cout << mod(static_cast<int>(10), static_cast<int>(7)) << "\n";
+
+    // for (int i = 0 ; i < 10; i ++) {
+    //     std::cout << i << "\n";
+    // }
 }
+

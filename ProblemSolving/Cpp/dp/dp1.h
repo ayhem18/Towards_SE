@@ -1,6 +1,7 @@
 #ifndef CPP_DP1_H
 #define CPP_DP1_H
 
+# include <string>
 # include "../utils.h"
 // let's start simple with fibonacci
 

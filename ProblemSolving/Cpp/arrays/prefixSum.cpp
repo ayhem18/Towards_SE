@@ -72,46 +72,46 @@ bool subArrayExists(int arr[], int n){
 }
 
 
-int longSubarrWthSumDivByK(int arr[], int n, int k){
-    int prefixSum[n];
-    int total = 0;
-    for (int i = 0; i < n; i ++) {
-        total += arr[i];
-        prefixSum[i] = mod(total, k);
-    }
+// int longSubarrWthSumDivByK(int arr[], int n, int k){
+//     int prefixSum[n];
+//     int total = 0;
+//     for (int i = 0; i < n; i ++) {
+//         total += arr[i];
+//         prefixSum[i] = mod(total, k);
+//     }
 
-    int max_len = -1;
-    // first let's find any prefix subarray that are divisible by 'K'
-    for (int i = 0; i < n;i ++) {
-        if (prefixSum[i] == 0) {
-            max_len = i + 1;
-        }
-    }
+//     int max_len = -1;
+//     // first let's find any prefix subarray that are divisible by 'K'
+//     for (int i = 0; i < n;i ++) {
+//         if (prefixSum[i] == 0) {
+//             max_len = i + 1;
+//         }
+//     }
 
-    if (max_len == n) {
-        return n;
-    }
+//     if (max_len == n) {
+//         return n;
+//     }
 
-    std::map<int, std::pair<int,int>> mods_indices;
+//     std::map<int, std::pair<int,int>> mods_indices;
 
-    for (int i = 0;i < n; i++) {
-        if (mods_indices.contains(prefixSum[i])) {
-            mods_indices[prefixSum[i]].second = i;
-        }
-        else {
-            mods_indices[prefixSum[i]] = std::pair(i, -1);
-        }
-    }
+//     for (int i = 0;i < n; i++) {
+//         if (mods_indices.contains(prefixSum[i])) {
+//             mods_indices[prefixSum[i]].second = i;
+//         }
+//         else {
+//             mods_indices[prefixSum[i]] = std::pair(i, -1);
+//         }
+//     }
 
-    // iterate through the map
-    for (int i = 0; i < n; i++) {
-        auto p = mods_indices[prefixSum[i]];
-        if (p.second != -1) {
-            max_len = std::max(max_len, p.second - p.first);
-        }
-    }
+//     // iterate through the map
+//     for (int i = 0; i < n; i++) {
+//         auto p = mods_indices[prefixSum[i]];
+//         if (p.second != -1) {
+//             max_len = std::max(max_len, p.second - p.first);
+//         }
+//     }
 
-    return max_len;
-}
+//     return max_len;
+// }
 
 

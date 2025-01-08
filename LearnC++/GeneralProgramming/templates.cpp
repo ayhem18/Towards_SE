@@ -44,48 +44,48 @@ int factorial<0>() {
 }
 
 
-// concepts and class specializations !!!
-template <typename T>
-concept greaterThan = requires(T a, T b) { a > b;};
+// // concepts and class specializations !!!
+// template <typename T>
+// concept greaterThan = requires(T a, T b) { a > b;};
 
-template <typename T>
-concept lessThan = requires(T a, T b) { a < b;};
-
-
-template <typename T>
-requires lessThan<T>
-class cls {
-private:
-    T m_value;
-public:
-    explicit cls(const T& value): m_value(value){}
-
-    bool operator < (const cls another) {
-        return m_value < another.m_value;
-    }
-};
-
-template <>
-class cls <char*> {
-private:
-    char* m_value;
-public:
-    cls(char* value): m_value(value){}
-    bool operator < (const cls another) {
-        return strcmp(m_value, another.m_value) < 0;
-    }
-};
+// template <typename T>
+// concept lessThan = requires(T a, T b) { a < b;};
 
 
-// let's code the barrier function from the itp2 lecture
-template <typename T>
-void alignArray( T* array, int size, T barrier ) requires greaterThan<T> && lessThan<T>
-{
-    for ( int i=0; i < size; i++ )
-    {
-        if ( array[i] < barrier )
-            array[i] = array[i] + 2.0;
-        else if ( array[i] > barrier )
-            array[i] = array[i] - 2.0;
-    }
-}
+// template <typename T>
+// requires lessThan<T>
+// class cls {
+// private:
+//     T m_value;
+// public:
+//     explicit cls(const T& value): m_value(value){}
+
+//     bool operator < (const cls another) {
+//         return m_value < another.m_value;
+//     }
+// };
+
+// template <>
+// class cls <char*> {
+// private:
+//     char* m_value;
+// public:
+//     cls(char* value): m_value(value){}
+//     bool operator < (const cls another) {
+//         return strcmp(m_value, another.m_value) < 0;
+//     }
+// };
+
+
+// // let's code the barrier function from the itp2 lecture
+// template <typename T>
+// void alignArray( T* array, int size, T barrier ) requires greaterThan<T> && lessThan<T>
+// {
+//     for ( int i=0; i < size; i++ )
+//     {
+//         if ( array[i] < barrier )
+//             array[i] = array[i] + 2.0;
+//         else if ( array[i] > barrier )
+//             array[i] = array[i] - 2.0;
+//     }
+// }

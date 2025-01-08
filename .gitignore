@@ -71,5 +71,6 @@ backend_projects/Car Sharing/h2-2016-05-26/*
 *package-lock.json*
 
 
-
+*.h.gch
+*.out
 
