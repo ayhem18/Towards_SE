@@ -60,14 +60,6 @@ std::vector <int> commonElements (int A[], int B[], int C[], int n1, int n2, int
 }
 
 
-int majorityElement(std::vector<int>& nums) {
-    /**
-     * https://leetcode.com/problems/majority-element/
-      The first idea is to sort and then find the largest sequence of the same number; that's O(nlog(n)) and O(1) space
-      how to get it to O(n) time and O(1) space ? (no clue so far)
-     */
-}
-
 
 std::vector<int> leaders(int n, int arr[]) {
     // the idea here is to calculate the maximum number starting from the right

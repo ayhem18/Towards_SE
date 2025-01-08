@@ -7,8 +7,10 @@
 # include <cassert>
 # include <functional>
 # include <numeric>
-# include "arrays/must_do.h"
 # include <string>
+# include <cstdlib>
+# include "utils.h"
+
 
 void trees_f() {
     Node n1(1);
@@ -123,47 +125,8 @@ void dpf() {
     std::cout << numDistinct(s1, s2) << "\n";
 }
 
-#include <cstdlib>
-
-void test_subarray_sum() {
-    for (int i = 0; i <= 10000; i++) {
-        int n = rand() % 10000;
-        std::vector<int> arr (n, 0);
-        for (int j = 0; j < n; j++) {
-            arr[j] = rand() % 1000;
-        }
-        int s = rand() % 1000;
-        auto sol = subarraySum(arr, n, s);
-        if (i % 10 == 0) {
-            std::cout << "we are at " << i << "\n";
-        }
-
-        if (sol[0] != -1) {
-            int start = sol[0] - 1, e = sol[1];
-            int v = std::accumulate(arr.begin() + start, arr.begin() + e, 0);
-            if (v != s) {
-                std::cout << "SOMETHING HAPPENED !!!" << "\n";
-                break;
-            }
-        }
-    }
-}
-
-
-
-# include "utils.h"
 
 int main() {
-    // vi h{1, 2, 3, 5, 8};
-    // std::make_heap(h.begin(), h.end());
-    // for (int v : h) {
-    //     std::cout << v<< "\n";
-    // }
-
     std::cout << mod(static_cast<int>(10), static_cast<int>(7)) << "\n";
-
-    // for (int i = 0 ; i < 10; i ++) {
-    //     std::cout << i << "\n";
-    // }
 }
 
