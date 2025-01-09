@@ -7,4 +7,7 @@ std::vector <int> commonElements (int A[], int B[], int C[], int n1, int n2, int
 std::vector <int> commonElements (int a1[], int a2[], int n1, int n2);
 int majorityElement(std::vector<int>& nums);
 std::vector<int> leaders(int n, int arr[]);
+
+int search(int n, int arr[]);
+
 #endif //CPP_SEARCHING_H

@@ -2,13 +2,10 @@
 This file contains my solutions for gfg problems that can be solved mainly using a hashmap or a set
 */ 
 
-
-# include <unordered_map>
-# include <vector>
-
-using vi = std::vector<int>;
+# include "hash_map_set.h"
 
 bool map_subset_map(std::unordered_map<char, vi> m1, std::unordered_map<char, int> m2) {
+
     // check if m2 is a subset of m1
     auto it = m2.begin();
     while (it != m2.end()) {
@@ -27,6 +24,25 @@ bool map_subset_map(std::unordered_map<char, vi> m1, std::unordered_map<char, in
         it ++;
     }
     return true;
+}
+
+
+// the main goal of solving this problem is to refresh the C++ syntax in my head
+
+std::vector<int> removeDuplicate(std::vector<int>& arr) {
+    // the idea is very 
+    std::set arr_set = std::set<int>();
+
+    vi new_arr = vi();
+
+    for (const int v : arr) {
+        if (arr_set.find(v) == arr_set.end()) {
+        // if (! arr_set.contains(v) ) {
+            new_arr.push_back(v);
+            arr_set.insert(v);
+        }
+    }
+    return new_arr;
 }
 
 

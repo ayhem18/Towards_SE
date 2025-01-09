@@ -11,6 +11,8 @@
 # include <cstdlib>
 # include "utils.h"
 
+# include "arrays/dequeue.h"
+# include "arrays/hash_map_set.h"
 
 void trees_f() {
     Node n1(1);
@@ -68,8 +70,8 @@ void trees_f() {
 //    }
     std::cout << "\n";
 }
-
 void bst_f() {
+
     Node n1(2);
     Node n2(1);
     Node n3(5);
@@ -126,7 +128,38 @@ void dpf() {
 }
 
 
+void array_function() {
+
+    // some very basic array set problem
+
+    // vi a {5, 4, 3, 3, 1, 1, 2, 1};
+    // vi res = removeDuplicate(a);
+    // for (const int v : res) {
+    //     std::cout << v << " ";
+    // }
+    // std::cout << std::endl;
+
+    // some interesting search problem
+    int a[] = {1, 1, 2, 2, 3, 3, 4};
+    int n1 = sizeof(a) / sizeof(a[0]);
+    std::cout << search(n1, a) << "\n";
+
+    int b[] = {1, 2, 2, 3, 3};
+    int n2 = sizeof(b) / sizeof(b[0]);
+    std::cout << search(n2, b) << "\n";
+
+
+    int c[] = {1, 1, 2, 2, 3, 3, 4, 5, 5, 6, 6, 7, 7};
+    int n3 = sizeof(c) / sizeof(c[0]);
+    std::cout << search(n3, c) << "\n";
+
+    int d[] = {1, 1, 2, 3, 3};
+    int n4 = sizeof(d) / sizeof(d[0]);
+    std::cout << search(n4, d) << "\n";
+}
+
+
 int main() {
-    std::cout << mod(static_cast<int>(10), static_cast<int>(7)) << "\n";
+    array_function();
 }
 

@@ -79,3 +79,49 @@ std::vector<int> leaders(int n, int arr[]) {
 }
 
 
+int search_function(int arr[], int low, int high) {
+    while (high > low) {
+        int mid = static_cast<int> ((low + high) / 2);
+
+        if ((arr[mid] != arr[mid + 1]) && (arr[mid]  != arr[mid - 1])) {
+            return arr[mid];
+        }
+
+        // at this point it depends on the value of mid
+        if (arr[mid] == arr[mid + 1]) {
+            if (mid % 2 == 0) {
+                low = mid;
+            }
+            else {
+                high = mid;
+            }
+        }
+        else {
+            if (mid % 2 == 0) {
+                high = mid;
+            }
+            else {
+                low = mid;
+            }
+        }
+
+    }
+
+    return arr[low];
+}
+
+int search(int n, int arr[]) {
+    if (n == 1) {
+        return arr[0];
+    }
+    
+    if (arr[0] != arr[1]) {
+        return arr[0];
+    }
+
+    if (arr[n - 1] != arr[n - 2]) {
+        return arr[n - 1];
+    }
+
+    return search_function(arr, 0, n - 1);
+}
