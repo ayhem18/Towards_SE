@@ -111,6 +111,12 @@ int search_function(int arr[], int low, int high) {
 }
 
 int search(int n, int arr[]) {
+    /*
+    Solve:
+    
+    https://www.geeksforgeeks.org/problems/element-appearing-once2552/1?itm_source=geeksforgeeks&itm_medium=article&itm_campaign=practice_card
+    */
+
     if (n == 1) {
         return arr[0];
     }
