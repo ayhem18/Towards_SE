@@ -1,0 +1,6 @@
+apply plugin: 'java-library' // this plugin is applied maybe to subproject used in larger projects ???
+
+dependencies {
+    api "org.hibernate:hibernate-entitymanager" // why "api" I am not sure...
+    api "com.fasterxml.jackson.core:jackson-annotations"
+}

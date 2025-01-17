@@ -74,3 +74,8 @@ backend_projects/Car Sharing/h2-2016-05-26/*
 *.h.gch
 *.out
 
+*.jar
+
+SpringAcademy/restaurant_reward_network/gradle/*
+
+SpringAcademy/SpringBootEssentials/*
