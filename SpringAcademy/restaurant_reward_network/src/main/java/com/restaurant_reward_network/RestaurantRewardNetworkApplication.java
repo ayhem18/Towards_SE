@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class RestaurantRewardNetworkApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RestaurantRewardNetworkApplication.class, args);
+		ApplicationContext context = SpringApplication.run(RestaurantRewardNetworkApplication.class, args);
+		
 	}
 
 }
