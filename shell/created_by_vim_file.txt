@@ -1,0 +1,2 @@
+this text file was created using the following command: 
+"vim created_by_vim_file.txt"

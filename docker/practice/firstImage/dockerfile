@@ -1,0 +1,21 @@
+# choose the python image as a base image
+FROM ubuntu:latest 
+
+# the line below assumes that the base image contains a directory named /usr/local/app
+WORKDIR /usr/local/app
+
+# install python (apt install requires root privileges but the user is indeed user during build time)
+RUN apt update && apt install python3 -y
+
+# copy the source code to the image: <host-path> to <img-path> 
+COPY src ./src 
+
+# create a new user
+RUN useradd tempUser
+
+# set the created user as the active user in the image
+USER tempUser
+
+# set the default command as running the "src/app.py" script with 100 as an argument (may not be a good choice if I want to interact with the image afterwards)
+# CMD ["python3", "./src/app.py"]
+
