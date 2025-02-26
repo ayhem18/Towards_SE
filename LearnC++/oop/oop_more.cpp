@@ -77,18 +77,3 @@ std::istream& operator >> (std::istream& in, Fraction& frac) {
     return in;
 }
 
-// the code needed to overload the std::cout << operator
-//std::ostream& operator << (std::ostream& out, const Fraction& f) {
-//    out << f.getNumerator() << "/" << f.getDenominator();
-//    return out;
-//}
-//
-// the code needed to overload the std::cin >> operator;
-//std::istream& operator >> (std::istream& in, Fraction& frac) {
-//    double temp_val;
-//    in >> temp_val;
-//    frac.setNumerator(temp_val);
-//    in >> temp_val;
-//    frac.setDenominator(temp_val);
-//    return in;
-//}
