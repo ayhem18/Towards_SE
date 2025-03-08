@@ -79,3 +79,22 @@ backend_projects/Car Sharing/h2-2016-05-26/*
 SpringAcademy/restaurant_reward_network/gradle/*
 
 SpringAcademy/SpringBootEssentials/*
+
+# Include rules from test_email project
+backend_projects/test_email/HELP.md
+backend_projects/test_email/.gradle
+# build/ is already covered by **/build/* pattern
+backend_projects/test_email/*.iws
+backend_projects/test_email/*.iml
+backend_projects/test_email/*.ipr
+# out/ is already covered by **/out/* pattern
+backend_projects/test_email/nbproject/private/
+backend_projects/test_email/nbbuild/
+backend_projects/test_email/dist/
+backend_projects/test_email/nbdist/
+backend_projects/test_email/.nb-gradle/
+# .vscode/ is already covered
+
+backend_projects/test_email/gradle/**
+
+backend_projects/test_email/src/main/resources/application.properties

@@ -59,11 +59,21 @@ async function evenOrOdd(number) {
 // }
 
 
-function myFunc() {
-    for (let i = 1; i < 6; i++) {
-        // i to the power of 3
-        console.log(i ** 3);    
-    }
-}
 
-myFunc();
+
+// const url = "https://github.com/ayhem18"; 
+
+// let response = fetch(url);
+
+// response.then((response) => {
+//     console.log(response.status);
+// }).catch((error) => {
+//     console.log("an error was caught: ", error);
+// });
+
+
+// let's see what we can do to fetch use activity from the github api
+
+
+
+

@@ -13,14 +13,14 @@ a1.forEach((element, index, array) => {
     console.log(`the element at index ${index} is ${element} and the array is ${array}`);
 });
 
-console.log(`the global variable is ${global_variable}`);
+// console.log(`the global variable is ${global_variable}`);
 
 
 let animals = ["cat", "dog", "elephant"];
 animals.forEach((animal, index, array) => {
     array[index] = animal.toUpperCase();
 });
-console.log(animals); // ["CAT", "DOG", "ELEPHANT"]
+// console.log(animals); // ["CAT", "DOG", "ELEPHANT"]
 
 
 let animalSlice = animals.slice(1, 3);
@@ -29,14 +29,14 @@ console.log(animalSlice);
 
 animalSlice[0] = "bird";
 
-console.log(animalSlice);
-console.log(animals);
+// console.log(animalSlice);
+// console.log(animals);
 
 
 
 let arr = [4, 5, 8, 91, 45, 23, 0, 9, 4, 33];
 arr.splice(4, 3, 2, 6);
-console.log(arr.length);
+// console.log(arr.length);
 
 
 // animals.splice(1, 0, "bird", "fish");
@@ -52,3 +52,6 @@ function removeTail(array) {
 arr = Array(10).fill(1);
 console.log(removeTail(arr));
 
+numbers = ['1', '2', '3', '4', '5'];
+
+console.log(numbers.map(number => Number(number)));
