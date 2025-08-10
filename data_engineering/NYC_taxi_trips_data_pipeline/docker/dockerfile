@@ -1,0 +1,25 @@
+# the official postgres image is based on debian
+FROM postgres:16
+
+# install the wget package, python3 and pip
+RUN apt-get update && apt-get install -y wget python3 python3-pip && rm -rf /var/lib/apt/lists/*
+# install the pandas and pyarrow packages to convert the parquet data to csv
+RUN pip3 install pandas pyarrow
+
+WORKDIR /usr/local/app 
+
+# create a data directory
+RUN mkdir ./data
+
+# download the first portion of the data: NYC taxi trips data from January 2010
+RUN wget https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2010-01.parquet -O ./data/yellow_tripdata_2010-01.parquet
+
+# copy the scripts to the image
+COPY ./scripts/ /docker-entrypoint-initdb.d/
+
+
+
+# # # set the default command as running the "src/app.py" script with 100 as an argument (may not be a good choice if I want to interact with the image afterwards)
+# CMD ["psql", "-U", "postgres", "-d", "ny_taxi_db", "-f", "./scripts/load_data.sql"]
+
+
