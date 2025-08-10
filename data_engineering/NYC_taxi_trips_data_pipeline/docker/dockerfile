@@ -1,12 +1,12 @@
 # the official postgres image is based on debian
 FROM postgres:16
 
-# install the wget package, python3 and pip
-RUN apt-get update && apt-get install -y wget python3 python3-pip && rm -rf /var/lib/apt/lists/*
-# install the pandas and pyarrow packages to convert the parquet data to csv
-RUN pip3 install pandas pyarrow
+# install the wget package, python3 and pip and the debian-specific python3-venv package
+RUN apt-get update && apt-get install -y wget python3 python3-pip python3-venv && rm -rf /var/lib/apt/lists/*  
 
 WORKDIR /usr/local/app 
+
+RUN python3 -m venv image_env && . ./image_env/bin/activate && pip3 install pandas pyarrow tqdm 
 
 # create a data directory
 RUN mkdir ./data
@@ -14,12 +14,10 @@ RUN mkdir ./data
 # download the first portion of the data: NYC taxi trips data from January 2010
 RUN wget https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2010-01.parquet -O ./data/yellow_tripdata_2010-01.parquet
 
-# copy the scripts to the image
+# Change ownership of the app directory to the postgres user. This is necessary
+# because the init scripts run as the 'postgres' user and need permission
+# to write the converted CSV file into the './data' directory.
+RUN chown -R postgres:postgres /usr/local/app
+# the postgres image runs scripts in the docker-entrypoint-initdb.d directory
+# hence to populate the database, I need to copy the scripts to the said directory
 COPY ./scripts/ /docker-entrypoint-initdb.d/
-
-
-
-# # # set the default command as running the "src/app.py" script with 100 as an argument (may not be a good choice if I want to interact with the image afterwards)
-# CMD ["psql", "-U", "postgres", "-d", "ny_taxi_db", "-f", "./scripts/load_data.sql"]
-
-
