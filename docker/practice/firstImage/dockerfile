@@ -17,5 +17,5 @@ RUN useradd tempUser
 USER tempUser
 
 # set the default command as running the "src/app.py" script with 100 as an argument (may not be a good choice if I want to interact with the image afterwards)
-# CMD ["python3", "./src/app.py"]
+CMD ["python3", "./src/app.py"]
 

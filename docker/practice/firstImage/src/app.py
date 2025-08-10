@@ -34,6 +34,25 @@ def main():
         print(p)
 
 
+def better_main():
+    try:
+        while True:
+            n = int(input("Enter a number: "))
+            primes = find_primes(n)
+            print(primes)
+    except KeyboardInterrupt:
+        print("Sad to see you go...")
+        print("Exiting...") 
+        return
+
+from time import sleep
+
+def infinite_loop():
+    while True:
+        sleep(10)
+        print("I'm alive..., just slept for 10 seconds")
+
+
 if __name__ == '__main__':
-    main()
+    infinite_loop()
     

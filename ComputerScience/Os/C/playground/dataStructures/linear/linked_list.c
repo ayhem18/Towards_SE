@@ -62,7 +62,7 @@ void _free_empty_list(LinkedList* list) {
 void free_list(LinkedList* list) {
     
     if (list -> head == NULL) {
-        // free the linked list itself
+        // free the empty linked list
         _free_empty_list(list);
         return;
     }
