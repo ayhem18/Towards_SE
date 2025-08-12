@@ -98,3 +98,6 @@ backend_projects/test_email/.nb-gradle/
 backend_projects/test_email/gradle/**
 
 backend_projects/test_email/src/main/resources/application.properties
+
+*.parquet
+
