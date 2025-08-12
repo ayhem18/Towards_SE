@@ -12,4 +12,4 @@ python3 /docker-entrypoint-initdb.d/convert_data.py --input_file $PARQUET_FILE_P
 
 # Load data into PostgreSQL
 printf "Loading data into PostgreSQL\n"
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -f /docker-entrypoint-initdb.d/load_data.sql
+psql -v --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -f /docker-entrypoint-initdb.d/load_data.sql
