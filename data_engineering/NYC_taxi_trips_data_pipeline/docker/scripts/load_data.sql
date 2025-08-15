@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS yellow_tripdata_2010_01 (
 
     fare_amount            DOUBLE PRECISION CHECK (fare_amount   IS NULL OR fare_amount   >= 0),
     surcharge              DOUBLE PRECISION CHECK (surcharge     IS NULL OR surcharge     >= 0),
-    -- mta_tax can be negative
+    -- mta_tax is allowed to be negative apparently (not sure why)
     mta_tax                DOUBLE PRECISION,
     tip_amount             DOUBLE PRECISION CHECK (tip_amount    IS NULL OR tip_amount    >= 0),
     tolls_amount           DOUBLE PRECISION CHECK (tolls_amount  IS NULL OR tolls_amount  >= 0),
@@ -76,6 +76,7 @@ INSERT INTO yellow_tripdata_2010_01 (
     store_and_fwd_flag, dropoff_longitude, dropoff_latitude, payment_type,
     fare_amount, surcharge, mta_tax, tip_amount, tolls_amount, total_amount
 )
+
 SELECT
     s.vendor_id,
     NULLIF(s.pickup_datetime,'')::timestamp,

@@ -1,4 +1,5 @@
 # make sure the the docker image ny_taxi:1.0 exists
+
 # TODO: make the script more flexible when it comes to image tag: (since the run command below is creating )
 # one possible solution is to enforce passing a tag as an argument to the script
 
@@ -32,12 +33,12 @@ else
         -e POSTGRES_PASSWORD=mypassword \
         -e POSTGRES_DB=ny_taxi_db \
         -p 5123:5432 \
+        -d \
         ny_taxi:latest
 
     # the run command might not work as expected
     # to verify this, call the docker ps -a followed by the grep command to capture whether the container is running or existed
     # if the container is exited, then remove the container and remove the image
-
     if docker ps -a | grep "Exited"; then
         # remove the container
         docker container rm ny_c1
