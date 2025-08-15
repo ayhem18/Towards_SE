@@ -1,0 +1,8 @@
+{"name":"John","age":30}
+{"name":"Jane","age":25}    
+{"name":"Jim","age":35}
+{"name":"Mamadou","age":28}
+{"name":"Mostapha","age":30}
+{"name":"Moussa","age":30}
+{"name":"Khalil","age":45}
+{"name":"Temithy","age":20}
