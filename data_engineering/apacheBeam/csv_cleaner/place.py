@@ -16,6 +16,7 @@ This script is a solution to the very first formulation of the four square datas
 # create a schema for the places dataset: 
 
 
+import ast
 import csv, datetime, re
 import apache_beam as beam
 
@@ -65,7 +66,7 @@ class Place(NamedTuple):
     tel: Optional[str]
     website: Optional[str]
     email: Optional[str]  
-    fsq_category_ids: Sequence[str]
+    category_ids: Optional[Sequence[str]]
 
 
 class PlaceCsvParser(beam.DoFn):
@@ -109,9 +110,9 @@ class PlaceCsvParser(beam.DoFn):
                 tel=record['tel'], 
                 website=record['website'], 
                 email=record['email'], 
-                fsq_category_ids=record['fsq_category_ids'], 
+                category_ids=ast.literal_eval(record['fsq_category_ids']),          # eval is used to convert the string to a list of strings
             )
-
+        
         except Exception as e:
             # let's keep it simple for now
             pass               
@@ -139,6 +140,10 @@ class PlaceFilter(beam.DoFn):
         if element.date_closed is not None:
             return
 
+        # cateogy is is crucial information, if it is not present, the place is not processed
+        if element.category_ids is None or len(element.category_ids) == 0:
+            return
+
         # check the country code
         if element.country.lower().strip() not in self.country_codes:
             return
@@ -158,6 +163,7 @@ class PlaceFilter(beam.DoFn):
         if len(processed_name) == 0 or not re.match(r'^[-_?!.,:;a-zA-Z\d\s]+$', processed_name):
             return
 
+
         # create a new Place object because modiying the original one is not recommended in the Apache Beam programming guide
         final_element = Place(
             name=processed_name,
@@ -167,7 +173,7 @@ class PlaceFilter(beam.DoFn):
             tel=element.tel,
             website=element.website,
             email=element.email,
-            fsq_category_ids=element.fsq_category_ids,
+            category_ids=element.category_ids,
         )
 
         yield final_element
@@ -188,6 +194,9 @@ class PlaceCsvFormatter(beam.DoFn):
         
         if isinstance(field, date):
             return field.isoformat()
+
+        if isinstance(field, Sequence):
+            return ','.join(field)
 
         if not isinstance(field, str):
             raise TypeError(f"Field {field} is of type {type(field)}, expected str")
