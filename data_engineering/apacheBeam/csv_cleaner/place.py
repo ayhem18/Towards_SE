@@ -48,6 +48,7 @@ class Place(NamedTuple):
     'bbox'
 
     keeping only: 
+    'fsq_place_id', -- to be used as a primary key
     'name', -- to filter by the name (keep only names with specific patterns)
     'country', -- to filter by the country (keep only places in the US, CA, DE, UK)
     'date_created', -- to filter by the age of the place
@@ -58,7 +59,7 @@ class Place(NamedTuple):
     'instagram', -- keep only places with an instagram
     'fsq_category_ids', -- to filter by the category (to be joined with the categories dataset and filtered by the category name)
     """
-
+    fsq_place_id: str
     name: str
     country: str
     date_created: Optional[date]
@@ -103,6 +104,7 @@ class PlaceCsvParser(beam.DoFn):
 
             # the types need to be specifically set here: if the next steps rely on the types, the pipeline will fail
             yield Place(
+                fsq_place_id=record['fsq_place_id'],
                 name=record['name'], 
                 country=record['country'],
                 date_created=date.fromisoformat(record['date_created']) if record['date_created'] is not None and len(record['date_created']) > 0 else None, 
@@ -166,6 +168,7 @@ class PlaceFilter(beam.DoFn):
 
         # create a new Place object because modiying the original one is not recommended in the Apache Beam programming guide
         final_element = Place(
+            fsq_place_id=element.fsq_place_id,
             name=processed_name,
             country=element.country,
             date_created=element.date_created,
@@ -185,6 +188,9 @@ class PlaceCsvFormatter(beam.DoFn):
     I am not sure if there is a better way to do this...
     """
 
+    def __init__(self, fields_to_exclude: Sequence[str] = []):
+        self.fields_to_exclude = set(fields_to_exclude)
+
     def _convert_field_to_string(self, field: Any) -> str:
         """
         Convert the field to a string
@@ -195,7 +201,8 @@ class PlaceCsvFormatter(beam.DoFn):
         if isinstance(field, date):
             return field.isoformat()
 
-        if isinstance(field, Sequence):
+        # "str" is a sequence, but we don't want to join it !!
+        if isinstance(field, Sequence) and not isinstance(field, str):
             return ','.join(field)
 
         if not isinstance(field, str):
@@ -213,8 +220,8 @@ class PlaceCsvFormatter(beam.DoFn):
 
             Iterable[str]: a csv string representation of the Place object
         """
-        fields = list(element._asdict().values())
-        
+        fields = [f for k, f in element._asdict().items() if k not in self.fields_to_exclude]
+
         fields = [self._convert_field_to_string(f) for f in fields]
         
         yield ','.join(fields)

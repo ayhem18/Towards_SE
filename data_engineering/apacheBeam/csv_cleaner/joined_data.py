@@ -2,11 +2,9 @@
 This script contains functions to format to worked with the joined data: places + categories
 """
 
-import apache_beam as beam
-from typing import Any, Dict, NamedTuple, Iterable, Sequence, Tuple
+from typing import Dict, NamedTuple, Iterable, Sequence, Tuple
 
-from place import Place
-from category import Category
+from place import Place, PlaceCsvFormatter
 
 class PlaceWithCategory(NamedTuple):
     """
@@ -16,9 +14,7 @@ class PlaceWithCategory(NamedTuple):
     categories: Sequence[str]
 
 
-
-
-def flatten_joined_data(element: Tuple[str, Dict[str, Iterable]]) -> Iterable[Tuple[Place, str]]:
+def flatten_joined_data(element: Tuple[str, Dict[str, Iterable]]) -> Iterable[Tuple[str, Tuple[Place, str]]]:
     """
     Flatten the joined data into a list of PlaceWithCategory objects
     """
@@ -39,40 +35,55 @@ def flatten_joined_data(element: Tuple[str, Dict[str, Iterable]]) -> Iterable[Tu
     category_name = next(iter(categories)) # type: ignore 
 
     for place in places_iterable:
-        yield (place, category_name)
+        yield (place.fsq_place_id, (place, category_name))
+    
 
-
-def map_to_place_with_categories(element: Tuple[Place, Iterable[str]]) -> PlaceWithCategory:
+def map_to_place_with_categories(element: Tuple[str, Iterable[Tuple[Place, str]]]) -> PlaceWithCategory:
     """
-    Map a tuple of (Place, Iterable[str]) to a PlaceWithCategory object
+    Basically an element if of the form:
+    (place_id, [(place, category1), (place, category2), ... (place, category_n)])
+    hence, first extract the iterable of tuples, extract one instance of the place
+    and then extract the categories from the iterable of tuples
     """
-    place, categories = element
-    categories_list = list(categories)
-    return PlaceWithCategory(place, categories_list)
+    _, iterable_of_tuples = element
+    place = list(iterable_of_tuples)[0][0]
+    categories = [category for (_, category) in iterable_of_tuples]
+    return PlaceWithCategory(place, categories)
 
 
-class PlaceWithCategoryCsvFormatter(beam.DoFn):
+
+
+
+class PlaceWithCategoryCsvFormatter(PlaceCsvFormatter):
     """
     Format a PlaceWithCategory object to a csv string
     """
-    def process(self, element: PlaceWithCategory) -> str:
+    def __init__(self, fields_to_exclude: Sequence[str] = []):
+        super().__init__(fields_to_exclude=fields_to_exclude)
+        
+
+    def process(self, element: PlaceWithCategory) -> Iterable[str]:
         """
         Format a PlaceWithCategory object to a csv string
         """
         # extract the place and the categories
         place, categories = element
 
-        # ignore the "category_ids" field in the 'place' object
-        place_fields = list(place._asdict().values())
-        place_fields.remove(place.category_ids)
-        categories_str = ','.join(categories)
-        return ','.join(place_fields + [categories_str])
+        # super().process returns an iterable (with only one element: the csv string representation of the place)
+        place_processed = list(super().process(place))[0]
+
+        categories_str = '_'.join(categories)
+
+        final_str = ','.join([place_processed, categories_str])
+        yield final_str
+
 
     @classmethod
-    def get_header(cls) -> str:
+    def get_header(cls, fields_to_exclude: Sequence[str] = []) -> str:
         """
         Get the header for the csv file
         """
-        fields = list(Place._fields) + ['categories']
+        fields2exclude = set(fields_to_exclude)
+        fields = [f for f in Place._fields if f not in fields2exclude] + ['categories']
         return ','.join(fields)
 

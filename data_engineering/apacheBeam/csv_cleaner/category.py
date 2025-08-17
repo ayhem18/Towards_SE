@@ -67,8 +67,7 @@ class CategoryCsvParser(beam.DoFn):
             )
 
         except Exception as e:
-            # let's keep it simple for now
-            pass               
+            raise ValueError(f"Error parsing category: {str(e)}")
 
 
 class CategoryFilter(beam.DoFn):
@@ -110,7 +109,11 @@ class CategoryFilter(beam.DoFn):
                 break
         
         if valid_category:
-            yield element
+            # make sure to return a new category with the processed category name
+            yield Category(
+                category_id=element.category_id,
+                category_name=category_name,
+            )
 
 
 

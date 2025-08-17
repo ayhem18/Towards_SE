@@ -1,4 +1,6 @@
-import os
+import os, shutil
+from pathlib import Path
+from typing import Sequence
 
 import apache_beam as beam
 from apache_beam.io import ReadFromText, WriteToText
@@ -8,24 +10,12 @@ from category import CategoryCsvParser, CategoryFilter
 from joined_data import PlaceWithCategoryCsvFormatter, flatten_joined_data, map_to_place_with_categories
 
 
-def execute_pipeline():
-
-    # prepare input, output files and headers
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    places_input_file = os.path.join(script_dir, "data", "fsq_places_sample_100000.csv")
-    categories_input_file = os.path.join(script_dir, "data", "fsq_categories_sample.csv")
-    output_file = os.path.join(script_dir, "data", "joined_places_and_categories")
-
-    places_header = ['fsq_place_id', 'name', 'latitude', 'longitude', 'address', 'locality',
-       'region', 'postcode', 'admin_region', 'post_town', 'po_box', 'country',
-       'date_created', 'date_refreshed', 'date_closed', 'tel', 'website',
-       'email', 'facebook_id', 'instagram', 'twitter', 'fsq_category_ids',
-       'fsq_category_labels', 'placemaker_url', 'unresolved_flags', 'geom',
-       'bbox']
-
-    category_header = ['category_id', 'name', 'parents', 'hierarchy']
-
-    category_key_words = ["restaurant", "cafe", "bar", "pub", "hotel", "motel", "inn", "resort", "lodging"]
+def execute_pipeline(places_input_file: str, 
+                    categories_input_file: str, 
+                    output_file: str,
+                    places_header: Sequence[str],
+                    category_header: Sequence[str],
+                    category_key_words: Sequence[str]):
 
 
     # time to create the pipeline !!!
@@ -54,6 +44,7 @@ def execute_pipeline():
     # and similarly for the categories collection, we need to convert each category into a (cat_id, cat_name) pair
 
     # flatmap takes a place and generates multiple (cat_id, place) pairs and then flattens them into a single collection
+
     places_kv = (
         places 
         | 'Map Places to (cat_id, place)' >> beam.FlatMap(
@@ -67,7 +58,7 @@ def execute_pipeline():
     )
 
 
-    # the join operation expects either 2 collections or a map where "values" are collections, it is important to note 
+    # # the join operation expects either 2 collections or a map where "values" are collections, it is important to note 
 
     joined_data = (
         {'places': places_kv, 'categories': categories_kv}
@@ -88,80 +79,78 @@ def execute_pipeline():
 
     # [Place: [cat_name1, cat_name2, ...]] 
 
-    # to reach this form, we need to flatten the joined data and then apply a groupByKey operation (where place is the key)
+    # to reach this form, we need to flatten the joined data and then apply a groupByKey operation 
+    # the flatten_joined_data returns (place_id, (place, category_name))
     
+    fields2exclude = ['category_ids', 'date_closed']
+
     _ = (
-        joined_data | 'Flatten Joined Data' >> beam.FlatMap(flatten_joined_data) 
-        | 'Group by Place' >> beam.GroupByKey() 
+        joined_data 
+        | 'Flatten Joined Data' >> beam.FlatMap(flatten_joined_data) 
+        | 'Group by Place ID' >> beam.GroupByKey() 
         | 'Map to PlaceWithCategory' >> beam.Map(map_to_place_with_categories)
-        | 'Format PlaceWithCategory' >> beam.ParDo(PlaceWithCategoryCsvFormatter())
+        # make sure to exclude the category_ids field from the final csv file
+        | 'Format PlaceWithCategory' >> beam.ParDo(PlaceWithCategoryCsvFormatter(fields_to_exclude=fields2exclude))
         | 'Write to CSV' >> WriteToText(output_file, file_name_suffix='.csv', 
-        header=PlaceWithCategoryCsvFormatter.get_header(), 
+        header=PlaceWithCategoryCsvFormatter.get_header(fields2exclude), 
         num_shards=1, 
         shard_name_template=''
         )
     )
 
-
     pipeline.run()
 
 
+
+def _clean_temp_files(output_file: str):
+    """
+    Clean the temporary files created by the pipeline
+    """
+    output_file_dir = Path(output_file).parent
+
+    files = os.listdir(output_file_dir) 
+
+    for f in files:
+        if f.startswith('beam-temp'):
+            if os.path.isfile(os.path.join(output_file_dir, f)):
+                os.remove(os.path.join(output_file_dir, f))
+            if os.path.isdir(os.path.join(output_file_dir, f)):
+                shutil.rmtree(os.path.join(output_file_dir, f))
+
 def main():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    places_input_file = os.path.join(script_dir, "data", "fsq_places_sample_100000.csv")
+    categories_input_file = os.path.join(script_dir, "data", "fsq_categories_sample.csv")
+    output_file = os.path.join(script_dir, "data", "joined_places_and_categories")
+
+    places_header = ['fsq_place_id', 'name', 'latitude', 'longitude', 'address', 'locality',
+       'region', 'postcode', 'admin_region', 'post_town', 'po_box', 'country',
+       'date_created', 'date_refreshed', 'date_closed', 'tel', 'website',
+       'email', 'facebook_id', 'instagram', 'twitter', 'fsq_category_ids',
+       'fsq_category_labels', 'placemaker_url', 'unresolved_flags', 'geom',
+       'bbox']
 
 
-    # # create a pipeline
-    # with beam.Pipeline() as pipeline:
+    category_header = ['category_id', 'category_level', 'category_name', 'category_label',
+       'level1_category_id', 'level1_category_name', 'level2_category_id',
+       'level2_category_name', 'level3_category_id', 'level3_category_name',
+       'level4_category_id', 'level4_category_name', 'level5_category_id',
+       'level5_category_name', 'level6_category_id', 'level6_category_name']
 
 
-    #     # Step 2 & 3: Prepare PCollections for Join
-    #     # Places have a one-to-many relationship with categories, so we must "explode" them.
+    category_key_words = ["restaurant", "cafe", "bar", "pub", "hotel", "motel", "inn", "resort", "lodging"]
 
-    #     # Step 4: Execute the CoGroupByKey join
-    #     joined_data = (
-    #         {'places': places_kv, 'categories': categories_kv}
-    #         | 'Join Places and Categories' >> beam.CoGroupByKey()
-    #     )
 
-    #     # Step 5: Process the joined results to re-key by Place object
-    #     def invert_to_place_key(element):
-    #         (_cat_id, data) = element
-    #         if not data['places'] or not data['categories']:
-    #             return  # This makes it an INNER JOIN
+    execute_pipeline(places_input_file, 
+                    categories_input_file, 
+                    output_file, 
+                    places_header, 
+                    category_header, 
+                    category_key_words
+                    )
 
-    #         category_name = data['categories'][0]
-    #         for place in data['places']:
-    #             yield (place, category_name)
-
-    #     place_to_category_pairs = (
-    #         joined_data
-    #         | 'Invert to Place Key' >> beam.FlatMap(invert_to_place_key)
-    #     )
-
-    #     # Step 6: Group by Place to aggregate all categories
-    #     grouped_by_place = (
-    #         place_to_category_pairs
-    #         | 'Group by Place' >> beam.GroupByKey()
-    #     )
-        
-    #     # Step 7: Format the final, aggregated output
-    #     def format_final_output(element):
-    #         (place, category_names) = element
-    #         # Remove duplicate category names that might arise from the join
-    #         unique_categories = sorted(list(set(category_names)))
-    #         return f"Place: {place.name} ({place.country}) | Categories: {', '.join(unique_categories)}"
-
-    #     formatted_results = (
-    #         grouped_by_place
-    #         | 'Format Final Output' >> beam.Map(format_final_output)
-    #     )
-
-    #     # Write the final results to a text file
-    #     _ = (
-    #         formatted_results
-    #         | 'Write Results' >> WriteToText(output_file, file_name_suffix='.txt')
-    #     )
-
-    execute_pipeline()
+    _clean_temp_files(output_file)
 
 if __name__ == "__main__":
     main()
