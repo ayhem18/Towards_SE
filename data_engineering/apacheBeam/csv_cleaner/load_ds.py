@@ -46,55 +46,6 @@ def load_dataset_way1(num_samples: int = 100000):
 
 
 
-# def load_dataset_way2():
-#     script_dir = os.path.dirname(os.path.abspath(__file__))
-#     output_dir = os.path.join(script_dir, "data")
-#     output_file = os.path.join(output_dir, "fsq_places_sample.csv")
-
-#     # Ensure the output directory exists
-#     os.makedirs(output_dir, exist_ok=True)
-
-#     num_samples = 5000
-#     ds = load_dataset("foursquare/fsq-os-places", name="places", streaming=True, split=f"train")
-
-
-#     sample = islice(ds, num_samples)
-
-#     print(f"Writing sample to {output_file}...")
-    
-#     # Using 'w' mode to create/overwrite the file.
-#     # Using newline='' is the standard recommendation for the csv module.
-#     with open(output_file, 'w', newline='', encoding='utf-8') as f:
-#         # Get the header from the first item in our sample.
-#         # We need to buffer the first item to get the keys.
-#         first = next(sample)
-#         header = first.keys()
-        
-#         writer = csv.DictWriter(f, fieldnames=header)
-#         writer.writeheader()
-        
-#         # Write the first row that we already consumed
-#         writer.writerow(first)
-#         # Write the rest of the sample
-        
-#         writer.writerows(sample)
-
-
-
-def quick_peek():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_dir = os.path.join(script_dir, "data")
-    places_file = os.path.join(output_dir, "fsq_places_sample.csv")
-    categories_file = os.path.join(output_dir, "fsq_categories_sample.csv")
-
-    df_places = pd.read_csv(places_file, nrows=10)
-    df_categories = pd.read_csv(categories_file)
-
-
-
-
-
-
 if __name__ == "__main__": 
     
     parser = argparse.ArgumentParser()
