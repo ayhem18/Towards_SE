@@ -16,6 +16,8 @@ get_greeting()
     # extract only the hour from the current time
     hour=${current_time:0:2}
 
+
+
     # the morning is between 6 and 12 (both inclusive)
 
     # the afternoon is between 12 and 18 (both inclusive)
@@ -40,7 +42,12 @@ get_greeting()
         greeting="Good evening"
     fi
 
-    return $greeting
+    # one way to get the greeting is to echo it
+    # the "return" statement does not work the same way in other programming languages
+    echo $greeting
+
+    # the return statement indicates whether the call was successful or not
+    return 0
 }
 
 
