@@ -107,6 +107,16 @@ get_file_extension()
     fi
 
     # If we reach here, the file has an extension
+    
+    # the expression ${variable##pattern} does the following: 
+    # 1. Take the variable variable
+    # 2. Find the longest match of pattern from the beginning of the string
+    # 3. Remove that match and return what's left
+    
+    # the pattern here is "*.": any string that ends with a dot
+    # the largest substring matching the said regex is the substring 
+    # from the very beginning to the last dot (included)
+    # hence what is left is the extension !! 
     echo "${filename##*.}"
 }
 

@@ -68,7 +68,7 @@ input_path=$1
 output_path=$2 
 
 # the input path must be an existing directory
-if [! -d "$input_path"]; then
+if [ ! -d "$input_path" ]; then
     echo "Error: input path '$input_path' is not a valid directory." >&2
     exit 1
 fi
@@ -101,18 +101,29 @@ migrate_directory()
                 this_destination_folder_name=$(get_destination_folder_name "$this_file_extension")
 
                 # create the destination folder if it does not exist
-                destination_dir="$output_path/$this_destination_folder_name"
+                destination_dir="$destination_path/$this_destination_folder_name"
                 mkdir -p "$destination_dir"
 
                 # copy the file to the destination folder
                 echo "Copying '$filename' to '$this_destination_folder_name/'..."
                 cp "$file" "$destination_dir"
             fi
+        else
+            # at this point, we know that the file is a directory (since files exist, it's either -f or -d)
+            # get the directory name
+            dirname=$(basename "$file")
+            
+            # create the new destination path: destination_path/dirname
+            new_destination_path="$destination_path/$dirname"
+            mkdir -p "$new_destination_path"
+            
+            # call the function recursively with the current directory and new destination path
+            migrate_directory "$file" "$new_destination_path"
         fi
-        
-
-        # at this point, we know that the file is a directory
-        # call the function recursively
-        migrate_directory "$file" "$destination_path"
     done
 }
+
+
+# Start the migration process
+migrate_directory "$input_path" "$output_path"
+echo "File organization complete."
