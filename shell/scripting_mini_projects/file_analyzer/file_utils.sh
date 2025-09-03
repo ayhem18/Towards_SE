@@ -56,7 +56,7 @@ is_file()
 # # ./file_utils.sh /home/non_existent_dir/
 
 # p="$1"
-# echo "Checking path: '$p'"
+# echo "Checking path: $p"
 
 # if is_directory "$p"; then
 #     echo "-> The path is a directory"
@@ -74,18 +74,40 @@ is_file()
 
 get_file_extension()
 {   
-    # This is a much more robust and efficient way to get a file extension in Bash
-    # using parameter expansion. It removes the longest prefix ending in ".".
+    # Extract file extension using parameter expansion.
+    # A file has NO extension if:
+    # 1. Empty string
+    # 2. No dots at all
+    # 3. Starts with dot and has no other dots (hidden files like .bashrc)
     local filename="$1"
 
-    # Check if the file name is empty or has no extension.
-    # Also handles hidden files like ".bashrc" which have no extension.
-    if [[ -z "$filename" || "$filename" != *.* || "${filename##*.}" == "$filename" ]]; then
-        echo "" # Return an empty string if no extension
-    else
-        # Echo the part of the string after the last dot.
-        echo "${filename##*.}"
+    # although the 2 first conditions can be written in a single if statement, they are left seperate for readability.
+
+    # Condition 1: Empty string
+    if [[ -z "$filename" ]]; then
+        echo ""
+        return
     fi
+
+    # Condition 2: No dots at all
+    if [[ "$filename" != *.* ]]; then
+        echo ""
+        return
+    fi
+
+    # Condition 3: Starts with dot and has no other dots
+    if [[ "${filename:0:1}" == "." ]]; then
+        # Remove the first character (the leading dot)
+        local after_first_dot="${filename:1}"
+        # If what remains has no dots, then no extension
+        if [[ "$after_first_dot" != *.* ]]; then
+            echo ""
+            return
+        fi
+    fi
+
+    # If we reach here, the file has an extension
+    echo "${filename##*.}"
 }
 
 

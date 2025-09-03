@@ -10,7 +10,7 @@ source "$(dirname "$0")/file_utils.sh"
 
 # 1. create a function to get the file extension (Done in file_utils.sh)
 # 2. create a function to determine the folder name based on the file extension 
-# 3. a functiont to verify the conditions about the output path (if it does not exist, create it)
+# 3. create a function to verify the conditions about the output path (if it does not exist, create it)
 
 get_destination_folder_name() 
 {   
@@ -67,8 +67,8 @@ verify_output_path()
 input_path=$1
 output_path=$2 
 
-# make sure that the input path is a directory
-if ! is_directory "$input_path"; then
+# the input path must be an existing directory
+if [! -d "$input_path"]; then
     echo "Error: input path '$input_path' is not a valid directory." >&2
     exit 1
 fi
@@ -77,38 +77,42 @@ fi
 verify_output_path "$output_path"
 
 
-# Iterate through the files in the input path.
-# This loop is safer than `ls` as it handles filenames with spaces.
-for file in "$input_path"/*
-do 
-    # Check if the item is actually a file (and not a directory)
-    if [ -f "$file" ]; then
-        # We need the filename part of the path to get the extension.
-        filename=$(basename "$file")
-        
-        # get the file extension
-        this_file_extension=$(get_file_extension "$filename")
+# define a function to copy the files to the destination folder
 
-        # Proceed only if the file has an extension
-        if [ -n "$this_file_extension" ]; then
-            # get the destination folder name
-            this_destination_folder_name=$(get_destination_folder_name "$this_file_extension")
 
-            # create the destination folder if it does not exist
-            destination_dir="$output_path/$this_destination_folder_name"
-            mkdir -p "$destination_dir"
+migrate_directory()
+{
+    local source_path="$1"
+    local destination_path="$2"
 
-            # copy the file to the destination folder
-            echo "Copying '$filename' to '$this_destination_folder_name/'..."
-            cp "$file" "$destination_dir"
+    for file in "$source_path"/*
+    do
+        # Check if the item is actually a file (and not a directory)
+        if [ -f "$file" ]; then
+            # We need the filename part of the path to get the extension.
+            filename=$(basename "$file")
+            
+            # get the file extension
+            this_file_extension=$(get_file_extension "$filename")
+
+            # Proceed only if the file has an extension
+            if [ -n "$this_file_extension" ]; then
+                # get the destination folder name
+                this_destination_folder_name=$(get_destination_folder_name "$this_file_extension")
+
+                # create the destination folder if it does not exist
+                destination_dir="$output_path/$this_destination_folder_name"
+                mkdir -p "$destination_dir"
+
+                # copy the file to the destination folder
+                echo "Copying '$filename' to '$this_destination_folder_name/'..."
+                cp "$file" "$destination_dir"
+            fi
         fi
-    fi
-done
+        
 
-echo "File organization complete."
-
-
-
-
-
-
+        # at this point, we know that the file is a directory
+        # call the function recursively
+        migrate_directory "$file" "$destination_path"
+    done
+}
