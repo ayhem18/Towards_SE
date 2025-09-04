@@ -67,36 +67,27 @@ migrate_directory()
     local source_path="$1"
     local destination_path="$2"
 
-    # let's check if the directory is empty
-    if [ -z "$(ls -A "$source_path")" ]; then
 
+    # Standard way to check if directory is empty
+    if [ -z "$(ls -A "$source_path")" ]; then
+        echo "$source_path is empty"
+        return 0
+    else
+        echo "$source_path is not empty"
+    fi
+
+    # Use a safer loop that handles glob expansion properly
     for file in "$source_path"/*
     do
+        # Double-check that the file actually exists (handles edge cases)
+        # the line isn't necessary... but well, it doesn't hurt to be a bit paranoid.
+        [ ! -e "$file" ] && continue
+
         echo "the file is $file"
         echo "The basename of this file is $(basename "$file")" 
         extension=$(get_file_extension "$(basename "$file")")
         echo "The extension of this file is $extension"
         echo "This file belongs to this category: $(get_destination_folder_name "$extension")"
-
-        # echo "########################################################"
-
-
-        # # Method 1: Check exit codes of test commands
-        # if [ -f "$file" ]; then
-        #     file_test_result="TRUE (is a file)"
-        # else
-        #     file_test_result="FALSE (not a file)"
-        # fi
-
-        # if [ -d "$file" ]; then
-        #     dir_test_result="TRUE (is a directory)"
-        # else
-        #     dir_test_result="FALSE (not a directory)"
-        # fi
-
-        # echo "[ -f \"$file\" ] returns: $file_test_result"
-        # echo "[ -d \"$file\" ] returns: $dir_test_result"
-
 
         # Check if the item is actually a file (and not a directory)
         if [ -f "$file" ]; then

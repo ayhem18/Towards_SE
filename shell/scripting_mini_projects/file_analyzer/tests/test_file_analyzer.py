@@ -8,7 +8,6 @@ import unittest
 import tempfile
 import subprocess
 
-@unittest.skip("skip for now")
 class TestGetDestinationFolder(unittest.TestCase):
     """
     Test suite for the shell script functions in file_analyzer_utils.sh.
@@ -191,7 +190,6 @@ class TestGetDestinationFolder(unittest.TestCase):
                     f"Extension '{ext}' should map to '{expected_folder}'")
 
 
-# @unittest.skip("skip for now")
 class TestMigrateDirectory(unittest.TestCase):
     """
     Test suite for the migrate_directory function in file_analyzer_utils.sh.
@@ -251,11 +249,7 @@ class TestMigrateDirectory(unittest.TestCase):
             print(f"Script path: {script_path}")
             print(f"Script exists: {os.path.exists(script_path)}")
         
-        # Check if file_utils.sh exists in the same directory as file_analyzer_utils.sh
-        utils_path = os.path.join(os.path.dirname(script_path), 'file_utils.sh')
-        print(f"file_utils.sh path: {utils_path}")
-        print(f"file_utils.sh exists: {os.path.exists(utils_path)}")
-    
+            
         return result
 
     def _create_test_file(self, filepath, content="test content"):
@@ -310,7 +304,6 @@ class TestMigrateDirectory(unittest.TestCase):
 
     # --- Scenario 1: Only Files ---
     
-    @unittest.skip("skip for now")
     def test_migrate_directory_only_files_single_category(self):
         """Test migrating a directory with only files of the same category."""
         # Create multiple text files
@@ -328,7 +321,7 @@ class TestMigrateDirectory(unittest.TestCase):
         for filename in test_files:
             self._assert_file_migrated_correctly(filename, os.path.join(self.destination_dir, "text_files"))
 
-    @unittest.skip("skip for now")
+    # @unittest.skip("skip for now")
     def test_migrate_directory_only_files_multiple_categories(self):
         """Test migrating a directory with files from multiple categories."""
         test_files = [
@@ -355,7 +348,7 @@ class TestMigrateDirectory(unittest.TestCase):
             expected_parent_dir= os.path.join(self.destination_dir, expected_folder)
             self._assert_file_migrated_correctly(filename, expected_parent_dir)
 
-    @unittest.skip("skip for now")
+
     def test_migrate_directory_only_files_randomized(self):
         """Test migrating a directory with random files from various categories."""
         # Create 30 random files
@@ -378,7 +371,6 @@ class TestMigrateDirectory(unittest.TestCase):
 
     # --- Scenario 2: One Level of Subdirectories ---
     
-    @unittest.skip("skip for now")
     def test_migrate_directory_one_level_subdirectories(self):
         """Test migrating a directory with one level of subdirectories."""
         # Create subdirectories with files
@@ -414,7 +406,22 @@ class TestMigrateDirectory(unittest.TestCase):
         for filename, expected_folder in test_files:
             self._assert_file_migrated_correctly(filename, expected_folder)
 
-    @unittest.skip("skip for now")
+    def test_migrate_directory_empty_source_directory(self):
+        """Test migrating a completely empty source directory."""
+        # Create an empty source directory (it already exists from setUp)
+        # Don't create any files
+        
+        # Run migration on empty directory
+        result = self._run_shell_function(f'migrate_directory "{self.source_dir}" "{self.destination_dir}"')
+        
+        # Verify no errors occurred
+        self.assertEqual(result.returncode, 0, "migrate_directory should handle empty directories gracefully")
+        
+        # Verify no category directories were created
+        dest_contents = os.listdir(self.destination_dir)
+        self.assertEqual(len(dest_contents), 0, "No directories should be created for empty source")
+
+    # @unittest.skip("skip for now")
     def test_migrate_directory_one_level_empty_subdirectories(self):
         """Test migrating a directory with empty subdirectories."""
         # Create empty subdirectories
@@ -431,11 +438,12 @@ class TestMigrateDirectory(unittest.TestCase):
         
         # Verify files were migrated correctly
         for filename, expected_folder in test_files:
-            self._assert_file_migrated_correctly(filename, expected_folder)
+            p = os.path.join(self.destination_dir, expected_folder)
+            self._assert_file_migrated_correctly(filename, p)
 
     # --- Scenario 3: Multiple Levels of Subdirectories ---
     
-    @unittest.skip("skip for now")
+    # @unittest.skip("skip for now")
     def test_migrate_directory_two_levels_subdirectories(self):
         """Test migrating a directory with two levels of subdirectories."""
         test_files = []
@@ -448,18 +456,21 @@ class TestMigrateDirectory(unittest.TestCase):
                     (f'nested_{i}_{j}_doc.pdf', 'documents'),
                     (f'nested_{i}_{j}_image.gif', 'images'),
                 ]
+                
+                des_nested_path = os.path.join(self.destination_dir, f'level1_{i}', f'level2_{j}')
                 for filename, expected_folder in files_in_nested:
                     self._create_test_file(os.path.join(nested_path, filename))
-                    test_files.append((filename, expected_folder))
+                    p = os.path.join(des_nested_path, expected_folder)
+                    test_files.append((filename, p))
 
         # Run migration
         result = self._run_shell_function(f'migrate_directory "{self.source_dir}" "{self.destination_dir}"')
         
         # Verify all files were migrated correctly
-        for filename, expected_folder in test_files:
-            self._assert_file_migrated_correctly(filename, expected_folder)
+        for filename, p in test_files:
+            self._assert_file_migrated_correctly(filename, p)
 
-    @unittest.skip("skip for now")
+    # @unittest.skip("skip for now")
     def test_migrate_directory_three_levels_subdirectories(self):
         """Test migrating a directory with three levels of subdirectories."""
         test_files = []
@@ -473,9 +484,11 @@ class TestMigrateDirectory(unittest.TestCase):
                         (f'deep_{i}_{j}_{k}.txt', 'text_files'),
                         (f'deep_{i}_{j}_{k}.zip', 'archives'),
                     ]
+                    deep_des_path = os.path.join(self.destination_dir, f'l1_{i}', f'l2_{j}', f'l3_{k}')
                     for filename, expected_folder in files_in_deep:
                         self._create_test_file(os.path.join(deep_path, filename))
-                        test_files.append((filename, expected_folder))
+                        p = os.path.join(deep_des_path, expected_folder)
+                        test_files.append((filename, p))
 
         # Run migration
         result = self._run_shell_function(f'migrate_directory "{self.source_dir}" "{self.destination_dir}"')
@@ -484,7 +497,7 @@ class TestMigrateDirectory(unittest.TestCase):
         for filename, expected_folder in test_files:
             self._assert_file_migrated_correctly(filename, expected_folder)
 
-    @unittest.skip("skip for now")
+    # @unittest.skip("skip for now")
     def test_migrate_directory_mixed_levels_comprehensive(self):
         """Test migrating a comprehensive directory structure with mixed levels and file types."""
         test_files = []
@@ -493,31 +506,34 @@ class TestMigrateDirectory(unittest.TestCase):
         root_files = [('root.pdf', 'documents'), ('root.mp3', 'audio')]
         for filename, expected_folder in root_files:
             self._create_test_file(os.path.join(self.source_dir, filename))
-            test_files.append((filename, expected_folder))
+            test_files.append((filename, os.path.join(self.destination_dir, expected_folder)))
         
         # Level 1 files
         level1_path = os.path.join(self.source_dir, 'projects')
         level1_files = [('project.docx', 'documents'), ('screenshot.png', 'images')]
         for filename, expected_folder in level1_files:
+            level1_des_path = os.path.join(self.destination_dir, 'projects')
             self._create_test_file(os.path.join(level1_path, filename))
-            test_files.append((filename, expected_folder))
+            test_files.append((filename, os.path.join(level1_des_path, expected_folder)))
         
         # Level 2 files
         level2_path = os.path.join(level1_path, 'web_project')
         level2_files = [('index.txt', 'text_files'), ('demo.mp4', 'videos')]
         for filename, expected_folder in level2_files:
+            level2_des_path = os.path.join(self.destination_dir, 'projects', 'web_project')
             self._create_test_file(os.path.join(level2_path, filename))
-            test_files.append((filename, expected_folder))
+            test_files.append((filename, os.path.join(level2_des_path, expected_folder)))
         
         # Level 3 files
         level3_path = os.path.join(level2_path, 'assets')
         level3_files = [('logo.jpg', 'images'), ('app.exe', 'executables')]
         for filename, expected_folder in level3_files:
+            level3_des_path = os.path.join(self.destination_dir, 'projects', 'web_project', 'assets')
             self._create_test_file(os.path.join(level3_path, filename))
-            test_files.append((filename, expected_folder))
+            test_files.append((filename, os.path.join(level3_des_path, expected_folder)))
 
         # Run migration
-        result = self._run_shell_function(f'migrate_directory "{self.source_dir}" "{self.destination_dir}"')
+        self._run_shell_function(f'migrate_directory "{self.source_dir}" "{self.destination_dir}"')
         
         # Verify all files were migrated correctly regardless of their original nesting level
         for filename, expected_folder in test_files:
@@ -525,7 +541,7 @@ class TestMigrateDirectory(unittest.TestCase):
 
 
 
-    @unittest.skip("skip for now")
+    # @unittest.skip("skip for now")
     def test_migrate_directory_files_without_extensions(self):
         """Test that files without extensions are ignored (as per current implementation)."""
         # Create files without extensions
@@ -543,7 +559,7 @@ class TestMigrateDirectory(unittest.TestCase):
         
         # Verify only files with extensions were migrated
         for filename, expected_folder in files_with_ext:
-            self._assert_file_migrated_correctly(filename, expected_folder)
+            self._assert_file_migrated_correctly(filename, os.path.join(self.destination_dir, expected_folder))
         
         # Verify files without extensions were not migrated
         for filename in files_without_ext:

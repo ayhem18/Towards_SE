@@ -1,5 +1,8 @@
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$script_dir/file_utils.sh"
+
+echo "script_dir: $script_dir"
+
+source "$script_dir/file_analyzer_utils.sh"
 
 input_path=$1
 output_path=$2
