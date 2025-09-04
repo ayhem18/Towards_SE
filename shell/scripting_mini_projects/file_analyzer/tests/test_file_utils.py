@@ -104,7 +104,6 @@ class TestFileUtils(unittest.TestCase):
 
 
     # --- Tests for is_file ---
-    # @unittest.skip("skip for now")
     def test_is_file_existing_files(self):
         """Test is_file with multiple existing files."""
         for i in range(20):
@@ -119,7 +118,6 @@ class TestFileUtils(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, 
                     f"is_file should return true for existing file: {filename}")
 
-    # @unittest.skip("skip for now")
     def test_is_file_existing_directories(self):
         """Test is_file with multiple existing directories."""
         for i in range(10):
@@ -133,7 +131,6 @@ class TestFileUtils(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0, 
                     f"is_file should return false for existing directory: {dirname}")
 
-    # @unittest.skip("skip for now")
     def test_is_file_non_existent_file_paths(self):
         """Test is_file with multiple non-existent file paths."""
         for i in range(15):
@@ -146,7 +143,6 @@ class TestFileUtils(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, 
                     f"is_file should return true for non-existent file path: {filename}")
     
-    # @unittest.skip("skip for now")
     def test_is_file_non_existent_directory_paths(self):
         """Test is_file with multiple non-existent directory paths."""
         for i in range(10):
@@ -160,7 +156,6 @@ class TestFileUtils(unittest.TestCase):
                     f"is_file should return false for non-existent directory path: {dirname}/")
 
     # --- Tests for is_directory ---
-    # @unittest.skip("skip for now")
     def test_is_directory_existing_directories(self):
         """Test is_directory with multiple existing directories."""
         for i in range(15):
@@ -174,7 +169,6 @@ class TestFileUtils(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, 
                     f"is_directory should return true for existing directory: {dirname}")
 
-    # @unittest.skip("skip for now")
     def test_is_directory_existing_files(self):
         """Test is_directory with multiple existing files."""
         for i in range(15):
@@ -189,7 +183,6 @@ class TestFileUtils(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0, 
                     f"is_directory should return false for existing file: {filename}")
 
-    # @unittest.skip("skip for now")
     def test_is_directory_non_existent_paths_with_slash(self):
         """Test is_directory with multiple non-existent paths ending in slash."""
         for i in range(10):
@@ -202,7 +195,6 @@ class TestFileUtils(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, 
                     f"is_directory should return true for non-existent path with slash: {dirname}/")
 
-    # @unittest.skip("skip for now")
     def test_is_directory_non_existent_paths_without_slash(self):
         """Test is_directory with multiple non-existent paths without slash."""
         for i in range(10):
@@ -217,7 +209,6 @@ class TestFileUtils(unittest.TestCase):
 
     # --- Tests for get_file_extension ---
     
-    # @unittest.skip("skip for now")
     def test_get_file_extension_simple_files(self):
         """Test get_file_extension with random files having valid extensions."""
         # Test with various edge cases first
@@ -243,7 +234,6 @@ class TestFileUtils(unittest.TestCase):
                 self.assertEqual(result.stdout.strip(), expected_ext,
                     f"Failed for random file: '{filename}' (expected: '{expected_ext}')")
 
-    # @unittest.skip("skip for now")
     def test_get_file_extension_multiple_dots(self):
         """Test get_file_extension with random files containing multiple dots."""
         # Test some known multi-dot cases first

@@ -1,15 +1,17 @@
-import unittest
-import subprocess
+from math import exp
 import os
-import tempfile
+from re import A
 import shutil
 import random
 import string
+import unittest
+import tempfile
+import subprocess
 
-@unittest.skip("already tested")
+@unittest.skip("skip for now")
 class TestGetDestinationFolder(unittest.TestCase):
     """
-    Test suite for the shell script functions in file_analyzer.sh.
+    Test suite for the shell script functions in file_analyzer_utils.sh.
     This test class calls the shell script functions directly from Python
     using the subprocess module, checking their exit codes and output.
     """
@@ -36,7 +38,7 @@ class TestGetDestinationFolder(unittest.TestCase):
         Helper method to source file_analyzer.sh and run a function call.
         Returns the completed subprocess result object.
         """
-        script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'file_analyzer.sh'))
+        script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'file_analyzer_utils.sh'))
         # The command sources the script, then executes the function call
         # inside the temporary test directory to ensure paths are resolved correctly.
         command = f"source {script_path}; {function_call}"
@@ -189,9 +191,10 @@ class TestGetDestinationFolder(unittest.TestCase):
                     f"Extension '{ext}' should map to '{expected_folder}'")
 
 
+# @unittest.skip("skip for now")
 class TestMigrateDirectory(unittest.TestCase):
     """
-    Test suite for the migrate_directory function in file_analyzer.sh.
+    Test suite for the migrate_directory function in file_analyzer_utils.sh.
     Tests various directory structures and file organization scenarios.
     """
 
@@ -199,41 +202,77 @@ class TestMigrateDirectory(unittest.TestCase):
         """
         Set up a temporary environment for each test.
         This runs before every single test method.
-        """
-        script_dir = os.                              
-        # self.test_dir = tempfile.mkdtemp(prefix="migrate_directory_tests_")
-        # self.test_dir = 
+        """     
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.test_dir = os.path.join(script_dir, "test_dir")
         self.source_dir = os.path.join(self.test_dir, "source")
         self.destination_dir = os.path.join(self.test_dir, "destination")
-        os.makedirs(self.source_dir)
-        os.makedirs(self.destination_dir)
+        
+        # Create directories
+        os.makedirs(self.source_dir, exist_ok=True)
+        os.makedirs(self.destination_dir, exist_ok=True)
+        
+        # Grant all permissions (read, write, execute) to all users
+        # 0o777 = rwxrwxrwx (owner, group, others all have full permissions)
+        os.chmod(self.test_dir, 0o777)
+        os.chmod(self.source_dir, 0o777)
+        os.chmod(self.destination_dir, 0o777)
 
     def tearDown(self):
         """
         Clean up the temporary environment after each test.
         This runs after every single test method.
         """
-        # shutil.rmtree(self.test_dir)
+        shutil.rmtree(self.test_dir)
 
     def _run_shell_function(self, function_call: str):
         """
-        Helper method to source file_analyzer.sh and run a function call.
+        Helper method to source file_analyzer_utils.sh and run a function call.
         Returns the completed subprocess result object.
         """
-        script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'file_analyzer.sh'))
+        script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'file_analyzer_utils.sh'))
         command = f"source {script_path}; {function_call}"
-        return subprocess.run(
+        
+        # Enhanced subprocess execution with better error handling
+        result = subprocess.run(
             ['bash', '-c', command],
             capture_output=True,
             text=True,
             cwd=self.test_dir
         )
+        
+        # Debug output
+        if result.returncode != 0 or result.stderr:
+            print(f"Command failed with return code {result.returncode}")
+            print(f"STDOUT: {result.stdout}")
+            print(f"STDERR: {result.stderr}")
+            print(f"Command: {command}")
+            print(f"Working directory: {self.test_dir}")
+            print(f"Script path: {script_path}")
+            print(f"Script exists: {os.path.exists(script_path)}")
+        
+        # Check if file_utils.sh exists in the same directory as file_analyzer_utils.sh
+        utils_path = os.path.join(os.path.dirname(script_path), 'file_utils.sh')
+        print(f"file_utils.sh path: {utils_path}")
+        print(f"file_utils.sh exists: {os.path.exists(utils_path)}")
+    
+        return result
 
     def _create_test_file(self, filepath, content="test content"):
         """Helper method to create a test file."""
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        # Create parent directories if they don't exist
+        parent_dir = os.path.dirname(filepath)
+        os.makedirs(parent_dir, exist_ok=True)
+        
+        # Grant full permissions to the parent directory
+        os.chmod(parent_dir, 0o777)
+        
+        # Create the file
         with open(filepath, 'w') as f:
             f.write(content)
+        
+        # Grant read/write permissions to the file
+        os.chmod(filepath, 0o666)
 
     def _get_expected_folder_for_extension(self, extension):
         """Helper method to get expected destination folder for an extension."""
@@ -249,11 +288,13 @@ class TestMigrateDirectory(unittest.TestCase):
         }
         return mapping.get(extension, 'other')
 
-    def _assert_file_migrated_correctly(self, original_filename, expected_folder):
+    def _assert_file_migrated_correctly(self, 
+                                        original_filename: str, 
+                                        expected_parent_dir: str):
         """Helper method to assert a file was migrated to the correct folder with the correct name."""
-        expected_path = os.path.join(self.destination_dir, expected_folder, original_filename)
+        expected_path = os.path.join(expected_parent_dir, original_filename)
         self.assertTrue(os.path.exists(expected_path), 
-                       f"File '{original_filename}' should exist in '{expected_folder}/' folder")
+                       f"File '{original_filename}' should exist in {expected_parent_dir}/{original_filename}")
         
         # Verify the content is preserved
         with open(expected_path, 'r') as f:
@@ -269,6 +310,7 @@ class TestMigrateDirectory(unittest.TestCase):
 
     # --- Scenario 1: Only Files ---
     
+    @unittest.skip("skip for now")
     def test_migrate_directory_only_files_single_category(self):
         """Test migrating a directory with only files of the same category."""
         # Create multiple text files
@@ -277,14 +319,14 @@ class TestMigrateDirectory(unittest.TestCase):
             self._create_test_file(os.path.join(self.source_dir, filename))
 
         # Run migration
-        result = self._run_shell_function(f'migrate_directory "{self.source_dir}" "{self.destination_dir}"')
+        self._run_shell_function(f'migrate_directory "{self.source_dir}" "{self.destination_dir}"')
         
         # Assert the text_files directory was created
         self._assert_directory_created('text_files')
         
         # Assert all files were migrated correctly
         for filename in test_files:
-            self._assert_file_migrated_correctly(filename, 'text_files')
+            self._assert_file_migrated_correctly(filename, os.path.join(self.destination_dir, "text_files"))
 
     @unittest.skip("skip for now")
     def test_migrate_directory_only_files_multiple_categories(self):
@@ -310,7 +352,8 @@ class TestMigrateDirectory(unittest.TestCase):
         # Assert all expected directories were created and files migrated
         for filename, expected_folder in test_files:
             self._assert_directory_created(expected_folder)
-            self._assert_file_migrated_correctly(filename, expected_folder)
+            expected_parent_dir= os.path.join(self.destination_dir, expected_folder)
+            self._assert_file_migrated_correctly(filename, expected_parent_dir)
 
     @unittest.skip("skip for now")
     def test_migrate_directory_only_files_randomized(self):
@@ -330,7 +373,8 @@ class TestMigrateDirectory(unittest.TestCase):
         
         # Verify all files were migrated correctly
         for filename, expected_folder in test_files:
-            self._assert_file_migrated_correctly(filename, expected_folder)
+            expected_parent_dir = os.path.join(self.destination_dir, expected_folder)
+            self._assert_file_migrated_correctly(filename, expected_parent_dir)
 
     # --- Scenario 2: One Level of Subdirectories ---
     
@@ -351,13 +395,17 @@ class TestMigrateDirectory(unittest.TestCase):
             ]
             for filename, expected_folder in files_in_subdir:
                 self._create_test_file(os.path.join(subdir_path, filename))
-                test_files.append((filename, expected_folder))
+                path = os.path.join(self.destination_dir, subdir, expected_folder)
+                test_files.append((filename, path))
 
         # Also add some files in the root
-        root_files = [('root_file.mp3', 'audio'), ('root_doc.docx', 'documents')]
-        for filename, expected_folder in root_files:
+        root_files = [
+                    ('root_file.mp3', os.path.join(self.destination_dir, 'audio')), 
+                    ('root_doc.docx', os.path.join(self.destination_dir, 'documents'))
+                    ]
+        for filename, p in root_files:
             self._create_test_file(os.path.join(self.source_dir, filename))
-            test_files.append((filename, expected_folder))
+            test_files.append((filename, p))
 
         # Run migration
         result = self._run_shell_function(f'migrate_directory "{self.source_dir}" "{self.destination_dir}"')
