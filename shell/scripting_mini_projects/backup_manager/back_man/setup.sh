@@ -67,6 +67,9 @@ set_env_var "REMOTE_CONFIGS_DIR_NAME" "_DEFAULT_REMOTE_CONFIGS_DIR_NAME"
 # 9. Connection cache directory name
 set_env_var "CONNECTION_CACHE_DIR_NAME" "_DEFAULT_CONNECTION_CACHE_DIR_NAME"
 
+# 10. Default remote home directory for relative paths
+set_env_var "BACKUP_MANAGER_DEFAULT_REMOTE_HOME_DIR" "_DEFAULT_BACKUP_MANAGER_DEFAULT_REMOTE_HOME_DIR"
+
 # Create necessary directories
 echo "Creating necessary directories..."
 
