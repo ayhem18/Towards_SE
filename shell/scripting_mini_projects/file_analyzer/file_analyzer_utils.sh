@@ -83,12 +83,6 @@ migrate_directory()
         # the line isn't necessary... but well, it doesn't hurt to be a bit paranoid.
         [ ! -e "$file" ] && continue
 
-        echo "the file is $file"
-        echo "The basename of this file is $(basename "$file")" 
-        extension=$(get_file_extension "$(basename "$file")")
-        echo "The extension of this file is $extension"
-        echo "This file belongs to this category: $(get_destination_folder_name "$extension")"
-
         # Check if the item is actually a file (and not a directory)
         if [ -f "$file" ]; then
             # We need the filename part of the path to get the extension.
