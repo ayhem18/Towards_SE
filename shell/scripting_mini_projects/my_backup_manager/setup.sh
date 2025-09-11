@@ -58,6 +58,15 @@ set_env_var "BACKUP_FILE_EXTENSION" "_DEFAULT_BACKUP_FILE_EXTENSION"
 # 6. Default backup file compression
 set_env_var "BACKUP_FILE_COMPRESSION" "_DEFAULT_BACKUP_FILE_COMPRESSION"
 
+# 7. SSH keys directory name
+set_env_var "SSH_KEYS_DIR_NAME" "_DEFAULT_SSH_KEYS_DIR_NAME"
+
+# 8. Remote configs directory name
+set_env_var "REMOTE_CONFIGS_DIR_NAME" "_DEFAULT_REMOTE_CONFIGS_DIR_NAME"
+
+# 9. Connection cache directory name
+set_env_var "CONNECTION_CACHE_DIR_NAME" "_DEFAULT_CONNECTION_CACHE_DIR_NAME"
+
 # Create necessary directories
 echo "Creating necessary directories..."
 
@@ -74,4 +83,4 @@ if [[ ! -d "$full_path_local_backup" ]]; then
     echo "Created directory: $full_path_local_backup"
 fi
 
-echo "Environment setup complete!"z
+echo "Environment setup complete!"
