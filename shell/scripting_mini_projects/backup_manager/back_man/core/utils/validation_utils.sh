@@ -96,7 +96,7 @@ validate_remote_path() {
     
     # Check for dangerous shell metacharacters that could cause security issues
     # Reject paths containing: ; | & < > $ ( ) ` ' " * ? and control characters
-    if [[ "$remote_path" =~ [;\|\&\<\>\$\(\)\`\'\"\*\?[:cntrl:]] ]]; then
+    if [[ "$remote_path" =~ [\;\|\&\<\>\$\(\)\`\'\"\*\?[:cntrl:]] ]]; then
         echo "Error: Path contains unsafe characters: $remote_path" >&2
         echo "Paths cannot contain shell metacharacters: ; | & < > \$ ( ) \` ' \" * ? or control characters" >&2
         return 1

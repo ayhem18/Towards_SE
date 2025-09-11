@@ -33,6 +33,9 @@ class TestParsingUtils(unittest.TestCase):
         script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'back_man', 'core', 'utils', 'parsing_utils.sh'))
         # Test function that calls parse_remote_path and outputs the results
         test_function = '''
+        # Set up environment variable for testing
+        export BACKUP_MANAGER_DEFAULT_REMOTE_HOME_DIR="~"
+        
         test_parse_remote_path() {
             local remote_path="$1"
             local hostname username remote_dir
@@ -152,9 +155,8 @@ class TestParsingUtils(unittest.TestCase):
 
     # --- Test valid remote path formats ---
     
-    @unittest.skip("passed")
     def test_parse_remote_path_standard_format(self):
-        """Test parsing standard user@hostname:/path format."""
+        """Test parsing standard user@hostname:/path format with absolute paths."""
         test_cases = [
             ("user@server:/home/backup", "server", "user", "/home/backup"),
             ("admin@192.168.1.1:/var/data", "192.168.1.1", "admin", "/var/data"),
@@ -172,7 +174,25 @@ class TestParsingUtils(unittest.TestCase):
                 self.assertEqual(username, expected_user)
                 self.assertEqual(remote_dir, expected_dir)
 
-    @unittest.skip("passed")       
+    def test_parse_remote_path_relative_to_absolute(self):
+        """Test parsing relative paths that should be converted to absolute paths."""
+        test_cases = [
+            ("user@server:backup", "server", "user", "~/backup"),
+            ("admin@server:documents/files", "server", "admin", "~/documents/files"),
+            ("user@server:./relative", "server", "user", "~/relative"),
+            ("user@server:", "server", "user", "~"),  # Empty path
+        ]
+        
+        for remote_path, expected_host, expected_user, expected_dir in test_cases:
+            with self.subTest(remote_path=remote_path):
+                result = self._run_shell_function(f'test_parse_remote_path "{remote_path}"')
+                success, hostname, username, remote_dir = self._parse_test_output(result.stdout)
+                
+                self.assertTrue(success, f"Parsing should succeed for: {remote_path}")
+                self.assertEqual(hostname, expected_host)
+                self.assertEqual(username, expected_user)
+                self.assertEqual(remote_dir, expected_dir)
+
     def test_parse_remote_path_no_username_should_fail(self):
         """Test that parsing hostname:/path format fails (username now required)."""
         test_cases = [
@@ -188,10 +208,9 @@ class TestParsingUtils(unittest.TestCase):
                 
                 self.assertFalse(success, f"Parsing should fail for path without username: {remote_path}")
 
-    @unittest.skip("passed")
     def test_parse_remote_path_random_valid_combinations(self):
-        """Test parsing with 1000 random valid combinations."""
-        for i in range(1000):
+        """Test parsing with 50 random valid combinations."""
+        for i in range(50):
             with self.subTest(iteration=i):
                 hostname = self._get_valid_hostname()
                 username = self._get_valid_username()
@@ -201,17 +220,22 @@ class TestParsingUtils(unittest.TestCase):
                 remote_path = f"{username}@{hostname}:{path}"
                 expected_user = username
                 
+                # Determine expected normalized path
+                if path.startswith('/'):
+                    expected_path = path  # Already absolute
+                else:
+                    expected_path = f"~/{path}" if path else "~"
+                
                 result = self._run_shell_function(f'test_parse_remote_path "{remote_path}"')
                 success, parsed_hostname, parsed_username, parsed_dir = self._parse_test_output(result.stdout)
                 
                 self.assertTrue(success, f"Parsing should succeed for: {remote_path}")
                 self.assertEqual(parsed_hostname, hostname)
-                self.assertEqual(parsed_dir, path)
+                self.assertEqual(parsed_dir, expected_path)
                 self.assertEqual(parsed_username, expected_user)
 
     # --- Test edge cases and tricky scenarios ---
     
-    @unittest.skip("passed")
     def test_parse_remote_path_valid_hostnames(self):
         """Test parsing with valid hostnames that match our regex."""
         valid_cases = [
@@ -246,7 +270,6 @@ class TestParsingUtils(unittest.TestCase):
                 self.assertEqual(username, expected_user)
                 self.assertEqual(remote_dir, expected_dir)
 
-    @unittest.skip("passed")
     def test_parse_remote_path_invalid_hostnames(self):
         """Test parsing with invalid hostnames that should fail regex validation."""
         invalid_cases = [
@@ -275,7 +298,6 @@ class TestParsingUtils(unittest.TestCase):
                 
                 self.assertFalse(success, f"Parsing should fail for invalid hostname: {remote_path}")
 
-    @unittest.skip("passed")
     def test_parse_remote_path_tricky_usernames(self):
         """Test parsing with tricky but valid usernames."""
         tricky_cases = [
@@ -299,24 +321,26 @@ class TestParsingUtils(unittest.TestCase):
                 self.assertEqual(username, expected_user)
                 self.assertEqual(remote_dir, expected_dir)
 
-    @unittest.skip("passed")
     def test_parse_remote_path_tricky_paths(self):
         """Test parsing with tricky but valid paths."""
         tricky_cases = [
             # Paths with spaces (though this might cause issues in practice)
             ('user@server:/path with spaces', "server", "user", "/path with spaces"),
             
-            # Paths with special characters
+            # Paths with special characters (absolute)
             ("user@server:/path/with-hyphens", "server", "user", "/path/with-hyphens"),
             ("user@server:/path/with_underscores", "server", "user", "/path/with_underscores"),
             ("user@server:/path/with.dots", "server", "user", "/path/with.dots"),
             
-            # Relative paths
-            ("user@server:relative/path", "server", "user", "relative/path"),
+            # Relative paths (should be normalized to absolute)
+            ("user@server:relative/path", "server", "user", "~/relative/path"),
+            ("user@server:documents", "server", "user", "~/documents"),
+            
+            # Home directory path (already absolute)
             ("user@server:~/home/path", "server", "user", "~/home/path"),
             
-            # Empty path
-            # ("user@server:", "server", "user", ""),
+            # Empty path (should default to ~)
+            ("user@server:", "server", "user", "~"),
         ]
         
         for remote_path, expected_host, expected_user, expected_dir in tricky_cases:
@@ -369,15 +393,20 @@ class TestParsingUtils(unittest.TestCase):
                 
                 self.assertFalse(success, f"Parsing should fail for invalid format: {invalid_path}")
 
-    @unittest.skip("Skipping edge cases test as it is not required")
     def test_parse_remote_path_edge_cases(self):
         """Test parsing with extreme edge cases that should still work."""
         edge_cases = [
-            # Single character components
+            # Single character components (absolute path)
             ("a@b:/c", "b", "a", "/c"),
+            
+            # Single character components (relative path)
+            ("a@b:c", "b", "a", "~/c"),
             
             # Long but valid hostnames
             ("user@very-long-hostname.example.com:/path", "very-long-hostname.example.com", "user", "/path"),
+            
+            # Relative path with dot prefix
+            ("user@server:./documents", "server", "user", "~/documents"),
         ]
         
         for remote_path, expected_host, expected_user, expected_dir in edge_cases:
