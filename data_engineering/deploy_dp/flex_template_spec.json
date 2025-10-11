@@ -1,0 +1,9 @@
+{
+    "image": "tagged us-central1-docker.pkg.dev/wonderfullogisticsinsights/test-docker-repo/basic_dp_image:latest",
+    "sdk_info": { "language": "PYTHON" },
+    "metadata": {
+        "name": "data-pipelines-flex-template",
+        "description": "A Flex Template for various data pipelines.",
+        "parameters": []
+    }
+}

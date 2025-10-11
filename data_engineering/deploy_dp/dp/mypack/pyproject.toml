@@ -1,0 +1,32 @@
+[project]
+name = "mypack"
+version = "1.0.0"
+
+authors = [
+  { name="Ayhem Bouabid", email="ayhem@premiercloud.com" },
+]
+
+description = "a test package"
+
+requires-python = ">=3.9"
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "tqdm"
+]
+
+[project.urls]
+Homepage = "https://github.com/ayhem18/Towards_SE"
+
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

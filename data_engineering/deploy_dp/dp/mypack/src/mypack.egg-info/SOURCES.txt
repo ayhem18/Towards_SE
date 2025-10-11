@@ -1,0 +1,7 @@
+pyproject.toml
+src/mypack/utils.py
+src/mypack.egg-info/PKG-INFO
+src/mypack.egg-info/SOURCES.txt
+src/mypack.egg-info/dependency_links.txt
+src/mypack.egg-info/requires.txt
+src/mypack.egg-info/top_level.txt

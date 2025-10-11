@@ -12,9 +12,9 @@ validate_user_name() {
     # Check if username is empty
     if [[ -z "$username" ]]; then
         echo "Error: Username cannot be empty" >&2
-        return 1
     fi
     
+        return 1
     # Check username length (typical limit is 32 characters)
     if [[ ${#username} -gt 32 ]]; then
         echo "Error: Username too long (max 32 characters): $username" >&2
@@ -25,7 +25,7 @@ validate_user_name() {
     # Allow: letters, numbers, hyphens, underscores, dots
     # Must start with letter or underscore
     # Must not end with hyphen
-    local username_regex="^[a-zA-Z_][a-zA-Z0-9._-]*[a-zA-Z0-9._]$|^[a-zA-Z_]$"
+    local username_regex="(^[a-zA-Z_][a-zA-Z0-9._-]*[a-zA-Z0-9._]$)|(^[a-zA-Z_]$)"
     
     if [[ ! "$username" =~ $username_regex ]]; then
         echo "Error: Invalid username format: $username" >&2
@@ -42,8 +42,6 @@ validate_user_name() {
     return 0
 }
 
-# Validate hostname format
-# Uses the regex pattern specified earlier
 validate_host() {
     local hostname="$1"
     
@@ -60,7 +58,7 @@ validate_host() {
     fi
     
     # Validate hostname format using the specified regex
-    local hostname_regex="^(([a-zA-Z0-9]([a-zA-Z0-9-]+\.)+([a-zA-Z0-9-]+))|([a-zA-Z0-9-]*[a-zA-Z-]+[a-zA-Z0-9-]*))$"
+    local hostname_regex="(([a-zA-Z0-9]([a-zA-Z0-9-]+\.)+([a-zA-Z0-9-]+))|([a-zA-Z0-9-]*[a-zA-Z-]+[a-zA-Z0-9-]*))"
     
     if [[ ! "$hostname" =~ $hostname_regex ]]; then
         echo "Error: Invalid hostname format: $hostname" >&2
