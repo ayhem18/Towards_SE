@@ -217,3 +217,18 @@ function grant_role_to_gcp_service_agent() {
         --member="serviceAccount:${service_agent_email}" \
         --role="${role_to_grant}"
 }
+
+
+function grant_sa_permission_on_artifact_registry() {
+    local service_account_name=$1
+    local role=$2
+    local service_account_email
+    service_account_email=$(get_service_account_email "${service_account_name}")
+
+    echo "--> Granting SA '${service_account_name}' the role '${role}' on ARTIFACT REGISTRY..."
+
+    gcloud artifacts repositories add-iam-policy-binding REPOSITORY \
+    --location=${GCP_REGION} \
+    --member="serviceAccount:${service_account_email}" \
+    --role="${role}"
+}

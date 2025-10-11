@@ -7,7 +7,7 @@ _DP_DEPLOY_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "DP_DEPLOY_SCRIPT_DIR: ${_DP_DEPLOY_SCRIPT_DIR}"
 
 source "${_DP_DEPLOY_SCRIPT_DIR}/common.sh"
-source "${_GS_CLOUD_UTILS_DIR}/gcloud_utils.sh"
+source "${_DP_DEPLOY_SCRIPT_DIR}/gcloud_utils.sh"
 
 # according to this Google Cloud documentation: 
 # https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates#create_bucket
@@ -16,7 +16,7 @@ source "${_GS_CLOUD_UTILS_DIR}/gcloud_utils.sh"
 create_docker_repository 
 
 # # configure the docker client to use the docker repository
-# configure_docker_auth
+configure_docker_auth
 
 
 # let's define the temporary and staging locations
@@ -27,24 +27,22 @@ DP_FLEX_SPECIFICATION_FOLDER_LOCATION="gs://${DP_MAIN_BUCKET_NAME}/flex-specs/fl
 
 DP_BASIC_IMAGE_NAME="basic_dp_image"
 IMAGE_PATH=${_DP_DEPLOY_SCRIPT_DIR}/dp
-
-
 DP_SDK_CONTAINER_IMAGE="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${ARTIFACT_REPO_NAME}/${DP_BASIC_IMAGE_NAME}:latest"
 
-# TODO: understand what this command does exactly...
+# # TODO: understand what this command does exactly...
 gcloud builds submit "${IMAGE_PATH}" --tag "${DP_SDK_CONTAINER_IMAGE}" --project "${GCP_PROJECT_ID}"
 
 
-
-
-
+# # set the permissions for the worker service account
+source "${_DP_DEPLOY_SCRIPT_DIR}/set_up_dataflow_permissions.sh" --main-bucket-name "${DP_MAIN_BUCKET_NAME}"
 
 
 # build the dataflow flex template
 gcloud dataflow flex-template build "${DP_FLEX_SPECIFICATION_FOLDER_LOCATION}"  \
     --image "${DP_SDK_CONTAINER_IMAGE}" \
     --sdk-language "PYTHON" \
-    --project "${GCP_PROJECT_ID}"
+    --project "${GCP_PROJECT_ID}" \
+    --service-account-email "${DP_WORKER_SA_EMAIL}" # this value is exported from the set_up_dataflow_permissions.sh script
 
 
 DP_JOB_NAME="basic-dp-job-`date +%Y%m%d-%H%M%S`"
@@ -54,4 +52,3 @@ gcloud dataflow flex-template run "${DP_JOB_NAME}" \
     --region "${GCP_REGION}" \
     --staging-location "${DP_STAGING_FOLDER_LOCATION}" \
     --project "${GCP_PROJECT_ID}" \
-    # --parameters sdk_container_image=$DP_SDK_CONTAINER_IMAGE \ # not sure if this argument is needed
