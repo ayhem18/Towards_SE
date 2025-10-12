@@ -1,0 +1,28 @@
+# ARG for the base image tag from Artifact Registry. This will be passed during the build.
+ARG BASE_IMAGE_TAG
+
+# Use the pre-built base image. It contains 'mypack' and common dependencies.
+FROM ${BASE_IMAGE_TAG}
+
+# Set the working directory for the pipeline code.
+WORKDIR /app
+
+# 1. Copy ONLY the requirements file first.
+# This leverages Docker's layer caching. The next step will only re-run
+# if this specific file changes, not when your pipeline code changes.
+COPY pip1_reqs.txt .
+
+# 2. Install any pipeline-specific dependencies.
+# --no-cache-dir reduces image size.
+# --require-hashes is a security best practice to ensure dependency integrity.
+# You would need to generate a requirements.txt with hashes for this.
+RUN pip install --no-cache-dir -r pip1_reqs.txt
+
+# 3. Now copy the rest of your application code.
+COPY main.py .
+
+# 4. Set the command to execute your pipeline script.
+# This is what the Cloud Run Job will execute.
+# The arguments to the script (like --runner, --project) will be provided
+# in the Cloud Run Job definition itself.
+CMD ["python", "/app/main.py"]
