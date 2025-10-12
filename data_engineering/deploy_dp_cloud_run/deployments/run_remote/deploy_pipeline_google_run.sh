@@ -31,7 +31,7 @@ TEMP_LOCATION="gs://${DP_MAIN_BUCKET_NAME}/temp"
 # OUTPUT_PATH="gs://${DP_MAIN_BUCKET_NAME}/output/${PIPELINE_NAME}/" # Note: path for output files
 
 # call the set_permissions_script.sh script
-source "${_DEPLOY_SCRIPT_DIR}/set_permissions_script.sh" "${PIPELINE_SA_NAME}" "${DP_MAIN_BUCKET_NAME}"
+source "${_DEPLOY_SCRIPT_DIR}/set_permissions_script.sh" "${PIPELINE_NAME}" "${DP_MAIN_BUCKET_NAME}"
 
 
 echo "--- Creating/Updating Cloud Run Job: ${JOB_NAME} ---"
@@ -47,6 +47,7 @@ GCLOUD_JOB_ARGS=(
   "--args=--staging_location=${STAGING_LOCATION}"
   "--args=--temp_location=${TEMP_LOCATION}"
   "--args=--service_account_email=${PIPELINE_SA_EMAIL}"
+  "--args=--sdk_container_image=${PIPELINE_IMAGE_TAG}"
 )
 
 deploy_cloud_run_job "${JOB_NAME}" "${GCLOUD_JOB_ARGS}"

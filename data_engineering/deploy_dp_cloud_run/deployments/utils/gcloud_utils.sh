@@ -169,23 +169,29 @@ function get_gcp_service_agent_email() {
     local service_name="$1"
     local project_number
 
-    # First, get the unique project number for the current project ID.
+    # This command is efficient and gets the project number directly.
     project_number=$(gcloud projects describe "${GCP_PROJECT_ID}" --format='value(projectNumber)')
 
+    echo "--> Getting GCP Service Agent email for '${service_name}'..."
+    echo "    Project number: ${project_number}"
+
+
     local service_agent_email=""
+    # Use a case statement for clarity and extensibility
     case "${service_name}" in
-        cloudscheduler)
+        "cloudscheduler")
             service_agent_email="service-${project_number}@gcp-sa-cloudscheduler.iam.gserviceaccount.com"
             ;;
-        storage)
+        "storage")
+            # Example for another service agent
             service_agent_email="service-${project_number}@gs-project-accounts.iam.gserviceaccount.com"
             ;;
         "pubsub" | "Pub/Sub")
+            # Example showing multiple aliases
             service_agent_email="service-${project_number}@gcp-sa-pubsub.iam.gserviceaccount.com"
             ;;
-        # Add other service agents here as needed in the future
         *)
-            echo "Error: Unknown service agent name '${service_name}'." >&2
+            echo "Error: Unknown service agent name '${service_name}' in get_gcp_service_agent_email." >&2
             return 1
             ;;
     esac
@@ -264,3 +270,31 @@ function deploy_cloud_run_job() {
     fi
 }
 
+
+
+function grant_permission_on_sa() {
+    local principal_with_prefix="$1" # MUST include prefix like "user:" or "serviceAccount:"
+    local role_to_grant="$2"
+    local target_sa_email="$3" # The SA to grant permission ON.
+
+    echo "--> Granting Principal '${principal_with_prefix}'"
+    echo "    the role '${role_to_grant}'"
+    echo "    on Service Account ${target_sa_email}"
+
+    gcloud iam service-accounts add-iam-policy-binding "${target_sa_email}" \
+        --member="${principal_with_prefix}" \
+        --role="${role_to_grant}"
+
+    # gcloud iam service-accounts add-iam-policy-binding "${target_sa_email}" \
+    #     --member="${principal_with_prefix}" \
+    #     --role="${role_to_grant}"
+
+
+    # if [[ -z "${project_id}" ]]; then
+    # else
+    #     gcloud iam service-accounts add-iam-policy-binding "${target_sa_email}" \
+    #         --project="${project_id}" \
+    #         --member="${principal_with_prefix}" \
+    #         --role="${role_to_grant}"
+    # fi
+}   

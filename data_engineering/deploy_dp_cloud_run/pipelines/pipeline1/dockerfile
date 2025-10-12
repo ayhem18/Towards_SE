@@ -21,8 +21,7 @@ RUN pip install --no-cache-dir -r pip1_reqs.txt
 # 3. Now copy the rest of your application code.
 COPY main.py .
 
-# 4. Set the command to execute your pipeline script.
-# This is what the Cloud Run Job will execute.
-# The arguments to the script (like --runner, --project) will be provided
-# in the Cloud Run Job definition itself.
-CMD ["python", "/app/main.py"]
+# 4. Set the entrypoint to execute your pipeline script.
+# Using ENTRYPOINT makes the container behave like an executable and correctly
+# appends arguments from `docker run`.
+ENTRYPOINT ["python", "/app/main.py"]

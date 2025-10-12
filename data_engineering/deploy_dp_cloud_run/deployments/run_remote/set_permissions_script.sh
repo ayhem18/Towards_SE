@@ -11,34 +11,57 @@ PIPELINE_SA_NAME=$1 # e.g., "my-pipeline-1-sa"
 DP_MAIN_BUCKET_NAME=$2 # e.g., "ayhem-exp-bucket"
 
 if [[ -z "${PIPELINE_SA_NAME}" || -z "${DP_MAIN_BUCKET_NAME}" ]]; then
-    echo "Usage: $0 <service-account-name> <gcs-bucket-name>"
+    echo "Usage: $0 <pipeline-name> <gcs-bucket-name>"
     exit 1
 fi
 
 echo "--- Setting up Service Account: ${PIPELINE_SA_NAME} ---"
 
-# 1. Create the user-managed service account
-create_service_account_in_gcp "${PIPELINE_SA_NAME}" "Service Account for ${PIPELINE_SA_NAME}"
+# # 1. Create the user-managed service account
+# create_service_account_in_gcp "${PIPELINE_SA_NAME}" "Service Account for ${PIPELINE_SA_NAME}"
 
-# 2. Grant permissions needed by the DATAFLOW WORKERS
-# These are the permissions the job needs while it's running.
-echo "--> Granting permissions for Dataflow workers"
-grant_sa_permission_on_project "${PIPELINE_SA_NAME}" "roles/dataflow.worker"
+# # 2. Grant permissions needed by the DATAFLOW WORKERS
+# # These are the permissions the job needs while it's running.
+# echo "--> Granting permissions for Dataflow workers"
+# grant_sa_permission_on_project "${PIPELINE_SA_NAME}" "roles/dataflow.worker"
 
-echo "--> Granting permissions for the GCS bucket"
-grant_sa_permission_on_bucket "${DP_MAIN_BUCKET_NAME}" "${PIPELINE_SA_NAME}" "roles/storage.objectAdmin"
+# echo "--> Granting permissions for the GCS bucket"
+# grant_sa_permission_on_bucket "${DP_MAIN_BUCKET_NAME}" "${PIPELINE_SA_NAME}" "roles/storage.objectAdmin"
 
-# 3. Grant permissions needed by the CLOUD RUN LAUNCHER
-# The Cloud Run job needs these to submit the pipeline and act on behalf of the worker SA.
-echo "--> Granting permissions for the Cloud Run launcher..."
-grant_sa_permission_on_project "${PIPELINE_SA_NAME}" "roles/dataflow.admin"
-# This critical permission allows the Cloud Run job to assign this SA to the Dataflow workers.
-grant_sa_permission_on_self "${PIPELINE_SA_NAME}" "roles/iam.serviceAccountUser"
+# # 3. Grant permissions needed by the CLOUD RUN LAUNCHER
+# # The Cloud Run job needs these to submit the pipeline and act on behalf of the worker SA.
+# echo "--> Granting permissions for the Cloud Run launcher..."
+# grant_sa_permission_on_project "${PIPELINE_SA_NAME}" "roles/dataflow.admin"
+# # This critical permission allows the Cloud Run job to assign this SA to the Dataflow workers.
+# grant_sa_permission_on_self "${PIPELINE_SA_NAME}" "roles/iam.serviceAccountUser"
 
-# 4. (Optional but Recommended) Grant Artifact Registry read access
-# This allows the service account to be used for pulling its own image if needed,
-# though Cloud Run usually handles this with its own service agent.
-grant_sa_permission_on_artifact_registry "${ARTIFACT_REPO_NAME}" "${PIPELINE_SA_NAME}" "roles/artifactregistry.reader"
+# # 4. (Optional but Recommended) Grant Artifact Registry read access
+# # This allows the service account to be used for pulling its own image if needed,
+# # though Cloud Run usually handles this with its own service agent.
+# grant_sa_permission_on_artifact_registry "${ARTIFACT_REPO_NAME}" "${PIPELINE_SA_NAME}" "roles/artifactregistry.reader"
+
+
+PIPELINE_SA_EMAIL=$(get_service_account_email "${PIPELINE_SA_NAME}")
+
+# grant_role_to_gcp_service_agent "cloudscheduler" "roles/iam.serviceAccountUser" "${PIPELINE_SA_EMAIL}"
+
+# Get the email of the user running the script
+GCLOUD_USER_EMAIL=$(gcloud config get-value account)
+
+# grant the CLOUD scheduler service account the 
+GCP_SCHEDULER_SERVICE_ACCOUNT_EMAIL=$(get_gcp_service_agent_email "cloudscheduler")
+
+if [[ -z "${GCP_SCHEDULER_SERVICE_ACCOUNT_EMAIL}" ]]; then
+    echo "Error: GCP_SCHEDULER_SERVICE_ACCOUNT_EMAIL is not set"
+    exit 1
+fi
+
+
+# grant_permission_on_sa \
+#     "user:${GCLOUD_USER_EMAIL}" \
+#     "roles/iam.serviceAccountUser" \
+#     "${GCP_SCHEDULER_SERVICE_ACCOUNT_EMAIL}"
+
 
 echo "--- Permissions setup complete for ${PIPELINE_SA_NAME} ---"
 export PIPELINE_SA_EMAIL=$(get_service_account_email "${PIPELINE_SA_NAME}")

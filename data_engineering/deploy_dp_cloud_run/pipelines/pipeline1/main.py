@@ -110,12 +110,18 @@ def run_pipeline(argv: list[str] | None = None):
 
     known_args, pipeline_args = parser.parse_known_args(argv)
 
-    # --- Set up GCP-specific pipeline options ---
-    pipeline_options = PipelineOptions(pipeline_args)
-    google_cloud_options = pipeline_options.view_as(GoogleCloudOptions)
+    logging.info(f"\n\npipeline_args: {pipeline_args}\n\n")
 
-    # The runner must be set to DataflowRunner to run on Dataflow
-    pipeline_options.view_as(WorkerOptions).runner = 'DataflowRunner'
+    logging.info(f"\n\nknown_args: {known_args}\n\n")
+
+    # --- Set up GCP-specific pipeline options ---
+    # pipeline_options = PipelineOptions(pipeline_args)
+    # google_cloud_options = pipeline_options.view_as(GoogleCloudOptions)
+
+    # # The runner must be set to DataflowRunner to run on Dataflow
+    # pipeline_options.view_as(WorkerOptions).runner = 'DataflowRunner'
+
+    pipeline_options = PipelineOptions(pipeline_args)
 
     # The service account for the Dataflow workers
     # We will pass this from the Cloud Run Job environment variables
