@@ -35,7 +35,7 @@ if [[ -z "${PIPELINE_NAME}" ]]; then
 fi
 
 # --- 2. Define Paths and Variables ---
-_PROJECT_ROOT="${_DEPLOY_PIPELINE_SCRIPT_DIR}/.."
+_PROJECT_ROOT="${_DEPLOY_PIPELINE_SCRIPT_DIR}/../.."
 PIPELINE_DIR="${_PROJECT_ROOT}/pipelines/${PIPELINE_NAME}"
 
 if [[ ! -d "${PIPELINE_DIR}" ]]; then

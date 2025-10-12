@@ -22,8 +22,10 @@ create_service_account_in_gcp "${PIPELINE_SA_NAME}" "Service Account for ${PIPEL
 
 # 2. Grant permissions needed by the DATAFLOW WORKERS
 # These are the permissions the job needs while it's running.
-echo "--> Granting permissions for Dataflow workers..."
+echo "--> Granting permissions for Dataflow workers"
 grant_sa_permission_on_project "${PIPELINE_SA_NAME}" "roles/dataflow.worker"
+
+echo "--> Granting permissions for the GCS bucket"
 grant_sa_permission_on_bucket "${DP_MAIN_BUCKET_NAME}" "${PIPELINE_SA_NAME}" "roles/storage.objectAdmin"
 
 # 3. Grant permissions needed by the CLOUD RUN LAUNCHER
@@ -36,7 +38,7 @@ grant_sa_permission_on_self "${PIPELINE_SA_NAME}" "roles/iam.serviceAccountUser"
 # 4. (Optional but Recommended) Grant Artifact Registry read access
 # This allows the service account to be used for pulling its own image if needed,
 # though Cloud Run usually handles this with its own service agent.
-# grant_sa_permission_on_artifact_registry "${ARTIFACT_REPO_NAME}" "${PIPELINE_SA_NAME}" "roles/artifactregistry.reader"
+grant_sa_permission_on_artifact_registry "${ARTIFACT_REPO_NAME}" "${PIPELINE_SA_NAME}" "roles/artifactregistry.reader"
 
 echo "--- Permissions setup complete for ${PIPELINE_SA_NAME} ---"
 export PIPELINE_SA_EMAIL=$(get_service_account_email "${PIPELINE_SA_NAME}")
