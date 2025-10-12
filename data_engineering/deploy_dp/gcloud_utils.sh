@@ -122,8 +122,13 @@ function grant_sa_permission_on_bucket() {
     local service_account_email
     service_account_email=$(get_service_account_email "${service_account_name}")
 
+    # if bucket name does not start with gs://, add it
+    if [[ "${bucket_name}" != "gs://"* ]]; then
+        bucket_name="gs://${bucket_name}"
+    fi
+
     echo "--> Granting SA '${service_account_name}' the role '${role}' on BUCKET '${bucket_name}'..."
-    gcloud storage buckets add-iam-policy-binding "gs://${bucket_name}" \
+    gcloud storage buckets add-iam-policy-binding "${bucket_name}" \
         --member="serviceAccount:${service_account_email}" \
         --role="${role}" \
         --project="${GCP_PROJECT_ID}"
@@ -220,14 +225,17 @@ function grant_role_to_gcp_service_agent() {
 
 
 function grant_sa_permission_on_artifact_registry() {
-    local service_account_name=$1
-    local role=$2
+    local artifact_registry_name=$1
+    local service_account_name=$2
+    local role=$3
     local service_account_email
     service_account_email=$(get_service_account_email "${service_account_name}")
 
     echo "--> Granting SA '${service_account_name}' the role '${role}' on ARTIFACT REGISTRY..."
 
-    gcloud artifacts repositories add-iam-policy-binding REPOSITORY \
+
+
+    gcloud artifacts repositories add-iam-policy-binding "${artifact_registry_name}" \
     --location=${GCP_REGION} \
     --member="serviceAccount:${service_account_email}" \
     --role="${role}"

@@ -1,1 +1,1 @@
-tqdm
+apache_beam[gcp]==2.54.0

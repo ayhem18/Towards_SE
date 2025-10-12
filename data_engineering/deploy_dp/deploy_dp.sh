@@ -34,7 +34,7 @@ gcloud builds submit "${IMAGE_PATH}" --tag "${DP_SDK_CONTAINER_IMAGE}" --project
 
 
 # # set the permissions for the worker service account
-source "${_DP_DEPLOY_SCRIPT_DIR}/set_up_dataflow_permissions.sh" --main-bucket-name "${DP_MAIN_BUCKET_NAME}"
+source "${_DP_DEPLOY_SCRIPT_DIR}/set_up_dataflow_permissions.sh" "${DP_MAIN_BUCKET_NAME}"
 
 
 # build the dataflow flex template

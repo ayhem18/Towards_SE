@@ -17,7 +17,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "tqdm"
+    "apache_beam[gcp]==2.54.0"
 ]
 
 [project.urls]

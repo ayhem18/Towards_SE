@@ -1,2 +1,1 @@
-empty_folder
 mypack
