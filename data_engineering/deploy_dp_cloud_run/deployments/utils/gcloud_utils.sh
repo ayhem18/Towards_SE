@@ -247,29 +247,6 @@ function grant_sa_permission_on_artifact_registry() {
 }
 
 
-function deploy_cloud_run_job() {
-    local job_name=$1
-    local gcloud_job_args=$2
-
-    echo "--> Checking if job '${job_name}' already exists..."
-    # We check for existence by trying to describe the job.
-    # The output is silenced (>/dev/null 2>&1) because we only care about the exit code.
-    # If the exit code is 0 (success), the job exists.
-    if gcloud run jobs describe "${job_name}" --project="${GCP_PROJECT_ID}" --region="${GCP_REGION}" >/dev/null 2>&1; then
-    echo "--> Job exists. Applying updates..."
-    gcloud run jobs update "${job_name}" \
-        --project="${GCP_PROJECT_ID}" \
-        --region="${GCP_REGION}" \
-        "${gcloud_job_args[@]}"
-    else
-    echo "--> Job does not exist. Creating a new one..."
-    gcloud run jobs create "${job_name}" \
-        --project="${GCP_PROJECT_ID}" \
-        --region="${GCP_REGION}" \
-        "${gcloud_job_args[@]}"
-    fi
-}
-
 
 
 function grant_permission_on_sa() {
@@ -298,3 +275,28 @@ function grant_permission_on_sa() {
     #         --role="${role_to_grant}"
     # fi
 }   
+
+
+
+function deploy_cloud_run_job() {
+    local job_name=$1
+    local gcloud_job_args=$2
+
+    echo "--> Checking if job '${job_name}' already exists..."
+    # We check for existence by trying to describe the job.
+    # The output is silenced (>/dev/null 2>&1) because we only care about the exit code.
+    # If the exit code is 0 (success), the job exists.
+    if gcloud run jobs describe "${job_name}" --project="${GCP_PROJECT_ID}" --region="${GCP_REGION}" >/dev/null 2>&1; then
+    echo "--> Job exists. Applying updates..."
+    gcloud run jobs update "${job_name}" \
+        --project="${GCP_PROJECT_ID}" \
+        --region="${GCP_REGION}" \
+        "${gcloud_job_args[@]}"
+    else
+    echo "--> Job does not exist. Creating a new one..."
+    gcloud run jobs create "${job_name}" \
+        --project="${GCP_PROJECT_ID}" \
+        --region="${GCP_REGION}" \
+        "${gcloud_job_args[@]}"
+    fi
+}

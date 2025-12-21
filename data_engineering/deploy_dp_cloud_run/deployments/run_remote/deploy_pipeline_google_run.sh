@@ -17,10 +17,6 @@ if [[ -z "${PIPELINE_NAME}" ]]; then
     exit 1
 fi
 
-# if [[ -z "$1" || -z "$2" || -z "$3" || -z "$4" ]]; then
-#     echo "Usage: $0 <pipeline-name> <image-tag> <service-account-name> <bucket-name>"
-#     exit 1
-# fi
 
 PIPELINE_SA_EMAIL=$(get_service_account_email "${PIPELINE_SA_NAME}")
 JOB_NAME="${PIPELINE_NAME}-job"

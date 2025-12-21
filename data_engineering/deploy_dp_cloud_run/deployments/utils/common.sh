@@ -126,3 +126,5 @@ function build_image_locally() {
 
     echo "--- Successfully built local image: ${local_tag} ---"
 }
+
+
